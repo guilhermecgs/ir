@@ -32,5 +32,3 @@ cusrtodia:
     stage: custodia
     script:
         - python ./ir.py --do custodia
-    only:
-        - master

@@ -28,6 +28,7 @@ def calcula_custodia(df):
         ticker_na_carteira = df.loc[df['ticker'] == ticker]['add'].sum()
         custodia.append({'ticker': ticker, 'qtd': ticker_na_carteira})
 
-    custodia = pd.DataFrame(custodia)
+    df_custodia = pd.DataFrame(custodia)
+    df_custodia.sort_values(by=['qtd'])
 
-    return custodia
+    return df_custodia
