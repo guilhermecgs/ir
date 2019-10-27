@@ -2,6 +2,7 @@ import pandas as pd
 
 from src.dropbox_files import OPERATIONS_FILEPATH
 
+
 def get_operations_dataframe():
     df = pd.read_csv(OPERATIONS_FILEPATH, sep='\t',
                      header=None,
@@ -29,6 +30,6 @@ def calcula_custodia(df):
         custodia.append({'ticker': ticker, 'qtd': ticker_na_carteira})
 
     df_custodia = pd.DataFrame(custodia)
-    df_custodia.sort_values(by=['qtd'])
+    df_custodia = df_custodia.sort_values(by=['qtd'], ascending=False)
 
     return df_custodia
