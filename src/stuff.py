@@ -26,7 +26,7 @@ def calcula_custodia(df):
     custodia = []
 
     for ticker in df['ticker'].unique():
-        ticker_na_carteira = df.loc[df['ticker'] == ticker]['add'].sum()
+        ticker_na_carteira = df.loc[df['ticker'] == ticker]['qtd'].sum()
         custodia.append({'ticker': ticker, 'qtd': ticker_na_carteira})
 
     df_custodia = pd.DataFrame(custodia)
