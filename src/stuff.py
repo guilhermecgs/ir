@@ -37,22 +37,12 @@ def calcula_custodia(df):
 
 def calcula_precos_medio_de_compra(df):
 
-<<<<<<< refs/remotes/origin/master
-    df = df.sort_values(by=['data'])
-
-    precos_medios_de_compra = {}
-
-    for ticker in df['ticker'].unique():
-
-        df_ticker = df.loc[df['ticker'] == ticker]
-=======
     precos_medios_de_compra = {}
 
     df = df.sort_values(by=['data'])
 
     for ticker in df['ticker'].unique():
         df_ticker = df.loc[df['ticker'] == ticker].copy()
->>>>>>> Calculo do preco medio de compra
         df_ticker['valor'] = df_ticker['qtd'] * df_ticker['preco']
         df_ticker['cum_qtd'] = df_ticker['qtd'].cumsum()
 
