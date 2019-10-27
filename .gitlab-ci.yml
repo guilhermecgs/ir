@@ -1,0 +1,36 @@
+image: python:3.6.4
+
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .cache/
+    - venv/
+
+stages:
+    - coverage_report
+    - custodia
+    
+before_script:
+    - pip list
+    - pip install -r requirements.txt
+
+coverage_html:
+    stage: coverage_report
+    script:
+        - python coverage_test.py
+        - mkdir -p public/coverage_report
+        - mv coverage_report public/coverage_report
+    artifacts:
+        paths:
+            - public
+        expire_in: 15 days
+
+cusrtodia:
+    stage: custodia
+    script:
+        - python ./ir.py --do custodia
+    only:
+        - master
