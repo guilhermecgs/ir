@@ -28,7 +28,7 @@ coverage_html:
             - public
         expire_in: 15 days
 
-cusrtodia:
+custodia:
     stage: custodia
     script:
         - python ./ir.py --do custodia

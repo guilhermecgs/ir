@@ -8,3 +8,4 @@
     - calculo de tudo o que foi vendido no mes anterior
     - envio de emails com resumo
     - geracao de darf? 
+    - talvez pegar o preco via API para o relatorio
