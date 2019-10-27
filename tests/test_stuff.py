@@ -13,7 +13,12 @@ class TestStuff(unittest.TestCase):
 
         df = get_operations_dataframe()
 
+<<<<<<< refs/remotes/origin/master
         assert calcula_precos_medio_de_compra(df) is dict
+=======
+        precos_medios_de_compra = calcula_precos_medio_de_compra(df)
+        assert type(precos_medios_de_compra) is dict
+>>>>>>> Calculo do preco medio de compra
 
     def test_calcula_precos_medios_quando_um_ciclo(self):
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 20), 'preco': 100},
