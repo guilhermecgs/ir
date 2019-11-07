@@ -14,9 +14,9 @@ class TestStuff(unittest.TestCase):
 
         df = get_operations_dataframe()
 
-        vendas_no_mes = vendas_no_mes(df, 2019, 8)
-        assert type(vendas_no_mes) is list
-        assert len(vendas_no_mes) == 3
+        vendas_no_mes_agosto = vendas_no_mes(df, 2019, 8)
+        assert type(vendas_no_mes_agosto) is list
+        assert len(vendas_no_mes_agosto) == 3
 
     def test_calcula_custodia(self):
         from src.dropbox_files import download_dropbox_file
