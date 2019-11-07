@@ -17,7 +17,7 @@ cache:
 
 stages:
     - coverage_report
-    - custodia
+    - relatorio
 
 before_script:
   - python -V
@@ -37,7 +37,8 @@ coverage_html:
             - public
         expire_in: 15 days
 
-custodia:
-    stage: custodia
+relatorio:
+    stage: relatorio
     script:
         - python ./ir.py --do custodia
+        - python ./ir.py --do vendas_no_mes

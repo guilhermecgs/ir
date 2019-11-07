@@ -2,10 +2,35 @@ import unittest
 import pytest
 import pandas as pd
 import datetime
-from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra
+from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, \
+    calcula_custodia, vendas_no_mes, calcula_valor
 
 
 class TestStuff(unittest.TestCase):
+
+    def test_descobre_vendas_no_mes(self):
+        from src.dropbox_files import download_dropbox_file
+        download_dropbox_file()
+
+        df = get_operations_dataframe()
+
+        vendas_no_mes = vendas_no_mes(df, 2019, 8)
+        assert type(vendas_no_mes) is list
+        assert len(vendas_no_mes) == 3
+
+    def test_calcula_custodia(self):
+        from src.dropbox_files import download_dropbox_file
+        download_dropbox_file()
+
+        df = get_operations_dataframe()
+
+        data = datetime.datetime.now()
+        custodia = calcula_custodia(df, data)
+
+        assert type(custodia) is pd.DataFrame
+        assert 'preco_medio_compra' in custodia.columns
+        assert 'ticker' in custodia.columns
+        assert 'qtd' in custodia.columns
 
     def test_calcula_precos_medios_do_dropbox(self):
         from src.dropbox_files import download_dropbox_file
@@ -21,6 +46,7 @@ class TestStuff(unittest.TestCase):
                 {'ticker': 'gcgs', 'qtd': 200, 'data': datetime.date(2019, 4, 13), 'preco': 200}]
 
         df = pd.DataFrame(data)
+        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
 
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 
@@ -38,6 +64,7 @@ class TestStuff(unittest.TestCase):
                 {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 16), 'preco': 2}]
 
         df = pd.DataFrame(data)
+        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
 
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 

@@ -10,3 +10,7 @@ __pycache__/
 *.pyc
 
 tests/.DS_Store
+
+.DS_Store
+
+export_operacoes.txt
