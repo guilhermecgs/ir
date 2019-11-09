@@ -33,6 +33,5 @@ def do_vendas_no_mes():
         print('Mes: ' + str(data.month) + ' Ano: ' + str(data.year))
         print(vendas_no_mes(get_operations_dataframe(), data.year, data.month))
 
-do_vendas_no_mes()
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -44,7 +44,9 @@ def calcula_custodia(df, data=None):
         valor = preco_atual * qtd_em_custodia
         valorizacao = preco_atual / precos_medios_de_compra[ticker] * 100.0 - 100.0
         valorizacao = "{0:.2f}".format(valorizacao)
+
         custodia.append({'ticker': ticker,
+                         'tipo': tipo_ticker(tipo_ticker),
                          'qtd': qtd_em_custodia,
                          'preco_medio_compra': precos_medios_de_compra[ticker],
                          'valor': valor,
@@ -115,3 +117,21 @@ def vendas_no_mes(df, ano, mes):
                               'resultado_apurado': resultado_apurado})
 
     return vendas_no_mes
+
+
+def tipo_ticker(ticker):
+    from  src.crawler_brinvesting_etfs import e_tipo_etf
+    from src.crawler_funds_explorer_bs4 import e_tipo_fii
+    from src.domain.tipo_ticker import TipoTicker
+
+    if e_tipo_etf(ticker):
+        return TipoTicker.ETF
+
+    if e_tipo_fii(ticker):
+        return TipoTicker.FII
+
+    if busca_preco_atual(ticker):
+        return TipoTicker.ACAO
+
+    return None
+

@@ -2,8 +2,9 @@ import unittest
 import pytest
 import pandas as pd
 import datetime
+from src.domain.tipo_ticker import TipoTicker
 from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, \
-    calcula_custodia, vendas_no_mes, calcula_valor
+    calcula_custodia, vendas_no_mes, calcula_valor, tipo_ticker
 
 
 class TestStuff(unittest.TestCase):
@@ -34,6 +35,7 @@ class TestStuff(unittest.TestCase):
         assert 'preco_atual' in custodia.columns
         assert 'valorizacao' in custodia.columns
         assert 'valor' in custodia.columns
+        assert 'tipo' in custodia.columns
 
     def test_calcula_precos_medios_do_dropbox(self):
         from src.dropbox_files import download_dropbox_file
@@ -72,3 +74,14 @@ class TestStuff(unittest.TestCase):
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 
         assert precos_medio_de_compra['gcgs'] == pytest.approx(3, 0.001)
+
+    def test_tipo_ticker(self):
+        assert tipo_ticker('MAXR11') is TipoTicker.FII
+        assert tipo_ticker('maxr11') is TipoTicker.FII
+        assert tipo_ticker('VRTA11') is TipoTicker.FII
+        assert tipo_ticker('ITSA4') is TipoTicker.ACAO
+        assert tipo_ticker('itsa4') is TipoTicker.ACAO
+        assert tipo_ticker('BOVA11') is TipoTicker.ETF
+        assert tipo_ticker('bova11') is TipoTicker.ETF
+        assert tipo_ticker('MAXR11invalid') is None
+        assert tipo_ticker('invalid') is None
