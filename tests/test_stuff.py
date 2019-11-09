@@ -33,6 +33,7 @@ class TestStuff(unittest.TestCase):
         assert 'qtd' in custodia.columns
         assert 'preco_atual' in custodia.columns
         assert 'valorizacao' in custodia.columns
+        assert 'valor' in custodia.columns
 
     def test_calcula_precos_medios_do_dropbox(self):
         from src.dropbox_files import download_dropbox_file

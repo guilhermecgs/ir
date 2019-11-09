@@ -39,18 +39,20 @@ def calcula_custodia(df, data=None):
     precos_medios_de_compra = calcula_precos_medio_de_compra(df, data)
 
     for ticker in df['ticker'].unique():
-        ticker_na_carteira = df.loc[df['ticker'] == ticker]['qtd'].sum()
+        qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd'].sum()
         preco_atual = busca_preco_atual(ticker)
+        valor = preco_atual * qtd_em_custodia
         valorizacao = preco_atual / precos_medios_de_compra[ticker] * 100.0 - 100.0
         valorizacao = "{0:.2f}".format(valorizacao)
         custodia.append({'ticker': ticker,
-                         'qtd': ticker_na_carteira,
+                         'qtd': qtd_em_custodia,
                          'preco_medio_compra': precos_medios_de_compra[ticker],
+                         'valor': valor,
                          'preco_atual': preco_atual,
                          'valorizacao': valorizacao})
 
     df_custodia = pd.DataFrame(custodia)
-    df_custodia = df_custodia.sort_values(by=['qtd'], ascending=False)
+    df_custodia = df_custodia.sort_values(by=['valor'], ascending=False)
 
     return df_custodia
 
