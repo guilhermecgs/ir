@@ -3,7 +3,7 @@ import pytest
 
 def main():
 
-    argv = ['--cov-report=term', '--cov-report=html:./coverage_report', '--cov=./src', '--cov-fail-under=1']
+    argv = ['--cov-report=term', '--cov-report=html:./coverage_report', '--cov=./src', '--cov-fail-under=30']
 
     out = 1
     try:

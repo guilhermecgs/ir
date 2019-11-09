@@ -2,6 +2,7 @@ import datetime
 import pandas as pd
 
 from src.dropbox_files import OPERATIONS_FILEPATH
+from src.crawler_yahoo_bs4 import busca_preco_atual
 
 
 def calcula_valor(qtd, preco):
@@ -39,9 +40,14 @@ def calcula_custodia(df, data=None):
 
     for ticker in df['ticker'].unique():
         ticker_na_carteira = df.loc[df['ticker'] == ticker]['qtd'].sum()
+        preco_atual = busca_preco_atual(ticker)
+        valorizacao = preco_atual / precos_medios_de_compra[ticker] * 100.0 - 100.0
+        valorizacao = "{0:.2f}".format(valorizacao)
         custodia.append({'ticker': ticker,
                          'qtd': ticker_na_carteira,
-                         'preco_medio_compra': precos_medios_de_compra[ticker]})
+                         'preco_medio_compra': precos_medios_de_compra[ticker],
+                         'preco_atual': preco_atual,
+                         'valorizacao': valorizacao})
 
     df_custodia = pd.DataFrame(custodia)
     df_custodia = df_custodia.sort_values(by=['qtd'], ascending=False)

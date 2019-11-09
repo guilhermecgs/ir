@@ -15,7 +15,6 @@ def parse(ticker):
     summary_table = parser.xpath('//div[contains(@data-test,"summary-table")]//tr')
     summary_data = OrderedDict()
 
-    dd = parser.xpath(r'/html[@id="atomic"]/body/div[@id="app"]/div/div/div[@id="render-target-default"]/div[@class="Bgc($bg-body) Mih(100%) W(100%) Bgc($layoutBgColor)! finance US"]/div[@id="YDC-Lead"]/div[@id="YDC-Lead-Stack"]/div[@id="YDC-Lead-Stack-Composite"]/div[4]/div[@id="mrt-node-Lead-3-QuoteHeader"]/div[@id="Lead-3-QuoteHeader-Proxy"]/div[@id="quote-header-info"]/div[@class="My(6px) Pos(r) smartphone_Mt(6px)"]/div[@class="D(ib) Va(m) Maw(65%) Ov(h)"]/div[@class="D(ib) Mend(20px)"]/span[@class="Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)"]')
     try:
         for table_data in summary_table:
             print(lxml.etree.tostring(table_data, pretty_print=True))
