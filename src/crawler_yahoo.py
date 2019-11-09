@@ -1,10 +1,10 @@
-import json
+
 from collections import OrderedDict
 from time import sleep
 
 import requests
+import lxml
 from lxml import html
-
 
 def parse(ticker):
     url = "http://finance.yahoo.com/quote/%s?p=%s" % (ticker, ticker)
@@ -14,27 +14,16 @@ def parse(ticker):
     parser = html.fromstring(response.text)
     summary_table = parser.xpath('//div[contains(@data-test,"summary-table")]//tr')
     summary_data = OrderedDict()
-    other_details_json_link = "https://query2.finance.yahoo.com/v10/finance/quoteSummary/{0}?formatted=true&lang=en-US&region=US&modules=summaryProfile%2CfinancialData%2CrecommendationTrend%2CupgradeDowngradeHistory%2Cearnings%2CdefaultKeyStatistics%2CcalendarEvents&corsDomain=finance.yahoo.com".format(
-        ticker)
-    summary_json_response = requests.get(other_details_json_link)
+
+    dd = parser.xpath(r'/html[@id="atomic"]/body/div[@id="app"]/div/div/div[@id="render-target-default"]/div[@class="Bgc($bg-body) Mih(100%) W(100%) Bgc($layoutBgColor)! finance US"]/div[@id="YDC-Lead"]/div[@id="YDC-Lead-Stack"]/div[@id="YDC-Lead-Stack-Composite"]/div[4]/div[@id="mrt-node-Lead-3-QuoteHeader"]/div[@id="Lead-3-QuoteHeader-Proxy"]/div[@id="quote-header-info"]/div[@class="My(6px) Pos(r) smartphone_Mt(6px)"]/div[@class="D(ib) Va(m) Maw(65%) Ov(h)"]/div[@class="D(ib) Mend(20px)"]/span[@class="Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)"]')
     try:
-        json_loaded_summary = json.loads(summary_json_response.text)
-        y_Target_Est = json_loaded_summary["quoteSummary"]["result"][0]["financialData"]["targetMeanPrice"]['raw']
-        earnings_list = json_loaded_summary["quoteSummary"]["result"][0]["calendarEvents"]['earnings']
-        eps = json_loaded_summary["quoteSummary"]["result"][0]["defaultKeyStatistics"]["trailingEps"]['raw']
-        datelist = []
-        for i in earnings_list['earningsDate']:
-            datelist.append(i['fmt'])
-        earnings_date = ' to '.join(datelist)
         for table_data in summary_table:
-            raw_table_key = table_data.xpath('.//td[contains(@class,"C(black)")]//text()')
-            raw_table_value = table_data.xpath('.//td[contains(@class,"Ta(end)")]//text()')
-            table_key = ''.join(raw_table_key).strip()
-            table_value = ''.join(raw_table_value).strip()
+            print(lxml.etree.tostring(table_data, pretty_print=True))
+            tds = table_data.xpath('.//td//text()')
+            table_key = ''.join(tds[0]).strip()
+            table_value = ''.join(tds[1]).strip()
             summary_data.update({table_key: table_value})
-        summary_data.update(
-            {'1y Target Est': y_Target_Est, 'EPS (TTM)': eps, 'Earnings Date': earnings_date, 'ticker': ticker,
-             'url': url})
+        summary_data.update({'ticker': ticker, 'url': url})
         return summary_data
     except:
         print("Failed to parse json response")
