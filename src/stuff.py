@@ -132,11 +132,11 @@ def tipo_ticker(ticker):
     from src.crawler_funds_explorer_bs4 import e_tipo_fii
     from src.domain.tipo_ticker import TipoTicker
 
-    if e_tipo_etf(ticker):
-        return TipoTicker.ETF
-
     if e_tipo_fii(ticker):
         return TipoTicker.FII
+
+    if e_tipo_etf(ticker):
+        return TipoTicker.ETF
 
     if busca_preco_atual(ticker):
         return TipoTicker.ACAO
