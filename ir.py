@@ -8,14 +8,18 @@ from src.stuff import get_operations_dataframe, calcula_custodia, vendas_no_mes
 
 def main(raw_args):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--do', required=True)
+    parser.add_argument('--do', required=False)
     args = parser.parse_args(raw_args)
 
     if args.do == 'custodia':
         do_custodia()
+        return
 
     if args.do == 'vendas_no_mes':
         do_vendas_no_mes()
+        return
+
+    do_vendas_no_mes()
 
 def do_custodia():
     from src.dropbox_files import download_dropbox_file

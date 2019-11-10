@@ -46,6 +46,7 @@ class TestStuff(unittest.TestCase):
         assert 'valorizacao' in custodia.columns
         assert 'valor' in custodia.columns
         assert 'tipo' in custodia.columns
+        assert 'data_primeira_compra' in custodia.columns
 
     def test_calcula_precos_medios_do_dropbox(self):
         from src.dropbox_files import download_dropbox_file
@@ -65,7 +66,8 @@ class TestStuff(unittest.TestCase):
 
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 
-        assert precos_medio_de_compra['gcgs'] == pytest.approx(166.66, 0.01)
+        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(166.66, 0.01)
+        assert precos_medio_de_compra['gcgs']['data_primeira_compra'] == datetime.date(2019, 4, 13)
 
     def test_calcula_precos_medios_quando_varios_ciclo(self):
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100},
@@ -83,9 +85,12 @@ class TestStuff(unittest.TestCase):
 
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 
-        assert precos_medio_de_compra['gcgs'] == pytest.approx(3, 0.001)
+        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(3, 0.001)
+        assert precos_medio_de_compra['gcgs']['data_primeira_compra'] == datetime.date(2019, 4, 15)
 
     def test_tipo_ticker(self):
+        assert tipo_ticker('GRLV11') is TipoTicker.FII
+        assert tipo_ticker('SDIL11') is TipoTicker.FII
         assert tipo_ticker('MAXR11') is TipoTicker.FII
         assert tipo_ticker('maxr11') is TipoTicker.FII
         assert tipo_ticker('VRTA11') is TipoTicker.FII
