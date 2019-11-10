@@ -142,8 +142,11 @@ def tipo_ticker(ticker):
     if e_tipo_etf(ticker):
         return TipoTicker.ETF
 
-    if busca_preco_atual(ticker):
+    try:
+        busca_preco_atual(ticker)
         return TipoTicker.ACAO
+    except:
+        pass
 
     return None
 
