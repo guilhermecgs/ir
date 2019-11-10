@@ -25,6 +25,7 @@ def get_operations_dataframe():
         else:
             return row['qtd'] * -1
 
+    df['data'] = df['data'].dt.date
     df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
     df['qtd'] = df.apply(lambda row: calculate_add(row), axis=1)
 
@@ -97,11 +98,13 @@ def vendas_no_mes(df, ano, mes):
     vendas_no_mes = []
 
     df = df.copy()
-    primeiro_dia_proximo_mes = datetime.datetime(ano, mes, 1, 1, 0, 0) + relativedelta(months=1)
+    primeiro_dia_proximo_mes = (datetime.datetime(ano, mes, 1, 1, 0, 0) + relativedelta(months=1)).date()
 
     precos_medios_de_compra = calcula_precos_medio_de_compra(df, primeiro_dia_proximo_mes)
 
-    df = df.loc[(df.data.dt.year == ano) & (df.data.dt.month == mes), :]
+    date_mask = df['data'].map(lambda x: str(x.year) + '_' + str(x.month)) == str(ano) + '_' + str(mes)
+    df = df[date_mask]
+
     df = df.loc[df.qtd < 0, :]
 
     for ticker in df['ticker'].unique():
@@ -110,7 +113,10 @@ def vendas_no_mes(df, ano, mes):
         qtd_vendida = df_vendas_ticker['qtd'].sum() * -1
         preco_medio_venda = df_vendas_ticker['valor'].sum() / qtd_vendida
         preco_medio_compra = precos_medios_de_compra[ticker]
-        resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
+        if preco_medio_compra:
+            resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
+        else:
+            resultado_apurado = None
 
         vendas_no_mes.append({'ticker': ticker,
                               'qtd_vendida': qtd_vendida,

@@ -10,14 +10,24 @@ from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, 
 class TestStuff(unittest.TestCase):
 
     def test_descobre_vendas_no_mes(self):
-        from src.dropbox_files import download_dropbox_file
-        download_dropbox_file()
+        data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100},
+                {'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2019, 4, 12), 'preco': 200},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 13), 'preco': 300},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 14), 'preco': 400},
+                {'ticker': 'gcgs', 'qtd': -200, 'data': datetime.date(2019, 4, 15), 'preco': 500},
+                {'ticker': 'gcgs2', 'qtd': -200, 'data': datetime.date(2019, 4, 15), 'preco': 500},
+                {'ticker': 'gcgs', 'qtd': 2, 'data': datetime.date(2019, 4, 15), 'preco': 5},
+                {'ticker': 'gcgs', 'qtd': -1, 'data': datetime.date(2019, 4, 15), 'preco': 1},
+                {'ticker': 'gcgs', 'qtd': 3, 'data': datetime.date(2019, 4, 15), 'preco': 2},
+                {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 16), 'preco': 2}]
 
-        df = get_operations_dataframe()
+        df = pd.DataFrame(data)
+        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
 
-        vendas_no_mes_agosto = vendas_no_mes(df, 2019, 8)
-        assert type(vendas_no_mes_agosto) is list
-        assert len(vendas_no_mes_agosto) == 3
+        vendas_no_mes_abril = vendas_no_mes(df, 2019, 4)
+        assert type(vendas_no_mes_abril) is list
+        assert len(vendas_no_mes_abril) == 2
 
     def test_calcula_custodia(self):
         from src.dropbox_files import download_dropbox_file
@@ -25,7 +35,7 @@ class TestStuff(unittest.TestCase):
 
         df = get_operations_dataframe()
 
-        data = datetime.datetime.now()
+        data = datetime.datetime.now().date()
         custodia = calcula_custodia(df, data)
 
         assert type(custodia) is pd.DataFrame
