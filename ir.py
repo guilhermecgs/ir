@@ -15,7 +15,7 @@ def main(raw_args):
         do_custodia()
 
     if args.do == 'vendas_no_mes':
-        do_custodia()
+        do_vendas_no_mes()
 
 def do_custodia():
     from src.dropbox_files import download_dropbox_file

@@ -46,7 +46,7 @@ def calcula_custodia(df, data=None):
         valorizacao = "{0:.2f}".format(valorizacao)
 
         custodia.append({'ticker': ticker,
-                         'tipo': tipo_ticker(tipo_ticker),
+                         'tipo': tipo_ticker(ticker),
                          'qtd': qtd_em_custodia,
                          'preco_medio_compra': precos_medios_de_compra[ticker],
                          'valor': valor,
