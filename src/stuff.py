@@ -1,6 +1,8 @@
 import datetime
 import pandas as pd
 
+from dateutil.relativedelta import relativedelta
+
 from src.dropbox_files import OPERATIONS_FILEPATH
 from src.crawler_yahoo_bs4 import busca_preco_atual
 
@@ -95,7 +97,7 @@ def vendas_no_mes(df, ano, mes):
     vendas_no_mes = []
 
     df = df.copy()
-    primeiro_dia_proximo_mes = datetime.datetime(ano, mes + 1, 1, 1, 0, 0)
+    primeiro_dia_proximo_mes = datetime.datetime(ano, mes, 1, 1, 0, 0) + relativedelta(months=1)
 
     precos_medios_de_compra = calcula_precos_medio_de_compra(df, primeiro_dia_proximo_mes)
 

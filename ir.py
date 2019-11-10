@@ -26,12 +26,22 @@ def do_vendas_no_mes():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
 
-    hoje = datetime.datetime.now().date()
+    df = get_operations_dataframe()
 
-    datas = [hoje + relativedelta(months=-i) for i in range(1, 6)]
+    data = df['data'].min().date()
+    hoje = datetime.datetime.now().date()
+    datas = []
+
+    while data < hoje:
+        datas.append(data)
+        data = data + relativedelta(months=1)
+
+    datas.append(hoje)
+
     for data in datas:
         print('Mes: ' + str(data.month) + ' Ano: ' + str(data.year))
-        print(vendas_no_mes(get_operations_dataframe(), data.year, data.month))
+        print(vendas_no_mes(df, data.year, data.month))
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
