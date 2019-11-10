@@ -1,9 +1,15 @@
 import unittest
 from src.crawler_yahoo_bs4 import busca_preco_atual
 
+
 class TestCrawlerYahoo(unittest.TestCase):
 
     def test_get_ticker_price_bs4(self):
+
+        with self.assertRaises(Exception):
+            busca_preco_atual('invalid')
+
+
         maxr11 = busca_preco_atual('MAXR11')
         print(maxr11)
 
