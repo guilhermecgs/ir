@@ -9,6 +9,8 @@ class TestCrawlerYahoo(unittest.TestCase):
         with self.assertRaises(Exception):
             busca_preco_atual('invalid')
 
+        sdil11 = busca_preco_atual('SDIL11')
+        print(sdil11)
 
         maxr11 = busca_preco_atual('MAXR11')
         print(maxr11)

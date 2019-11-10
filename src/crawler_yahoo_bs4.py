@@ -1,4 +1,5 @@
 import ssl
+import time
 from urllib.request import Request, urlopen
 
 from bs4 import BeautifulSoup
@@ -17,6 +18,8 @@ def busca_preco_atual(ticker):
         # Making the website believe that you are accessing it using a Mozilla browser
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         webpage = urlopen(req).read()
+
+        time.sleep(1)
 
         soup = BeautifulSoup(webpage, 'html.parser')
         # html = soup.prettify('utf-8')
