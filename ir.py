@@ -1,6 +1,7 @@
 import sys
 import argparse
 import datetime
+import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 from src.stuff import get_operations_dataframe, calcula_custodia, vendas_no_mes
@@ -11,6 +12,9 @@ def main(raw_args):
     parser.add_argument('--do', required=False)
     args = parser.parse_args(raw_args)
 
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', 200)
+
     if args.do == 'custodia':
         do_custodia()
         return
@@ -19,7 +23,7 @@ def main(raw_args):
         do_vendas_no_mes()
         return
 
-    do_vendas_no_mes()
+    do_custodia()
 
 def do_custodia():
     from src.dropbox_files import download_dropbox_file
