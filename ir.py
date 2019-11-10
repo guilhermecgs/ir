@@ -28,7 +28,7 @@ def do_vendas_no_mes():
 
     df = get_operations_dataframe()
 
-    data = df['data'].min().date()
+    data = df['data'].min()
     hoje = datetime.datetime.now().date()
     datas = []
 
@@ -41,7 +41,6 @@ def do_vendas_no_mes():
     for data in datas:
         print('Mes: ' + str(data.month) + ' Ano: ' + str(data.year))
         print(vendas_no_mes(df, data.year, data.month))
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
