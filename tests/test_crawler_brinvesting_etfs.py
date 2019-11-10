@@ -2,9 +2,9 @@ import unittest
 from src.crawler_brinvesting_etfs import e_tipo_etf
 
 
-class TestCrawlerB3Etfs(unittest.TestCase):
+class TestCrawlerBrInvest(unittest.TestCase):
 
-    def test_get_ticker_price_bs4(self):
+    def test_crawler(self):
         assert e_tipo_etf('BOVA11')
         assert e_tipo_etf('bova11')
         assert e_tipo_etf('DIVO11')
