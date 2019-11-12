@@ -40,5 +40,6 @@ coverage_html:
 relatorio:
     stage: relatorio
     script:
+        - python ./ir.py --do trades
         - python ./ir.py --do custodia
         - python ./ir.py --do vendas_no_mes

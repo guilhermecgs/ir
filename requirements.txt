@@ -4,6 +4,7 @@ beautifulsoup4==4.8.1
 bs4==0.0.1
 certifi==2019.9.11
 chardet==3.0.4
+chromedriver-binary==72.0.3626.69.0
 configparser==4.0.2
 contextlib2==0.6.0.post1
 coverage==4.5.4
@@ -26,6 +27,7 @@ python-dateutil==2.8.0
 pytz==2019.3
 requests==2.22.0
 scandir==1.10.0
+selenium==3.141.0
 simplejson==3.16.0
 six==1.12.0
 soupsieve==1.9.5

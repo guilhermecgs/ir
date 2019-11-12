@@ -15,6 +15,10 @@ def main(raw_args):
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', 200)
 
+    if args.do == 'trades':
+        do_busca_trades()
+        return
+
     if args.do == 'custodia':
         do_custodia()
         return
@@ -24,6 +28,10 @@ def main(raw_args):
         return
 
     do_custodia()
+
+def do_busca_trades():
+    from src.crawler_cei import busca_trades
+    busca_trades()
 
 def do_custodia():
     from src.dropbox_files import download_dropbox_file
@@ -49,6 +57,7 @@ def do_vendas_no_mes():
     for data in datas:
         print('Mes: ' + str(data.month) + ' Ano: ' + str(data.year))
         print(vendas_no_mes(df, data.year, data.month))
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
