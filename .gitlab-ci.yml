@@ -1,4 +1,4 @@
-image: python:3.6.4
+image: joyzoursky/python-chromedriver:3.7-selenium
 
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
@@ -17,6 +17,7 @@ cache:
 
 stages:
     - coverage_report
+    - busca_trades
     - relatorio
 
 before_script:
@@ -24,9 +25,6 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - apt-get update
-  - apt-get install -y libglib2.0-0 libx11-6 libnss3
-  - apt-get install -y libglib2.0-0 libnss3 libgconf-2-4 libfontconfig1
   - pip install -r requirements.txt 
 
 coverage_html:
@@ -40,9 +38,17 @@ coverage_html:
             - public
         expire_in: 15 days
 
+busca_trades:
+    stage: busca_trades
+    script:
+        - python ./ir.py --do busca_trades
+    artifacts:
+        paths:
+            - public
+        expire_in: 15 days
+
 relatorio:
     stage: relatorio
     script:
-        - python ./ir.py --do trades
         - python ./ir.py --do custodia
         - python ./ir.py --do vendas_no_mes

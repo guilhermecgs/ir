@@ -18,8 +18,6 @@ def busca_trades():
     try:
         driver.get('https://www.oursky.com/')
         el = driver.find_element_by_class_name('btn-header')
-        print('TEXTO DO BOTAO É')
-        print(el.text)
         el.click()
     except NoSuchElementException as ex:
         pass

@@ -8,7 +8,6 @@ class TestCrawlerCei_Selenium(unittest.TestCase):
     """Include test cases on a given url"""
 
     def setUp(self):
-
         print(chromedriver_binary.chromedriver_filename)
         """Start web driver"""
         chrome_options = webdriver.ChromeOptions()
@@ -22,15 +21,9 @@ class TestCrawlerCei_Selenium(unittest.TestCase):
         """Stop web driver"""
         self.driver.quit()
 
-    def test_case_1(self):
-        """Find and click top-right button"""
-        try:
-            self.driver.get('https://www.oursky.com/')
-            el = self.driver.find_element_by_class_name('btn-header')
-            print('TEXTO DO BOTAO ÉDDDDDDD')
-            print(el.text)
-            el.click()
-        except NoSuchElementException as ex:
-            self.fail(ex.msg)
+    def test_basic(self):
+        self.driver.get('https://www.oursky.com/')
+        el = self.driver.find_element_by_class_name('btn-header')
+        assert str(el.text).upper() == 'START YOUR PROJECT'
 
 

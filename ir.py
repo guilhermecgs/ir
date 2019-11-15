@@ -15,7 +15,7 @@ def main(raw_args):
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', 200)
 
-    if args.do == 'trades':
+    if args.do == 'busca_trades':
         do_busca_trades()
         return
 
