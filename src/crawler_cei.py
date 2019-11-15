@@ -27,8 +27,9 @@ class CrawlerCei():
             df = self.__converte_trades_para_dataframe()
             return self.__converte_dataframe_para_formato_padrao(df)
         except Exception as ex:
-            self.driver.quit()
             raise ex
+        finally:
+            self.driver.quit()
 
     def __login(self):
         txt_login = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_txtLogin')
@@ -59,7 +60,7 @@ class CrawlerCei():
 
     def __converte_trades_para_dataframe(self):
 
-        soup = BeautifulSoup(self.driver.page_source)
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
         top_div = soup.find('div', {'id': 'ctl00_ContentPlaceHolder1_rptAgenteBolsa_ctl00_rptContaBolsa_ctl00_pnAtivosNegociados'})
 

@@ -21,4 +21,6 @@ class TestCrawlerCei_Selenium(unittest.TestCase):
 
     def test_busca_trades(self):
         crawler_cei = CrawlerCei(headless=True)
-        assert type(crawler_cei.busca_trades()) is pd.DataFrame
+        trades = crawler_cei.busca_trades()
+        assert type(trades) is pd.DataFrame
+        assert len(trades)
