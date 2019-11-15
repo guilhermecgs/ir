@@ -1,8 +1,7 @@
 # ir
 
 # Falta
-    - Pegar o tipo de ticker - (FII, acao, ETF, etc)
-    - cypress no cei para scrap? tem jeito com cypress?
+    - crawler de ETF do site da bovespa via selenium
     - atualizacao append no arquivo de operacoes no dropbox por data
     - envio de emails com resumo
     - geracao de darf? 

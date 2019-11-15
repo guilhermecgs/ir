@@ -30,8 +30,9 @@ def main(raw_args):
     do_custodia()
 
 def do_busca_trades():
-    from src.crawler_cei import busca_trades
-    busca_trades()
+    from src.crawler_cei import CrawlerCei
+    crawlerCei = CrawlerCei(headless=True)
+    print(crawlerCei.busca_trades())
 
 def do_custodia():
     from src.dropbox_files import download_dropbox_file

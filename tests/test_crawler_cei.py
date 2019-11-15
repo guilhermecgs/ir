@@ -1,29 +1,23 @@
 import unittest
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-import chromedriver_binary
 
+from src.selenium import configure_driver
+from src.crawler_cei import CrawlerCei
+import pandas as pd
 
 class TestCrawlerCei_Selenium(unittest.TestCase):
-    """Include test cases on a given url"""
-
-    def setUp(self):
-        print(chromedriver_binary.chromedriver_filename)
-        """Start web driver"""
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-gpu')
-        self.driver = webdriver.Chrome(options=chrome_options)
-        self.driver.implicitly_wait(10)
-
-    def tearDown(self):
-        """Stop web driver"""
-        self.driver.quit()
 
     def test_basic(self):
-        self.driver.get('https://www.oursky.com/')
-        el = self.driver.find_element_by_class_name('btn-header')
-        assert str(el.text).upper() == 'START YOUR PROJECT'
+        driver = None
+        try:
+            driver = configure_driver()
+            driver.get('https://www.oursky.com/')
+            el = driver.find_element_by_class_name('btn-header')
+            assert str(el.text).upper() == 'START YOUR PROJECT'
+        except:
+            raise Exception()
+        finally:
+            driver.quit()
 
-
+    def test_busca_trades(self):
+        crawler_cei = CrawlerCei()
+        assert type(crawler_cei.busca_trades()) is pd.DataFrame

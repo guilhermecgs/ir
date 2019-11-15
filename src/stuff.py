@@ -11,6 +11,13 @@ def calcula_valor(qtd, preco):
     return abs(qtd) * preco
 
 
+def calculate_add(row):
+    if row['operacao'] == 'Compra':
+        return row['qtd']
+    else:
+        return row['qtd'] * -1
+
+
 def get_operations_dataframe():
     df = pd.read_csv(OPERATIONS_FILEPATH, sep='\t',
                      header=None,
@@ -18,13 +25,6 @@ def get_operations_dataframe():
                      dayfirst=True)
 
     df.columns = ['ticker', 'operacao', 'qtd', 'data', 'preco', 'taxas', 'id_carteira']
-
-    def calculate_add(row):
-        if row['operacao'] == 'Compra':
-            return row['qtd']
-        else:
-            return row['qtd'] * -1
-
     df['data'] = df['data'].dt.date
     df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
     df['qtd'] = df.apply(lambda row: calculate_add(row), axis=1)
