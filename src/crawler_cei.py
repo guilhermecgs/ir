@@ -17,7 +17,7 @@ class CrawlerCei():
 
     def __init__(self, headless=False):
         self.BASE_URL = 'https://cei.b3.com.br/'
-        self.driver = configure_driver()
+        self.driver = configure_driver(headless)
 
     def busca_trades(self):
         try:
