@@ -27,9 +27,8 @@ class CrawlerCei():
             df = self.__converte_trades_para_dataframe()
             return self.__converte_dataframe_para_formato_padrao(df)
         except Exception as ex:
-            return None
-        finally:
             self.driver.quit()
+            raise ex
 
     def __login(self):
         txt_login = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_txtLogin')
