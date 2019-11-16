@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 from selenium import webdriver
 import chromedriver_binary  # do not remove
+from selenium.common.exceptions import NoSuchElementException
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -15,9 +16,11 @@ from src.selenium import configure_driver
 
 class CrawlerCei():
 
-    def __init__(self, headless=False):
+    def __init__(self, headless=False, directory=None, debug=False):
         self.BASE_URL = 'https://cei.b3.com.br/'
         self.driver = configure_driver(headless)
+        self.directory = directory
+        self.debug = debug
 
     def busca_trades(self):
         try:
@@ -32,6 +35,7 @@ class CrawlerCei():
             self.driver.quit()
 
     def __login(self):
+        if self.debug: self.driver.save_screenshot(self.directory + r'01.png')
         txt_login = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_txtLogin')
         txt_login.clear()
         txt_login.send_keys(os.environ['CPF'])
@@ -40,23 +44,35 @@ class CrawlerCei():
         txt_senha.clear()
         txt_senha.send_keys(os.environ['SENHA_CEI'])
 
+        if self.debug: self.driver.save_screenshot(self.directory + r'02.png')
+
         btn_logar = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnLogar')
         btn_logar.click()
 
         WebDriverWait(self.driver, 60).until(EC.visibility_of_element_located((By.ID, 'objGrafPosiInv')))
 
+        if self.debug: self.driver.save_screenshot(self.directory + r'03.png')
+
     def __abre_consulta_trades(self):
         self.driver.get(self.BASE_URL + 'negociacao-de-ativos.aspx')
 
+        if self.debug: self.driver.save_screenshot(self.directory + r'04.png')
         btn_consultar = WebDriverWait(self.driver, 60).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_btnConsultar')))
         btn_consultar.click()
 
-        self.driver.implicitly_wait(15)
+        def not_disabled(driver):
+            try:
+                element = driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes')
+            except NoSuchElementException:
+                return False
+            return element.get_attribute("disabled") != "disabled"
+
+        WebDriverWait(self.driver, 60).until(not_disabled)
 
         btn_consultar = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnConsultar')
         btn_consultar.click()
 
-        self.driver.implicitly_wait(10)
+        if self.debug: self.driver.save_screenshot(self.directory + r'05.png')
 
     def __converte_trades_para_dataframe(self):
 

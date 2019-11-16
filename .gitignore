@@ -16,3 +16,5 @@ tests/.DS_Store
 export_operacoes.txt
 
 .coverage
+
+public/

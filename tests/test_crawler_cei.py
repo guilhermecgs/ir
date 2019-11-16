@@ -20,7 +20,12 @@ class TestCrawlerCei_Selenium(unittest.TestCase):
             driver.quit()
 
     def test_busca_trades(self):
-        crawler_cei = CrawlerCei(headless=True)
+        directory = '../public/'
+        import os
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        crawler_cei = CrawlerCei(headless=True, directory=directory, debug=True)
         trades = crawler_cei.busca_trades()
         assert type(trades) is pd.DataFrame
         assert len(trades)
