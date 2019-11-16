@@ -7,6 +7,10 @@ from src.dropbox_files import OPERATIONS_FILEPATH
 from src.crawler_yahoo_bs4 import busca_preco_atual
 
 
+def colunas_obrigatorias():
+    return ['ticker', 'operacao', 'qtd', 'data', 'preco', 'taxas', 'id_carteira', 'aquisicao_via', 'valor']
+
+
 def calcula_valor(qtd, preco):
     return abs(qtd) * preco
 
@@ -24,7 +28,7 @@ def get_operations_dataframe():
                      parse_dates=[3],
                      dayfirst=True)
 
-    df.columns = ['ticker', 'operacao', 'qtd', 'data', 'preco', 'taxas', 'id_carteira']
+    df.columns = ['ticker', 'operacao', 'qtd', 'data', 'preco', 'taxas', 'id_carteira', 'aquisicao_via']
     df['data'] = df['data'].dt.date
     df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
     df['qtd'] = df.apply(lambda row: calculate_add(row), axis=1)
@@ -150,3 +154,16 @@ def tipo_ticker(ticker):
 
     return None
 
+
+def merge_operacoes(df, other_df):
+    df = df.copy()
+
+    ultima_data = datetime.date.min
+
+    if len(df):
+        ultima_data = df[df['aquisicao_via'].str.upper() == 'HomeBroker'.upper()]['data'].max()
+
+    if len(other_df):
+        df = df.append(other_df.loc[other_df['data'] > ultima_data, :])
+
+    return df

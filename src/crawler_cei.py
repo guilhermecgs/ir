@@ -112,6 +112,7 @@ class CrawlerCei():
 
         df['taxas'] = np.nan
         df['id_carteira'] = np.nan
+        df['aquisicao_via'] = 'HomeBroker'
 
         df.drop(columns=['Mercado', 
                          'Prazo/Vencimento', 
