@@ -49,7 +49,7 @@ class CrawlerCei():
         btn_logar = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnLogar')
         btn_logar.click()
 
-        WebDriverWait(self.driver, 60).until(EC.visibility_of_element_located((By.ID, 'objGrafPosiInv')))
+        WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located((By.ID, 'objGrafPosiInv')))
 
         if self.debug: self.driver.save_screenshot(self.directory + r'03.png')
 
@@ -57,7 +57,7 @@ class CrawlerCei():
         self.driver.get(self.BASE_URL + 'negociacao-de-ativos.aspx')
 
         if self.debug: self.driver.save_screenshot(self.directory + r'04.png')
-        btn_consultar = WebDriverWait(self.driver, 60).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_btnConsultar')))
+        btn_consultar = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_btnConsultar')))
         btn_consultar.click()
 
         def not_disabled(driver):
@@ -65,7 +65,7 @@ class CrawlerCei():
                 element = driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes')
             except NoSuchElementException:
                 return False
-            return element.get_attribute("disabled") != "disabled"
+            return driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes').get_attribute("disabled") is None
 
         WebDriverWait(self.driver, 60).until(not_disabled)
 
@@ -73,6 +73,8 @@ class CrawlerCei():
         btn_consultar.click()
 
         if self.debug: self.driver.save_screenshot(self.directory + r'05.png')
+        WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_rptAgenteBolsa_ctl00_rptContaBolsa_ctl00_pnAtivosNegociados')))
+        if self.debug: self.driver.save_screenshot(self.directory + r'06.png')
 
     def __converte_trades_para_dataframe(self):
 
