@@ -1,10 +1,15 @@
 import sys
+import os
 import argparse
 import datetime
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-from src.stuff import get_operations_dataframe, calcula_custodia, vendas_no_mes
+from src.stuff import get_operations_dataframe, \
+    calcula_custodia, vendas_no_mes, merge_operacoes, \
+    df_to_csv
+
+from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 
 
 def main(raw_args):
@@ -15,8 +20,8 @@ def main(raw_args):
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', 200)
 
-    if args.do == 'busca_trades':
-        do_busca_trades()
+    if args.do == 'busca_trades_e_faz_merge_operacoes':
+        do_busca_trades_e_faz_merge_operacoes()
         return
 
     if args.do == 'custodia':
@@ -27,18 +32,38 @@ def main(raw_args):
         do_vendas_no_mes()
         return
 
-    do_custodia()
+    if args.do == 'envia_relatorio_por_email':
+        do_vendas_no_mes()
+        return
 
-def do_busca_trades():
+    do_busca_trades_e_faz_merge_operacoes()
+
+
+def do_busca_trades_e_faz_merge_operacoes():
     from src.crawler_cei import CrawlerCei
-    directory = '../public/'
-    crawler_cei = CrawlerCei(headless=True, directory=directory, debug=True)
-    print(crawler_cei.busca_trades())
+    crawler_cei = CrawlerCei(headless=True)
+    df_cei = crawler_cei.busca_trades()
+
+    from src.dropbox_files import download_dropbox_file
+    download_dropbox_file()
+
+    df = get_operations_dataframe()
+    df = merge_operacoes(df, df_cei)
+    df_to_csv(df, OPERATIONS_FILEPATH)
+
+    upload_dropbox_file(OPERATIONS_FILEPATH, os.environ['DROPBOX_FILE_LOCATION'])
+
 
 def do_custodia():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
     print(calcula_custodia(get_operations_dataframe()))
+
+
+def do_envia_relatorio_por_email():
+    from src.envia_relatorio_por_email import envia_relatorio_por_email
+    envia_relatorio_por_email()
+
 
 def do_vendas_no_mes():
     from src.dropbox_files import download_dropbox_file

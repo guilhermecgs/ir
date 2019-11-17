@@ -108,10 +108,10 @@ class CrawlerCei():
         df['data'] = pd.to_datetime(df['data'], dayfirst=True)
         df['data'] = df['data'].dt.date
         df['operacao'] = df.apply(lambda row: formata_compra_venda(row.operacao), axis=1)
-        df['qtd'] = df.apply(lambda row: calculate_add(row), axis=1)
+        df['qtd_ajustada'] = df.apply(lambda row: calculate_add(row), axis=1)
 
-        df['taxas'] = np.nan
-        df['id_carteira'] = np.nan
+        df['taxas'] = 0.0
+        df['id_carteira'] = 0
         df['aquisicao_via'] = 'HomeBroker'
 
         df.drop(columns=['Mercado', 

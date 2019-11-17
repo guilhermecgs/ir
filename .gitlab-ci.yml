@@ -17,7 +17,6 @@ cache:
 
 stages:
     - coverage_report
-    - busca_trades
     - relatorio
 
 before_script:
@@ -38,17 +37,10 @@ coverage_html:
             - public
         expire_in: 15 days
 
-busca_trades:
-    stage: busca_trades
-    script:
-        - python ./ir.py --do busca_trades
-    artifacts:
-        paths:
-            - public
-        expire_in: 15 days
-
 relatorio:
     stage: relatorio
     script:
+        - python ./ir.py --do busca_trades_e_faz_merge_operacoes
         - python ./ir.py --do custodia
         - python ./ir.py --do vendas_no_mes
+        - python ./ir.py --do envia_relatorio_por_email

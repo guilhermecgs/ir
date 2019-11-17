@@ -4,7 +4,25 @@ import pandas as pd
 import datetime
 from src.domain.tipo_ticker import TipoTicker
 from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, \
-    calcula_custodia, vendas_no_mes, calcula_valor, tipo_ticker
+    calcula_custodia, vendas_no_mes, calcula_valor, calculate_add,\
+    tipo_ticker, merge_operacoes, colunas_obrigatorias, df_to_csv
+
+
+def create_testing_dataframe(data):
+    for row in data:
+        for column in colunas_obrigatorias():
+            if column not in row:
+                row[column] = None
+
+    if len(data):
+        df = pd.DataFrame(data)
+        df['qtd_ajustada'] = df['qtd']
+        df['qtd'] = df.apply(lambda row: abs(row.qtd), axis=1)
+        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
+    else:
+        df = pd.DataFrame(columns=colunas_obrigatorias())
+
+    return df
 
 
 class TestStuff(unittest.TestCase):
@@ -22,12 +40,92 @@ class TestStuff(unittest.TestCase):
                 {'ticker': 'gcgs', 'qtd': 3, 'data': datetime.date(2019, 4, 15), 'preco': 2},
                 {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 16), 'preco': 2}]
 
-        df = pd.DataFrame(data)
-        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
+        df = create_testing_dataframe(data)
 
         vendas_no_mes_abril = vendas_no_mes(df, 2019, 4)
         assert type(vendas_no_mes_abril) is list
         assert len(vendas_no_mes_abril) == 2
+
+    def test_merge_operacoes_append_puro(self):
+        data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2019, 4, 12), 'preco': 200, 'aquisicao_via': 'HomeBroker'}]
+
+        df = create_testing_dataframe(data)
+
+        other_data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 14), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                      {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 15), 'preco': 100, 'aquisicao_via': 'HomeBroker'}]
+
+        other_df = create_testing_dataframe(other_data)
+
+        result = merge_operacoes(df, other_df)
+
+        assert len(result) == (len(df) + len(other_df))
+
+    def test_merge_operacoes_other_df_vazio(self):
+        data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2019, 4, 12), 'preco': 200, 'aquisicao_via': 'HomeBroker'}]
+
+        df = create_testing_dataframe(data)
+
+        other_df = create_testing_dataframe([])
+
+        result = merge_operacoes(df, other_df)
+
+        assert len(result) == len(df)
+
+    def test_merge_operacoes_df_vazio(self):
+        df = create_testing_dataframe([])
+
+        other_data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                      {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 12), 'preco': 100, 'aquisicao_via': 'HomeBroker'}]
+
+        other_df = create_testing_dataframe(other_data)
+
+        result = merge_operacoes(df, other_df)
+
+        assert len(result) == len(other_df)
+
+    def test_merge_operacoes_com_ipo(self):
+        data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'}]
+
+        other_data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 13), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                      {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 14), 'preco': 100, 'aquisicao_via': 'HomeBroker'}]
+        other_data.extend(data)
+        other_df = create_testing_dataframe(other_data)
+
+        data.extend([{'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2019, 4, 20), 'preco': 200, 'aquisicao_via': 'IPO'}])
+        df = create_testing_dataframe(data)
+
+        result = merge_operacoes(df, other_df)
+
+        assert len(result) == (len(df) + 2)
+
+    def test_merge_operacoes_com_ipo_em_uma_data_futura(self):
+        data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'}]
+
+        other_data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 13), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                      {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 14), 'preco': 100, 'aquisicao_via': 'HomeBroker'}]
+        other_data.extend(data)
+        other_df = create_testing_dataframe(other_data)
+
+        data.extend([{'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2099, 4, 20), 'preco': 200, 'aquisicao_via': 'IPO'}])
+        df = create_testing_dataframe(data)
+
+        result = merge_operacoes(df, other_df)
+
+        assert len(result) == (len(df) + 2)
+
+    def test_df_to_csv(self):
+        df_original = get_operations_dataframe()
+
+        df_to_csv(df_original, 'df_to_csv_testing.txt')
+
+        df_lido = get_operations_dataframe('df_to_csv_testing.txt')
+        assert df_lido.equals(df_original)
 
     def test_calcula_custodia(self):
         from src.dropbox_files import download_dropbox_file
@@ -61,8 +159,7 @@ class TestStuff(unittest.TestCase):
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 20), 'preco': 100},
                 {'ticker': 'gcgs', 'qtd': 200, 'data': datetime.date(2019, 4, 13), 'preco': 200}]
 
-        df = pd.DataFrame(data)
-        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
+        df = create_testing_dataframe(data)
 
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 
@@ -80,8 +177,7 @@ class TestStuff(unittest.TestCase):
                 {'ticker': 'gcgs', 'qtd': 3, 'data': datetime.date(2019, 4, 15), 'preco': 2},
                 {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 16), 'preco': 2}]
 
-        df = pd.DataFrame(data)
-        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
+        df = create_testing_dataframe(data)
 
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 
