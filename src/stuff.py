@@ -174,7 +174,7 @@ def merge_operacoes(df, other_df):
         ultima_data = df[df['aquisicao_via'].str.upper() == 'HomeBroker'.upper()]['data'].max()
 
     if len(other_df):
-        df = df.append(other_df.loc[other_df['data'] > ultima_data, :])
+        df = df.append(other_df.loc[other_df['data'] > ultima_data, :], sort=False)
 
     df = df.sort_values(by=['data'], ascending=False)
     return df

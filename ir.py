@@ -33,7 +33,7 @@ def main(raw_args):
         return
 
     if args.do == 'envia_relatorio_por_email':
-        do_vendas_no_mes()
+        do_envia_relatorio_por_email()
         return
 
     do_busca_trades_e_faz_merge_operacoes()
