@@ -36,7 +36,7 @@ def main(raw_args):
         do_envia_relatorio_por_email()
         return
 
-    do_busca_trades_e_faz_merge_operacoes()
+    do_custodia()
 
 
 def do_busca_trades_e_faz_merge_operacoes():
@@ -57,7 +57,9 @@ def do_busca_trades_e_faz_merge_operacoes():
 def do_custodia():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
-    print(calcula_custodia(get_operations_dataframe()))
+    df = calcula_custodia(get_operations_dataframe())
+    print(df)
+    print('Total na carteira : ' + str(df['valor'].sum()))
 
 
 def do_envia_relatorio_por_email():
