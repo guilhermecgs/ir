@@ -57,17 +57,25 @@ class CrawlerCei():
         self.driver.get(self.BASE_URL + 'negociacao-de-ativos.aspx')
 
         if self.debug: self.driver.save_screenshot(self.directory + r'04.png')
-        btn_consultar = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_btnConsultar')))
-        btn_consultar.click()
 
-        def not_disabled(driver):
-            try:
-                element = driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes')
-            except NoSuchElementException:
-                return False
-            return driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes').get_attribute("disabled") is None
+        from selenium.webdriver.support.select import Select
+        ddlAgentes = Select(self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes'))
 
-        WebDriverWait(self.driver, 60).until(not_disabled)
+        if ddlAgentes.first_selected_option.text.upper() == 'SELECIONE':
+            ddlAgentes.select_by_value('3')
+        else:
+            btn_consultar = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_btnConsultar')))
+            btn_consultar.click()
+
+            def not_disabled(driver):
+                try:
+                    driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes')
+                except NoSuchElementException:
+                    return False
+                return driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes').get_attribute(
+                    "disabled") is None
+
+            WebDriverWait(self.driver, 60).until(not_disabled)
 
         btn_consultar = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnConsultar')
         btn_consultar.click()
