@@ -1,10 +1,10 @@
 import datetime
 import pandas as pd
 
-from dateutil.relativedelta import relativedelta
 
 from src.dropbox_files import OPERATIONS_FILEPATH
 from src.crawler_yahoo_bs4 import busca_preco_atual
+from src.domain.tipo_ticker import tipo_ticker
 
 
 def todas_as_colunas():
@@ -106,61 +106,6 @@ def calcula_precos_medio_de_compra(df, data=None):
         precos_medios_de_compra[ticker] = {'valor': preco_medio_de_compra, 'data_primeira_compra': data_primeira_compra}
 
     return precos_medios_de_compra
-
-
-def vendas_no_mes(df, ano, mes):
-
-    vendas_no_mes = []
-
-    df = df.copy()
-    primeiro_dia_proximo_mes = (datetime.datetime(ano, mes, 1, 1, 0, 0) + relativedelta(months=1)).date()
-
-    precos_medios_de_compra = calcula_precos_medio_de_compra(df, primeiro_dia_proximo_mes)
-
-    date_mask = df['data'].map(lambda x: str(x.year) + '_' + str(x.month)) == str(ano) + '_' + str(mes)
-    df = df[date_mask]
-
-    df = df.loc[df.qtd_ajustada < 0, :]
-
-    for ticker in df['ticker'].unique():
-        df_vendas_ticker = df.loc[df['ticker'] == ticker, :]
-
-        qtd_vendida = df_vendas_ticker['qtd'].sum()
-        preco_medio_venda = df_vendas_ticker['valor'].sum() / qtd_vendida
-        preco_medio_compra = precos_medios_de_compra[ticker]['valor']
-        if preco_medio_compra:
-            resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
-        else:
-            resultado_apurado = None
-
-        vendas_no_mes.append({'ticker': ticker,
-                              'qtd_vendida': qtd_vendida,
-                              'preco_medio_venda': preco_medio_venda,
-                              'preco_medio_compra': preco_medio_compra,
-                              'resultado_apurado': resultado_apurado})
-
-    return vendas_no_mes
-
-
-def tipo_ticker(ticker):
-    from  src.crawler_brinvesting_etfs import e_tipo_etf
-    from src.crawler_funds_explorer_bs4 import e_tipo_fii
-    from src.domain.tipo_ticker import TipoTicker
-
-    if e_tipo_fii(ticker):
-        return TipoTicker.FII
-
-    if e_tipo_etf(ticker):
-        return TipoTicker.ETF
-
-    try:
-        busca_preco_atual(ticker)
-        return TipoTicker.ACAO
-    except:
-        pass
-
-    return None
-
 
 def merge_operacoes(df, other_df):
     if not len(df) and not len(other_df):

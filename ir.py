@@ -6,8 +6,10 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 from src.stuff import get_operations_dataframe, \
-    calcula_custodia, vendas_no_mes, merge_operacoes, \
+    calcula_custodia, merge_operacoes, \
     df_to_csv
+
+from src.domain.memoria_calculo_ir import MemoriaCalculoIr
 
 from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 
@@ -28,15 +30,15 @@ def main(raw_args):
         do_custodia()
         return
 
-    if args.do == 'vendas_no_mes':
-        do_vendas_no_mes()
+    if args.do == 'memoria_de_calculo_ir':
+        do_memoria_de_calculo_ir()
         return
 
     if args.do == 'envia_relatorio_por_email':
         do_envia_relatorio_por_email()
         return
 
-    do_custodia()
+    do_memoria_de_calculo_ir()
 
 
 def do_busca_trades_e_faz_merge_operacoes():
@@ -67,25 +69,18 @@ def do_envia_relatorio_por_email():
     envia_relatorio_por_email()
 
 
-def do_vendas_no_mes():
+def do_memoria_de_calculo_ir():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
 
     df = get_operations_dataframe()
 
-    data = df['data'].min()
-    hoje = datetime.datetime.now().date()
-    datas = []
+    memoria_de_calculo_ir = MemoriaCalculoIr(df=df)
+    memoria_de_calculo_ir.calcula()
 
-    while data < hoje:
-        datas.append(data)
-        data = data + relativedelta(months=1)
-
-    datas.append(hoje)
-
-    for data in datas:
-        print('Mes: ' + str(data.month) + ' Ano: ' + str(data.year))
-        print(vendas_no_mes(df, data.year, data.month))
+    from src.report import report_txt
+    report_txt(memoria_de_calculo_ir)
+    pass
 
 
 if __name__ == "__main__":
