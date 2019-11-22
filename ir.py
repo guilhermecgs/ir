@@ -27,7 +27,7 @@ def main(raw_args):
         do_custodia()
         return
 
-    if args.do == 'memoria_de_calculo_ir':
+    if args.do == 'calculo_ir':
         do_calculo_ir()
         return
 
