@@ -1,17 +1,14 @@
-import sys
-import os
 import argparse
-import datetime
-import pandas as pd
-from dateutil.relativedelta import relativedelta
+import os
+import sys
 
+import pandas as pd
+
+from src.calculo_ir import CalculoIr
+from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 from src.stuff import get_operations_dataframe, \
     calcula_custodia, merge_operacoes, \
     df_to_csv
-
-from src.domain.memoria_calculo_ir import MemoriaCalculoIr
-
-from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 
 
 def main(raw_args):
@@ -31,14 +28,14 @@ def main(raw_args):
         return
 
     if args.do == 'memoria_de_calculo_ir':
-        do_memoria_de_calculo_ir()
+        do_calculo_ir()
         return
 
     if args.do == 'envia_relatorio_por_email':
         do_envia_relatorio_por_email()
         return
 
-    do_memoria_de_calculo_ir()
+    do_calculo_ir()
 
 
 def do_busca_trades_e_faz_merge_operacoes():
@@ -69,16 +66,16 @@ def do_envia_relatorio_por_email():
     envia_relatorio_por_email()
 
 
-def do_memoria_de_calculo_ir():
+def do_calculo_ir():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
 
     df = get_operations_dataframe()
 
-    memoria_de_calculo_ir = MemoriaCalculoIr(df=df)
+    memoria_de_calculo_ir = CalculoIr(df=df)
     memoria_de_calculo_ir.calcula()
 
-    from src.report import report_txt
+    from src.relatorio import report_txt
     report_txt(memoria_de_calculo_ir)
     pass
 

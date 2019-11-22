@@ -1,62 +1,107 @@
 import datetime
 
+import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-from src.stuff import calcula_precos_medio_de_compra
+from src.tipo_ticker import TipoTicker
+from src.stuff import tipo_ticker, vendas_no_mes
 
 
-def compras_no_mes(df, ano, mes):
+class CalculoIr():
+    df: pd.DataFrame
+    vendas: dict = dict()
+    prejuizo_acumulado: dict = {}
+    datas: list = []
 
-    compras_no_mes = []
+    def __init__(self, df):
+        self.df = df
 
-    df = df.copy()
-    date_mask = df['data'].map(lambda x: str(x.year) + '_' + str(x.month)) == str(ano) + '_' + str(mes)
-    df = df[date_mask]
+    def calcula(self):
+        hoje = datetime.datetime.now().date()
 
-    df = df.loc[df.qtd_ajustada > 0, :]
+        data = data_inicial = self.df['data'].min() + relativedelta(months=-1)
 
-    for ticker in df['ticker'].unique():
-        df_compras_ticker = df.loc[df['ticker'] == ticker, :]
+        while data < hoje:
+            self.datas.append(data)
+            data = data + relativedelta(months=1)
 
-        qtd_comprada = df_compras_ticker['qtd'].sum()
-        preco_medio_compra = df_compras_ticker['valor'].sum() / qtd_comprada
+        self.prejuizo_acumulado = {}
+        for tipo in TipoTicker:
+            self.__seta_prejuizo_acumulado(data_inicial, tipo, 0.0)
 
-        compras_no_mes.append({'ticker': ticker,
-                               'qtd_comprada': qtd_comprada,
-                               'preco_medio_compra': preco_medio_compra})
+        for index, data in enumerate(self.datas):
+            self.__seta_vendas_no_mes(data, vendas_no_mes(self.df, data.year, data.month))
 
-    return compras_no_mes
+            for tipo in TipoTicker:
+                prejuizo_acumulado = self.calcula_prejuizo_acumulado(data, tipo)
+                self.__seta_prejuizo_acumulado(data, tipo, prejuizo_acumulado)
 
+        pass
 
-def vendas_no_mes(df, ano, mes):
+    def calcula_prejuizo_acumulado(self, data, tipo):
+        prejuizo_acumulado = self.calcula_prejuizo_por_tipo(data, tipo)
 
-    vendas_no_mes = []
+        if self.__tem_prejuizo_no_mes_anterior(tipo, data):
+            prejuizo_acumulado = prejuizo_acumulado + self.__prejuizo_no_mes_anterior(tipo, data)
 
-    df = df.copy()
-    primeiro_dia_proximo_mes = (datetime.datetime(ano, mes, 1, 1, 0, 0) + relativedelta(months=1)).date()
+        return prejuizo_acumulado
 
-    precos_medios_de_compra = calcula_precos_medio_de_compra(df, primeiro_dia_proximo_mes)
+    def calcula_ir_a_pagar_no_mes(self, data):
+        ir_a_pagar = 0.0
+        for tipo in TipoTicker:
+            prejuizo_acumulado = self.calcula_prejuizo_acumulado(data, tipo)
+            ir_a_pagar += self.calcula_ir_a_pagar(prejuizo_acumulado, tipo)
+        return ir_a_pagar
 
-    date_mask = df['data'].map(lambda x: str(x.year) + '_' + str(x.month)) == str(ano) + '_' + str(mes)
-    df = df[date_mask]
+    def calcula_ir_a_pagar(self, lucro, tipo):
+        if lucro > 0:
+            if tipo == TipoTicker.ACAO:
+                return lucro * 0.2
+            if tipo == TipoTicker.ETF:
+                return lucro * 0.15
+            if tipo == TipoTicker.FII:
+                return lucro * 0.2
+        return 0.0
 
-    df = df.loc[df.qtd_ajustada < 0, :]
+    def calcula_prejuizo_por_tipo(self, data, tipo):
+        return sum([venda['resultado_apurado'] for venda in self.vendas[self.__get_date_key__(data)][tipo]])
 
-    for ticker in df['ticker'].unique():
-        df_vendas_ticker = df.loc[df['ticker'] == ticker, :]
+    def __tem_prejuizo_no_mes_anterior(self, tipo, data):
+        if self.__prejuizo_no_mes_anterior(tipo, data) < 0:
+            return True
+        return False
 
-        qtd_vendida = df_vendas_ticker['qtd'].sum()
-        preco_medio_venda = df_vendas_ticker['valor'].sum() / qtd_vendida
-        preco_medio_compra = precos_medios_de_compra[ticker]['valor']
-        if preco_medio_compra:
-            resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
-        else:
-            resultado_apurado = None
+    def __prejuizo_no_mes_anterior(self, tipo, data):
+        mes_anterior = self.__get_date_key__(data + relativedelta(months=-1))
+        if mes_anterior in self.prejuizo_acumulado:
+            return self.prejuizo_acumulado[mes_anterior][tipo]
+        return 0.0
 
-        vendas_no_mes.append({'ticker': ticker,
-                              'qtd_vendida': qtd_vendida,
-                              'preco_medio_venda': preco_medio_venda,
-                              'preco_medio_compra': preco_medio_compra,
-                              'resultado_apurado': resultado_apurado})
+    def __get_date_key__(self, data):
+        return str(data.month) + '_' + str(data.year)
 
-    return vendas_no_mes
+    def __seta_prejuizo_acumulado(self, data, tipo, prejuizo):
+        if not self.__get_date_key__(data) in self.prejuizo_acumulado:
+            self.prejuizo_acumulado[self.__get_date_key__(data)] = {}
+
+        self.prejuizo_acumulado[self.__get_date_key__(data)][tipo] = prejuizo
+
+    def __seta_vendas_no_mes(self, data, vendas_no_mes):
+        self.vendas[self.__get_date_key__(data)] = {}
+
+        for tipo in TipoTicker:
+            self.vendas[self.__get_date_key__(data)][tipo] = []
+
+        for venda in vendas_no_mes:
+            ticker = venda['ticker']
+            self.vendas[self.__get_date_key__(data)][tipo_ticker(ticker)].append(venda)
+
+    def get_vendas_no_mes_por_tipo(self, data):
+        return self.vendas[self.__get_date_key__(data)]
+
+    def possui_vendas_no_mes(self, data):
+        for tipo in TipoTicker:
+            if len(self.vendas[self.__get_date_key__(data)][tipo]):
+                return True
+
+        return False

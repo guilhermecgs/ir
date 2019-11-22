@@ -2,10 +2,9 @@ import unittest
 import pytest
 import pandas as pd
 import datetime
-from src.domain.tipo_ticker import TipoTicker
+from src.tipo_ticker import TipoTicker
 from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, \
-    calcula_custodia, vendas_no_mes, calcula_valor, calculate_add,\
-    tipo_ticker, merge_operacoes, colunas_obrigatorias, df_to_csv
+    calcula_custodia, calcula_valor, tipo_ticker, merge_operacoes, colunas_obrigatorias, df_to_csv, vendas_no_mes
 
 
 def create_testing_dataframe(data):

@@ -1,5 +1,6 @@
-from src.domain.tipo_ticker import TipoTicker
-from src.stuff import calcula_custodia, todas_as_colunas
+from src.tipo_ticker import TipoTicker
+from src.stuff import calcula_custodia
+
 
 def __tab(tamanho):
     return ' ' * tamanho * 4
@@ -45,36 +46,3 @@ def report_txt(ir):
                     print(__tab(4) + 'IR no mês para ' + tipo.name + ': ' + __format(ir.calcula_ir_a_pagar(ir.calcula_prejuizo_acumulado(data, tipo), tipo)))
 
             print(__tab(3) + 'IR a pagar TOTAL no mês: ' + __format(ir.calcula_ir_a_pagar_no_mes(data)))
-
-#   Custodia
-
-# Mes X
-#   Compras
-#       Tipo > 0
-#         -- dd
-#         -- dd
-#   Vendas
-#       Tipo > 0
-#         -- dd
-#         -- dd
-#           Lucro/Prejuizo no mes: ff
-#           Lucro/Prejuizo acumulado: ff
-#           Ir a pagar no mes para o Tipo: ff
-#
-#
-#   IR a pagar Total no mes : ff
-#
-#
-#
-#
-
-
-
-
-
-
-
-
-
-
-
