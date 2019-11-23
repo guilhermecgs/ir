@@ -42,4 +42,3 @@ relatorio:
     script:
         - python ./ir.py --do busca_trades_e_faz_merge_operacoes
         - python ./ir.py --do calculo_ir
-        - python ./ir.py --do envia_relatorio_por_email

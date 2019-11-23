@@ -9,6 +9,8 @@ from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 from src.stuff import get_operations_dataframe, \
     calcula_custodia, merge_operacoes, \
     df_to_csv
+from src.relatorio import relatorio_txt
+from src.envia_relatorio_por_email import envia_relatorio_por_email
 
 
 def main(raw_args):
@@ -29,10 +31,6 @@ def main(raw_args):
 
     if args.do == 'calculo_ir':
         do_calculo_ir()
-        return
-
-    if args.do == 'envia_relatorio_por_email':
-        do_envia_relatorio_por_email()
         return
 
     do_calculo_ir()
@@ -61,23 +59,17 @@ def do_custodia():
     print('Total na carteira : ' + str(df['valor'].sum()))
 
 
-def do_envia_relatorio_por_email():
-    from src.envia_relatorio_por_email import envia_relatorio_por_email
-    envia_relatorio_por_email()
-
-
 def do_calculo_ir():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
-
     df = get_operations_dataframe()
 
     memoria_de_calculo_ir = CalculoIr(df=df)
     memoria_de_calculo_ir.calcula()
 
-    from src.relatorio import report_txt
-    report_txt(memoria_de_calculo_ir)
-    pass
+    relatorio = relatorio_txt(memoria_de_calculo_ir)
+    print(relatorio)
+    envia_relatorio_por_email('Calculo de IR - (nao responder)', relatorio)
 
 
 if __name__ == "__main__":

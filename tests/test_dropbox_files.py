@@ -1,7 +1,6 @@
-import os
 import datetime
+import os
 import unittest
-import dropbox
 
 from src.dropbox_files import OPERATIONS_FILEPATH, upload_dropbox_file, download_dropbox_file
 
