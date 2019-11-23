@@ -10,6 +10,6 @@ class TestEnvironmentVariables(unittest.TestCase):
         assert 'DROPBOX_FILE_LOCATION' in os.environ
         assert 'CPF' in os.environ
         assert 'SENHA_CEI' in os.environ
-        assert 'GMAIL_FROM' is os.environ
-        assert 'GMAIL_PASSWORD' is os.environ
-        assert 'SEND_TO' is os.environ
+        assert 'GMAIL_FROM' in os.environ
+        assert 'GMAIL_PASSWORD' in os.environ
+        assert 'SEND_TO' in os.environ

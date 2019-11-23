@@ -15,17 +15,17 @@ def relatorio_txt(ir):
     relatorio.append('RELATORIO')
     relatorio.append('')
     relatorio.append('Custódia')
-    # custodia = calcula_custodia(ir.df)
-    # relatorio.append(custodia[custodia.valor > 0].to_string(columns=['ticker',
-    #                                                       'qtd',
-    #                                                       'valor',
-    #                                                       'preco_atual',
-    #                                                       'preco_medio_compra',
-    #                                                       'valorizacao',
-    #                                                       'tipo',
-    #                                                       'data_primeira_compra'],
-    #                                              index=False))
-    # relatorio.append('Total na carteira : ' + __format(custodia['valor'].sum()))
+    custodia = calcula_custodia(ir.df)
+    relatorio.append(custodia[custodia.valor > 0].to_string(columns=['ticker',
+                                                          'qtd',
+                                                          'valor',
+                                                          'preco_atual',
+                                                          'preco_medio_compra',
+                                                          'valorizacao',
+                                                          'tipo',
+                                                          'data_primeira_compra'],
+                                                 index=False))
+    relatorio.append('Total na carteira : ' + __format(custodia['valor'].sum()))
 
     for data in ir.datas:
         if ir.possui_vendas_no_mes(data):
