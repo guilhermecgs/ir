@@ -15,17 +15,17 @@ def relatorio_txt(ir):
     relatorio.append('RELATORIO')
     relatorio.append('')
     relatorio.append('Custódia')
-    custodia = calcula_custodia(ir.df)
-    relatorio.append(custodia[custodia.valor > 0].to_string(columns=['ticker',
-                                                          'qtd',
-                                                          'valor',
-                                                          'preco_atual',
-                                                          'preco_medio_compra',
-                                                          'valorizacao',
-                                                          'tipo',
-                                                          'data_primeira_compra'],
-                                                 index=False))
-    relatorio.append('Total na carteira : ' + __format(custodia['valor'].sum()))
+    # custodia = calcula_custodia(ir.df)
+    # relatorio.append(custodia[custodia.valor > 0].to_string(columns=['ticker',
+    #                                                       'qtd',
+    #                                                       'valor',
+    #                                                       'preco_atual',
+    #                                                       'preco_medio_compra',
+    #                                                       'valorizacao',
+    #                                                       'tipo',
+    #                                                       'data_primeira_compra'],
+    #                                              index=False))
+    # relatorio.append('Total na carteira : ' + __format(custodia['valor'].sum()))
 
     for data in ir.datas:
         if ir.possui_vendas_no_mes(data):
@@ -54,4 +54,4 @@ def __format_venda(venda):
              'Qtd Vendida: ' + str(int(venda['qtd_vendida'])) + __tab(1) + \
              'Preco Médio de Compra: ' + __format(venda['preco_medio_compra']) + __tab(1) + \
              'Preco Médio de Venda: ' + __format(venda['preco_medio_venda']) + __tab(1) + \
-             'Resultado Apurado: ' + __format(venda['qtd_vendida'])
+             'Resultado Apurado: ' + __format(venda['resultado_apurado'])

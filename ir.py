@@ -64,10 +64,10 @@ def do_calculo_ir():
     download_dropbox_file()
     df = get_operations_dataframe()
 
-    memoria_de_calculo_ir = CalculoIr(df=df)
-    memoria_de_calculo_ir.calcula()
+    calculo_ir = CalculoIr(df=df)
+    calculo_ir.calcula()
 
-    relatorio = relatorio_txt(memoria_de_calculo_ir)
+    relatorio = relatorio_txt(calculo_ir)
     print(relatorio)
     envia_relatorio_por_email('Calculo de IR - (nao responder)', relatorio)
 
