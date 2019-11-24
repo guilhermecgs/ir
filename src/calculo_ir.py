@@ -1,5 +1,5 @@
 import datetime
-
+import calendar
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
@@ -12,6 +12,7 @@ class CalculoIr():
     vendas: dict = dict()
     prejuizo_acumulado: dict = {}
     datas: list = []
+    mes_do_relatorio : str
 
     def __init__(self, df):
         self.df = df
@@ -19,9 +20,14 @@ class CalculoIr():
     def calcula(self):
         hoje = datetime.datetime.now().date()
 
-        data = data_inicial = self.df['data'].min() + relativedelta(months=-1)
+        data_inicial = self.df['data'].min() + relativedelta(months=-1)
+        data = data_inicial = datetime.date(data_inicial.year, data_inicial.month, 1)
+        data_final = hoje + relativedelta(months=-1)
+        data_final = datetime.date(data_final.year, data_final.month, calendar.monthrange(data_final.year,data_final.month)[1])
 
-        while data < hoje:
+        self.mes_do_relatorio = self.__get_date_key__(data_final)
+
+        while data <= data_final:
             self.datas.append(data)
             data = data + relativedelta(months=1)
 
@@ -78,7 +84,7 @@ class CalculoIr():
         return 0.0
 
     def __get_date_key__(self, data):
-        return str(data.month) + '_' + str(data.year)
+        return str(data.month) + '/' + str(data.year)
 
     def __seta_prejuizo_acumulado(self, data, tipo, prejuizo):
         if not self.__get_date_key__(data) in self.prejuizo_acumulado:

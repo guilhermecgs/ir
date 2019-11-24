@@ -19,13 +19,9 @@
 
 
 # TODO list
-    - crawler de ETF do site da bovespa via selenium
-    - envio de emails com resumo
+    - envio de emails com html/pdf
     - geracao de darf? 
-    - colocar a informacao da custodia da data 1 compra
-    - Melhorar a visualizacao das custodia e vendas durante o print ja pensando no email
-    - A custodia de receber como parametro a data atual, visto que poderia ja deixar lancado IPOs e subscricoes futuras
-    
+    - mirror github
    
 # techstack
     - python

@@ -4,8 +4,10 @@ import unittest
 
 class TestEnvironmentVariables(unittest.TestCase):
 
-    def test_download_dropbox_file(self):
-        print(os.environ)
+    def test_environment_variables(self):
+        if 'CI_PIPELINE_SOURCE' in os.environ:
+            print(os.environ['CI_PIPELINE_SOURCE'])
+
         assert 'DROPBOX_API_KEY' in os.environ
         assert 'DROPBOX_FILE_LOCATION' in os.environ
         assert 'CPF' in os.environ

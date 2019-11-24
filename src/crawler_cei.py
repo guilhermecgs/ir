@@ -118,7 +118,6 @@ class CrawlerCei():
         df['qtd_ajustada'] = df.apply(lambda row: calculate_add(row), axis=1)
 
         df['taxas'] = 0.0
-        df['id_carteira'] = 0
         df['aquisicao_via'] = 'HomeBroker'
 
         df.drop(columns=['Mercado', 

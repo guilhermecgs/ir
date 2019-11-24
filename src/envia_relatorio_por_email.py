@@ -2,7 +2,7 @@ import os
 import smtplib
 
 
-def envia_relatorio_por_email(assunto, relatorio):
+def envia_relatorio_txt_por_email(assunto, relatorio):
     gmail_user = os.environ['GMAIL_FROM']
     gmail_password = os.environ['GMAIL_PASSWORD']
     to = os.environ['SEND_TO'].split(sep=';')

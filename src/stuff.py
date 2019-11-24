@@ -12,7 +12,7 @@ def todas_as_colunas():
 
 
 def colunas_obrigatorias():
-    return ['ticker', 'operacao', 'qtd', 'data', 'preco', 'taxas', 'id_carteira', 'aquisicao_via']
+    return ['ticker', 'operacao', 'qtd', 'data', 'preco', 'taxas', 'aquisicao_via']
 
 
 def calcula_valor(qtd, preco):
@@ -34,8 +34,14 @@ def get_operations_dataframe(filepath=None):
                      header=None,
                      parse_dates=[3],
                      dayfirst=True)
+    try:
+        df.columns = colunas_obrigatorias()
+    except:
+        columns = colunas_obrigatorias()
+        columns.insert(6, 'id_carteira')
+        df.columns = columns
+        df = df.drop(['id_carteira'], axis=1)
 
-    df.columns = ['ticker', 'operacao', 'qtd', 'data', 'preco', 'taxas', 'id_carteira', 'aquisicao_via']
     df['data'] = df['data'].dt.date
     df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
     df['qtd_ajustada'] = df.apply(lambda row: calculate_add(row), axis=1)
@@ -107,6 +113,7 @@ def calcula_precos_medio_de_compra(df, data=None):
 
     return precos_medios_de_compra
 
+
 def merge_operacoes(df, other_df):
     if not len(df) and not len(other_df):
         return pd.DataFrame(columns=colunas_obrigatorias())
@@ -129,7 +136,6 @@ def df_to_csv(df, filepath):
     import csv
     df = df.copy()
     df['data'] = df['data'].apply(lambda data: data.strftime('%d/%m/%y'))
-    df['id_carteira'] = pd.to_numeric(df['id_carteira'], downcast='integer')
     df.to_csv(path_or_buf=filepath,
               columns=colunas_obrigatorias(),
               sep='\t',
@@ -159,6 +165,7 @@ def compras_no_mes(df, ano, mes):
                                'preco_medio_compra': preco_medio_compra})
 
     return compras_no_mes
+
 
 def vendas_no_mes(df, ano, mes):
 

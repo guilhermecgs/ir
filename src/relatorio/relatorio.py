@@ -1,9 +1,11 @@
-from src.tipo_ticker import TipoTicker
+import datetime
+
 from src.stuff import calcula_custodia
+from src.tipo_ticker import TipoTicker
 
 
 def __tab(tamanho):
-    return str(' ' * tamanho * 4)
+    return str('\t' * tamanho)
 
 
 def __format(float_value):
@@ -15,7 +17,7 @@ def relatorio_txt(ir):
     relatorio.append('RELATORIO')
     relatorio.append('')
     relatorio.append('Custódia')
-    custodia = calcula_custodia(ir.df)
+    custodia = calcula_custodia(ir.df, datetime.datetime.now().date())
     relatorio.append(custodia[custodia.valor > 0].to_string(columns=['ticker',
                                                           'qtd',
                                                           'valor',

@@ -36,9 +36,13 @@ coverage_html:
         paths:
             - public
         expire_in: 15 days
+    rules:
+      - if: 'CI_PIPELINE_SOURCE != "schedule"'
+        when: always
 
 relatorio:
     stage: relatorio
     script:
+        - python ./ir.py --do check_environment_variables
         - python ./ir.py --do busca_trades_e_faz_merge_operacoes
         - python ./ir.py --do calculo_ir

@@ -6,11 +6,11 @@ import pandas as pd
 
 from src.calculo_ir import CalculoIr
 from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
+from src.envia_relatorio_por_email import envia_relatorio_txt_por_email
+from src.relatorio.relatorio import relatorio_txt
 from src.stuff import get_operations_dataframe, \
-    calcula_custodia, merge_operacoes, \
+    merge_operacoes, \
     df_to_csv
-from src.relatorio import relatorio_txt
-from src.envia_relatorio_por_email import envia_relatorio_por_email
 
 
 def main(raw_args):
@@ -25,8 +25,8 @@ def main(raw_args):
         do_busca_trades_e_faz_merge_operacoes()
         return
 
-    if args.do == 'custodia':
-        do_custodia()
+    if args.do == 'check_environment_variables':
+        do_check_environment_variables()
         return
 
     if args.do == 'calculo_ir':
@@ -51,12 +51,9 @@ def do_busca_trades_e_faz_merge_operacoes():
     upload_dropbox_file(OPERATIONS_FILEPATH, os.environ['DROPBOX_FILE_LOCATION'])
 
 
-def do_custodia():
-    from src.dropbox_files import download_dropbox_file
-    download_dropbox_file()
-    df = calcula_custodia(get_operations_dataframe())
-    print(df)
-    print('Total na carteira : ' + str(df['valor'].sum()))
+def do_check_environment_variables():
+    from tests.test_environment_variables import TestEnvironmentVariables
+    TestEnvironmentVariables().test_environment_variables()
 
 
 def do_calculo_ir():
@@ -69,7 +66,7 @@ def do_calculo_ir():
 
     relatorio = relatorio_txt(calculo_ir)
     print(relatorio)
-    envia_relatorio_por_email('Calculo de IR - (nao responder)', relatorio)
+    envia_relatorio_txt_por_email('Calculo de IR - ' + calculo_ir.mes_do_relatorio + ' - CPF: ' + os.environ['CPF'], relatorio)
 
 
 if __name__ == "__main__":
