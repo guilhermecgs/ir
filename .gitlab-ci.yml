@@ -37,7 +37,7 @@ coverage_html:
             - public
         expire_in: 15 days
     rules:
-      - if: 'CI_PIPELINE_SOURCE != "schedule"'
+      - if: 'CI_PIPELINE_SOURCE =~ "schedule"'
         when: always
 
 relatorio:
