@@ -19,7 +19,7 @@ def relatorio_txt(ir):
     relatorio.append('Custódia')
     custodia = calcula_custodia(ir.df, datetime.datetime.now().date())
     columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'tipo', 'data_primeira_compra']
-    headers = ['ticker', 'qtd', 'valor (R$)', 'preco_atual (R$)', 'preco_medio_compra (R$)', 'valorizacao (%)', 'tipo', 'data_primeira_compra']
+    headers = ['ticker', 'qtd', 'valor (R$)', 'PrecoAtual(R$)', 'PrecoMedioCompra(R$)', 'valorizacao (%)', 'tipo', 'PrimeiraCompra']
     custodia = custodia[columns]
     custodia = custodia[custodia.valor > 0]
     total_na_carteira = custodia['valor'].sum()
