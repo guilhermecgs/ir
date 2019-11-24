@@ -69,7 +69,7 @@ def calcula_custodia(df, data=None):
 
         custodia.append({'ticker': ticker,
                          'tipo': tipo_ticker(ticker).name,
-                         'qtd': qtd_em_custodia,
+                         'qtd': int(qtd_em_custodia),
                          'preco_medio_compra': preco_medio_de_compra,
                          'valor': valor,
                          'preco_atual': preco_atual,
