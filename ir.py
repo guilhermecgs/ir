@@ -67,7 +67,6 @@ def do_calculo_ir():
     print(relatorio_txt(calculo_ir))
 
     envia_relatorio_html_por_email('Calculo de IR - ' + calculo_ir.mes_do_relatorio + ' - CPF: ' + os.environ['CPF'],
-                                   relatorio_txt(calculo_ir),
                                    relatorio_html(calculo_ir))
 
 

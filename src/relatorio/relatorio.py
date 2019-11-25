@@ -72,7 +72,7 @@ def relatorio_html(ir):
     custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
     custodia['preco_atual'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_atual), axis=1)
     custodia['preco_medio_compra'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_medio_compra), axis=1)
-    headers = ['ticker', 'qtd', 'valor (R$)', 'PrecoAtual(R$)', 'PrecoMedioCompra(R$)', 'valorizacao (%)', 'tipo', 'PrimeiraCompra']
+    headers = ['ticker', 'qtd', 'valor (R$)', 'Preco Atual (R$)', 'Preco Medio Compra (R$)', 'valorizacao (%)', 'tipo', 'Primeira Compra']
     columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'tipo', 'data_primeira_compra']
     custodia = custodia[columns]
     custodia.columns = headers
