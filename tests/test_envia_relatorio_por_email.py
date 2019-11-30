@@ -18,4 +18,4 @@ class TestEnvia_relatorio_por_email(TestCase):
                  'aquisicao_via': 'HomeBroker'}]
 
         df = create_testing_dataframe(data)
-        assert envia_relatorio_html_por_email('assunto - teste unitário', 'relatório', df.to_html())
+        assert envia_relatorio_html_por_email('assunto - teste unitário', df.to_html())
