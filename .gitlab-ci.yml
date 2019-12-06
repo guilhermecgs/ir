@@ -38,7 +38,7 @@ coverage_html:
             - public
         expire_in: 15 days
     rules:
-      - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^schedule/'
+      - if: '$CI_PIPELINE_SOURCE =~ /^schedule/'
         when: always
 
 relatorio:
