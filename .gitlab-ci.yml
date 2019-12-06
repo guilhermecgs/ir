@@ -24,7 +24,8 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - pip install -r requirements.txt 
+  - pip install -r requirements.txt
+  - echo $CI_PIPELINE_SOURCE
 
 coverage_html:
     stage: coverage_report
@@ -37,7 +38,7 @@ coverage_html:
             - public
         expire_in: 15 days
     rules:
-      - if: '$CI_PIPELINE_SOURCE =~ "schedule"'
+      - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^schedule/'
         when: always
 
 relatorio:

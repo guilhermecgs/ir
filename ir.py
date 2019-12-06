@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+from datetime import datetime
 
 import pandas as pd
 
@@ -61,12 +62,18 @@ def do_calculo_ir():
     download_dropbox_file()
     df = get_operations_dataframe()
 
+    from src.stuff import calcula_custodia
+
+    calcula_custodia(df)
     calculo_ir = CalculoIr(df=df)
     calculo_ir.calcula()
 
     print(relatorio_txt(calculo_ir))
 
-    envia_relatorio_html_por_email('Calculo de IR - ' + calculo_ir.mes_do_relatorio + ' - CPF: ' + os.environ['CPF'],
+    envia_relatorio_html_por_email('Calculo de IR - '
+                                   + calculo_ir.mes_do_relatorio +
+                                   ' - CPF: ' + os.environ['CPF'] +
+                                   ' - ' + datetime.now().strftime("%H:%M:%S"),
                                    relatorio_html(calculo_ir))
 
 
