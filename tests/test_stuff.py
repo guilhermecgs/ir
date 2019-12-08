@@ -29,7 +29,7 @@ class TestStuff(unittest.TestCase):
 
     def test_deve_criar_dataframe_vazio_se_arquivo_vazio(self):
         df = get_operations_dataframe('arquivo_invalido.txt')
-        self.assertListEqual(df.columns, todas_as_colunas())
+        self.assertListEqual(list(df.columns), todas_as_colunas())
 
     def test_descobre_vendas_no_mes(self):
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100},
