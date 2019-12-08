@@ -4,7 +4,8 @@ import pandas as pd
 import datetime
 from src.tipo_ticker import TipoTicker
 from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, \
-    calcula_custodia, calcula_valor, tipo_ticker, merge_operacoes, colunas_obrigatorias, df_to_csv, vendas_no_mes
+    calcula_custodia, calcula_valor, tipo_ticker, merge_operacoes, colunas_obrigatorias, \
+    df_to_csv, vendas_no_mes, todas_as_colunas
 
 
 def create_testing_dataframe(data):
@@ -25,6 +26,10 @@ def create_testing_dataframe(data):
 
 
 class TestStuff(unittest.TestCase):
+
+    def test_deve_criar_dataframe_vazio_se_arquivo_vazio(self):
+        df = get_operations_dataframe('arquivo_invalido.txt')
+        assert len(df.columns) == len(todas_as_colunas()) and sorted(df.columns) == sorted(todas_as_colunas())
 
     def test_descobre_vendas_no_mes(self):
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100},

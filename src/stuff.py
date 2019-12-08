@@ -8,7 +8,9 @@ from src.tipo_ticker import tipo_ticker
 
 
 def todas_as_colunas():
-    return colunas_obrigatorias().extend(['valor', 'qtd_ajustada'])
+    result = colunas_obrigatorias()
+    result.extend(['valor', 'qtd_ajustada'])
+    return result
 
 
 def colunas_obrigatorias():
@@ -30,10 +32,16 @@ def get_operations_dataframe(filepath=None):
     if not filepath:
         filepath = OPERATIONS_FILEPATH
 
-    df = pd.read_csv(filepath, sep='\t',
-                     header=None,
-                     parse_dates=[3],
-                     dayfirst=True)
+    df = pd.DataFrame(columns=colunas_obrigatorias())
+
+    try:
+        df = pd.read_csv(filepath, sep='\t',
+                         header=None,
+                         parse_dates=[3],
+                         dayfirst=True)
+    except:
+        return pd.DataFrame(columns=todas_as_colunas())
+
     try:
         df.columns = colunas_obrigatorias()
     except:
@@ -42,9 +50,12 @@ def get_operations_dataframe(filepath=None):
         df.columns = columns
         df = df.drop(['id_carteira'], axis=1)
 
-    df['data'] = df['data'].dt.date
-    df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
-    df['qtd_ajustada'] = df.apply(lambda row: calculate_add(row), axis=1)
+    if len(df):
+        df['data'] = df['data'].dt.date
+        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
+        df['qtd_ajustada'] = df.apply(lambda row: calculate_add(row), axis=1)
+    else:
+        return pd.DataFrame(columns=todas_as_colunas())
 
     return df
 
