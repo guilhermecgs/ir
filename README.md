@@ -19,9 +19,7 @@
 
 
 # TODO list
-    - envio de emails com html/pdf
-    - geracao de darf? 
-    - mirror github
+    - geracao de darf automaticamente ?? 
    
 # techstack
     - python
