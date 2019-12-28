@@ -11,8 +11,20 @@
     - Tabela com a custodia atual para conferencia
     - Envia email com todas as informacoes para voce pagar o imposto
  - A ideia é ser TUDO automatico, mas ainda ter a opcao de voce manualmente ter controle de tudo via um arquivo csv.
-    
+
+## o que voce vai precisar
+ - Ser um programador python
+ - Uma conta no CEI (https://cei.b3.com.br/)
+ - Uma conta no dropbox com API habilitada (https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account/)
+ - Configurar as variaveis de ambiente conforme (https://github.com/guilhermecgs/ir/blob/master/tests/test_environment_variables.py)
+ - Executar os comandos abaixo:
+    - python ./ir.py --do check_environment_variables
+    - python ./ir.py --do busca_trades_e_faz_merge_operacoes
+    - python ./ir.py --do calculo_ir
+
    
+## exemplo do relatorio gerado no seu email
+
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
  - Nao funciona com daytrade
