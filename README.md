@@ -24,6 +24,7 @@
 
    
 ## exemplo do relatorio gerado no seu email
+https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
