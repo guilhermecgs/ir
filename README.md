@@ -2,7 +2,8 @@
 
 ## o que ele se propoe a fazer
  - Automaticamente busca todos as suas operacoes na bolsa no site do canal eletronico do investidor (CEI) (https://cei.b3.com.br/)
- - Apos buscar os trades no CEI, salva tudo em um arquivo csv no dropbox
+ - Funciona com FIIs, ETFs e Acoes
+ - Apos buscar os trades no CEI, salva tudo em um arquivo csv no dropbox da sua conta
  - Todo dia 5 de cada mes executa e calcula (**automaticamente**):
     - Preco medio de compra
     - Preco medio de venda
@@ -10,7 +11,7 @@
     - IR a pagar, ja considerando o possivel prejuizo acumulado
     - Tabela com a custodia atual para conferencia
     - Envia email com todas as informacoes para voce pagar o imposto
- - A ideia é ser TUDO automatico, mas ainda ter a opcao de voce manualmente ter controle de tudo via um arquivo csv.
+ - A ideia é ser TUDO automatico, mas ainda ter a opcao de voce manualmente ter controle de tudo via um arquivo csv caso algum papel sofra desdobramento ou seja mude o ticker de negociacao
 
 ## o que voce vai precisar
  - Ser um programador python
@@ -31,8 +32,9 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
  - Nao funciona com daytrade
 
 
-# TODO list
+# To do list
     - geracao de darf automaticamente ?? 
+    - buscar a lista de ETFs automaticamente
    
 # techstack
     - python
