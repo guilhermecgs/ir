@@ -35,7 +35,7 @@ def get_operations_dataframe(filepath=None):
     df = pd.DataFrame(columns=colunas_obrigatorias())
 
     try:
-        df = pd.read_csv(filepath, sep='\t',
+        df = pd.read_csv(filepath, delim_whitespace=True, #sep='\t',
                          header=None,
                          parse_dates=[3],
                          dayfirst=True)
