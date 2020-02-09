@@ -26,6 +26,7 @@ before_script:
   - source venv/bin/activate
   - pip install -r requirements.txt
   - echo $CI_PIPELINE_SOURCE
+  - echo $CPF
 
 coverage_html:
     stage: coverage_report
