@@ -48,7 +48,7 @@ class CrawlerCei():
         btn_logar = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnLogar')
         btn_logar.click()
 
-        WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.ID, 'objGrafPosiInv')))
+        WebDriverWait(self.driver, 60).until(EC.visibility_of_element_located((By.ID, 'objGrafPosiInv')))
 
         if self.debug: self.driver.save_screenshot(self.directory + r'03.png')
 
