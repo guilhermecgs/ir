@@ -27,6 +27,17 @@
 ## exemplo do relatorio gerado no seu email
 https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
+## Exemplo de varaiveis de ambiente:
+
+ - DROPBOX_FILE_LOCATION:/Finance/GCGS/export_operacoes_gcgs.txt
+ - DROPBOX_API_KEY:jOznaw_xxxxxxxxxxxxxxxxxxxxtkw9ox_a9I_8-_aU2xw1xxxxxxxxxxKWek69Z
+ - GMAIL_FROM:emailremetente@gmail.com
+ - GMAIL_PASSWORD:minha_senha_gmail
+ - SEND_TO:emaildestinatario@gmail.com
+ - CPF:00098765434
+ - SENHA_CEI:minha_senha_cei
+
+
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
  - Nao funciona com daytrade
