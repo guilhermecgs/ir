@@ -10,8 +10,14 @@ ctx.verify_mode = ssl.CERT_NONE
 
 
 def e_tipo_fii(ticker):
+
+    ticker_corrigido = ticker
+
+    if ticker.endswith('12'):
+        ticker_corrigido = ticker.replace('12', '11')
+
     try:
-        url = "https://www.fundsexplorer.com.br/funds/%s" % (ticker)
+        url = "https://www.fundsexplorer.com.br/funds/%s" % (ticker_corrigido)
 
         # Making the website believe that you are accessing it using a Mozilla browser
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})

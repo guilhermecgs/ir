@@ -70,22 +70,29 @@ def calcula_custodia(df, data=None):
     precos_medios_de_compra = calcula_precos_medio_de_compra(df, data)
 
     for ticker in df['ticker'].unique():
-        qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
-        preco_atual = busca_preco_atual(ticker)
-        valor = preco_atual * qtd_em_custodia
-        preco_medio_de_compra = precos_medios_de_compra[ticker]['valor']
-        data_primeira_compra = precos_medios_de_compra[ticker]['data_primeira_compra']
-        valorizacao = preco_atual / preco_medio_de_compra * 100.0 - 100.0
-        valorizacao = "{0:.2f}".format(valorizacao)
+        try:
+            qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
+            preco_atual = busca_preco_atual(ticker)
+            valor = preco_atual * qtd_em_custodia
+            preco_medio_de_compra = precos_medios_de_compra[ticker]['valor']
+            data_primeira_compra = precos_medios_de_compra[ticker]['data_primeira_compra']
 
-        custodia.append({'ticker': ticker,
-                         'tipo': tipo_ticker(ticker).name,
-                         'qtd': int(qtd_em_custodia),
-                         'preco_medio_compra': preco_medio_de_compra,
-                         'valor': valor,
-                         'preco_atual': preco_atual,
-                         'valorizacao': valorizacao,
-                         'data_primeira_compra': data_primeira_compra})
+            if preco_medio_de_compra <= 0.0001:
+                valorizacao = 'NA'  # ex: direitos de compra com custo zero
+            else:
+                valorizacao = preco_atual / preco_medio_de_compra * 100.0 - 100.0
+                valorizacao = "{0:.2f}".format(valorizacao)
+
+            custodia.append({'ticker': ticker,
+                             'tipo': tipo_ticker(ticker).name,
+                             'qtd': int(qtd_em_custodia),
+                             'preco_medio_compra': preco_medio_de_compra,
+                             'valor': valor,
+                             'preco_atual': preco_atual,
+                             'valorizacao': valorizacao,
+                             'data_primeira_compra': data_primeira_compra})
+        except Exception as ex:
+            raise Exception('Erro ao calcular custodia do ticker {}'.format(ticker), ex)
 
     df_custodia = pd.DataFrame(custodia)
     df_custodia = df_custodia.sort_values(by=['valor'], ascending=False)
@@ -198,10 +205,7 @@ def vendas_no_mes(df, ano, mes):
         qtd_vendida = df_vendas_ticker['qtd'].sum()
         preco_medio_venda = df_vendas_ticker['valor'].sum() / qtd_vendida
         preco_medio_compra = precos_medios_de_compra[ticker]['valor']
-        if preco_medio_compra:
-            resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
-        else:
-            resultado_apurado = None
+        resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
 
         vendas_no_mes.append({'ticker': ticker,
                               'qtd_vendida': qtd_vendida,

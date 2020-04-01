@@ -42,7 +42,6 @@ class CalculoIr():
                 prejuizo_acumulado = self.calcula_prejuizo_acumulado(data, tipo)
                 self.__seta_prejuizo_acumulado(data, tipo, prejuizo_acumulado)
 
-        pass
 
     def calcula_prejuizo_acumulado(self, data, tipo):
         prejuizo_acumulado = self.calcula_prejuizo_por_tipo(data, tipo)
@@ -68,6 +67,13 @@ class CalculoIr():
             if tipo == TipoTicker.FII:
                 return lucro * 0.2
         return 0.0
+
+    def calcula_dedo_duro_no_mes(self, data):
+        porcentagem_dedo_duro = 0.005 / 100.0
+        return vendas_no_mes(self.df, data.year, data.month) * porcentagem_dedo_duro
+
+    def calcula_vendas_totais_no_mes(self, data):
+        return vendas_no_mes(self.df, data.year, data.month)
 
     def calcula_prejuizo_por_tipo(self, data, tipo):
         return sum([venda['resultado_apurado'] for venda in self.vendas[self.__get_date_key__(data)][tipo]])
