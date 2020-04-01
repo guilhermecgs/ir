@@ -40,7 +40,7 @@ def main(raw_args):
 
 def do_busca_trades_e_faz_merge_operacoes():
     from src.crawler_cei import CrawlerCei
-    crawler_cei = CrawlerCei(headless=False)
+    crawler_cei = CrawlerCei(headless=True)
     df_cei = crawler_cei.busca_trades()
 
     from src.dropbox_files import download_dropbox_file
