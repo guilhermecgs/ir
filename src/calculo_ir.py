@@ -70,7 +70,8 @@ class CalculoIr():
 
     def calcula_dedo_duro_no_mes(self, data):
         porcentagem_dedo_duro = 0.005 / 100.0
-        return vendas_no_mes(self.df, data.year, data.month) * porcentagem_dedo_duro
+        return sum(operacao_de_venda['preco_medio_venda'] * operacao_de_venda['qtd_vendida']
+                   for operacao_de_venda in vendas_no_mes(self.df, data.year, data.month)) * porcentagem_dedo_duro
 
     def calcula_vendas_totais_no_mes(self, data):
         return vendas_no_mes(self.df, data.year, data.month)
