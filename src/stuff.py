@@ -1,5 +1,6 @@
 import datetime
 import pandas as pd
+import numpy as np
 from dateutil.relativedelta import relativedelta
 
 from src.dropbox_files import OPERATIONS_FILEPATH
@@ -32,10 +33,8 @@ def get_operations_dataframe(filepath=None):
     if not filepath:
         filepath = OPERATIONS_FILEPATH
 
-    df = pd.DataFrame(columns=colunas_obrigatorias())
-
     try:
-        df = pd.read_csv(filepath, delim_whitespace=True, #sep='\t',
+        df = pd.read_csv(filepath, delim_whitespace=True,
                          header=None,
                          parse_dates=[3],
                          dayfirst=True)
@@ -111,23 +110,30 @@ def calcula_precos_medio_de_compra(df, data=None):
 
     for ticker in df['ticker'].unique():
         df_ticker = df.loc[df['ticker'] == ticker].copy()
+        df_ticker = df_ticker.reset_index(drop=True)
         df_ticker['cum_qtd'] = df_ticker['qtd_ajustada'].cumsum()
-
-        df_ticker['ciclo'] = df_ticker.cum_qtd.eq(0).shift().cumsum().fillna(0)  # give back the group id for each trading circle.*
-
-        def calc(group):
-            qtd_comprada = float(group.qtd.sum())
-            valor_pago = float(group.valor.sum())
-            if qtd_comprada == 0:
-                return None
-            return valor_pago / qtd_comprada
+        df_ticker['ciclo'] = df_ticker.cum_qtd.eq(0).shift().cumsum().fillna(0)
 
         ultimo_ciclo = df_ticker.ciclo.max()
         df_ticker_ultimo_ciclo = df_ticker.loc[df_ticker.ciclo == ultimo_ciclo]
-        df_ticker_ultimo_ciclo = df_ticker_ultimo_ciclo.loc[df_ticker_ultimo_ciclo.qtd_ajustada > 0]  # kick out the selling action
         data_primeira_compra = df_ticker_ultimo_ciclo['data'].min()
-        preco_medio_de_compra = calc(df_ticker_ultimo_ciclo)
-        precos_medios_de_compra[ticker] = {'valor': preco_medio_de_compra, 'data_primeira_compra': data_primeira_compra}
+
+        df_ticker['cum_qtd_anterior'] = df_ticker['cum_qtd'].shift(1, fill_value=0)
+        df_ticker['preco_medio'] = np.nan
+        for i, row in df_ticker.iterrows():
+            if row['qtd_ajustada'] > 0:
+                preco_medio_atual = df_ticker['preco_medio'].shift(1, fill_value=df_ticker['preco'].iloc[0])[i]
+                cum_qtd_anterior = df_ticker['cum_qtd_anterior'][i]
+                valor_da_compra_atual = row['valor']
+                preco_medio = (valor_da_compra_atual + preco_medio_atual * cum_qtd_anterior) / df_ticker['cum_qtd'][i]
+                df_ticker.iloc[i, df_ticker.columns == 'preco_medio'] = preco_medio
+            else:
+                try:
+                    df_ticker.iloc[i, df_ticker.columns == 'preco_medio'] = df_ticker['preco_medio'][i - 1]
+                except:
+                    pass
+
+        precos_medios_de_compra[ticker] = {'valor': df_ticker['preco_medio'].iloc[-1], 'data_primeira_compra': data_primeira_compra}
 
     return precos_medios_de_compra
 

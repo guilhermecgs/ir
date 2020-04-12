@@ -38,7 +38,9 @@ class TestStuff(unittest.TestCase):
                 {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 13), 'preco': 300},
                 {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 14), 'preco': 400},
                 {'ticker': 'gcgs', 'qtd': -200, 'data': datetime.date(2019, 4, 15), 'preco': 500},
-                {'ticker': 'gcgs2', 'qtd': -200, 'data': datetime.date(2019, 4, 15), 'preco': 500},
+                {'ticker': 'gcgs2', 'qtd': 200, 'data': datetime.date(2019, 4, 15), 'preco': 500},
+                {'ticker': 'gcgs3', 'qtd': -200, 'data': datetime.date(2019, 4, 15), 'preco': 500},
+                {'ticker': 'gcgs', 'qtd': -200, 'data': datetime.date(2019, 4, 15), 'preco': 500},
                 {'ticker': 'gcgs', 'qtd': 2, 'data': datetime.date(2019, 4, 15), 'preco': 5},
                 {'ticker': 'gcgs', 'qtd': -1, 'data': datetime.date(2019, 4, 15), 'preco': 1},
                 {'ticker': 'gcgs', 'qtd': 3, 'data': datetime.date(2019, 4, 15), 'preco': 2},
@@ -170,7 +172,36 @@ class TestStuff(unittest.TestCase):
         assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(166.66, 0.01)
         assert precos_medio_de_compra['gcgs']['data_primeira_compra'] == datetime.date(2019, 4, 13)
 
+    def test_calcula_precos_medios_quando_varios_tickers_juntos(self):
+        data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 20), 'preco': 100},
+                {'ticker': 'gcgs2', 'qtd': 100, 'data': datetime.date(2019, 4, 20), 'preco': 100},
+                {'ticker': 'gcgs2', 'qtd': 100, 'data': datetime.date(2019, 4, 20), 'preco': 100},
+                {'ticker': 'gcgs2', 'qtd': 100, 'data': datetime.date(2019, 4, 20), 'preco': 100},
+                {'ticker': 'gcgs', 'qtd': 200, 'data': datetime.date(2019, 4, 13), 'preco': 200}]
+
+        df = create_testing_dataframe(data)
+
+        precos_medio_de_compra = calcula_precos_medio_de_compra(df)
+
+        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(166.66, 0.01)
+        assert precos_medio_de_compra['gcgs']['data_primeira_compra'] == datetime.date(2019, 4, 13)
+
     def test_calcula_precos_medios_quando_varios_ciclo(self):
+
+        data = [{'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 11), 'preco': 5},
+                {'ticker': 'gcgs', 'qtd': -1, 'data': datetime.date(2019, 4, 12), 'preco': 6},
+                {'ticker': 'gcgs', 'qtd': 2, 'data': datetime.date(2019, 4, 13), 'preco': 3},
+                {'ticker': 'gcgs', 'qtd': -1, 'data': datetime.date(2019, 4, 14), 'preco': 2},
+                {'ticker': 'gcgs', 'qtd': -1, 'data': datetime.date(2019, 4, 15), 'preco': 4},
+                {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 15), 'preco': 2},
+                {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 15), 'preco': 3},
+                {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 15), 'preco': 4},
+                {'ticker': 'gcgs', 'qtd': -2, 'data': datetime.date(2019, 4, 16), 'preco': 5}]
+
+        df = create_testing_dataframe(data)
+        precos_medio_de_compra = calcula_precos_medio_de_compra(df)
+        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(3.0, 0.001)
+
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100},
                 {'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2019, 4, 12), 'preco': 200},
                 {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 13), 'preco': 300},
@@ -182,10 +213,9 @@ class TestStuff(unittest.TestCase):
                 {'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 16), 'preco': 2}]
 
         df = create_testing_dataframe(data)
-
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
 
-        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(3, 0.001)
+        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(2.6, 0.001)
         assert precos_medio_de_compra['gcgs']['data_primeira_compra'] == datetime.date(2019, 4, 15)
 
     def test_tipo_ticker(self):
