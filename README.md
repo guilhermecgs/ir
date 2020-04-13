@@ -1,4 +1,4 @@
-# ir - Projeto de calculo de Imposto de Renda em operacoes na bovespa automaticamente (Work in progress)
+# ir - Projeto de calculo de Imposto de Renda em operacoes na bovespa automaticamente
 
 ## o que ele se propoe a fazer
  - Automaticamente busca todos as suas operacoes na bolsa no site do canal eletronico do investidor (CEI) (https://cei.b3.com.br/)
