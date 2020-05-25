@@ -71,7 +71,11 @@ def calcula_custodia(df, data=None):
     for ticker in df['ticker'].unique():
         try:
             qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
-            preco_atual = busca_preco_atual(ticker)
+            preco_atual = float('nan')
+            try:
+                preco_atual = busca_preco_atual(ticker)
+            except:
+                pass
             valor = preco_atual * qtd_em_custodia
             preco_medio_de_compra = precos_medios_de_compra[ticker]['valor']
             data_primeira_compra = precos_medios_de_compra[ticker]['data_primeira_compra']
