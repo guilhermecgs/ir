@@ -61,7 +61,7 @@ class CalculoIr():
     def calcula_ir_a_pagar(self, lucro, tipo):
         if lucro > 0:
             if tipo == TipoTicker.ACAO:
-                return lucro * 0.2
+                return lucro * 0.15
             if tipo == TipoTicker.ETF:
                 return lucro * 0.15
             if tipo == TipoTicker.FII:

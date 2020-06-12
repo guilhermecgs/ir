@@ -1,14 +1,13 @@
 import argparse
 import os
 import sys
-from datetime import datetime
 
 import pandas as pd
 
 from src.calculo_ir import CalculoIr
 from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
-from src.envia_relatorio_por_email import envia_relatorio_txt_por_email, envia_relatorio_html_por_email
-from src.relatorio.relatorio import relatorio_txt, relatorio_html
+from src.envia_relatorio_por_email import envia_relatorio_html_por_email
+from src.relatorio.relatorio import relatorio_txt, relatorio_html, assunto
 from src.stuff import get_operations_dataframe, \
     merge_operacoes, \
     df_to_csv
@@ -71,10 +70,7 @@ def do_calculo_ir():
 
     print(relatorio_txt(calculo_ir))
 
-    envia_relatorio_html_por_email('Calculo de IR - '
-                                   + calculo_ir.mes_do_relatorio +
-                                   ' - CPF: ' + os.environ['CPF'] +
-                                   ' - ' + datetime.now().strftime("%H:%M:%S"),
+    envia_relatorio_html_por_email(assunto(calculo_ir),
                                    relatorio_html(calculo_ir))
 
 

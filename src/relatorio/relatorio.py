@@ -1,3 +1,4 @@
+import os
 import datetime
 from tabulate import tabulate
 from src.stuff import calcula_custodia
@@ -104,6 +105,18 @@ def relatorio_html(ir):
 
     relatorio += __close_html()
     return ''.join(relatorio)
+
+
+def assunto(ir):
+    assunto = ''
+
+    if ir.calcula_ir_a_pagar_no_mes(ir.datas[-1]) > 0.0:
+        assunto = 'IMPOSTO A PAGAR! - '
+
+    assunto = assunto + 'Calculo de IR - ' + ir.mes_do_relatorio + ' - CPF: ' + os.environ['CPF'] + ' - ' \
+              + datetime.datetime.now().strftime("%H:%M:%S")
+
+    return assunto
 
 
 def __init_html():
