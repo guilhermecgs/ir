@@ -25,8 +25,7 @@ class CrawlerCei():
         try:
             self.driver.get(self.BASE_URL)
             self.__login()
-            self.__abre_consulta_trades()
-            df = self.__converte_trades_para_dataframe()
+            df = self.__abre_consulta_trades()
             return self.__converte_dataframe_para_formato_padrao(df)
         except Exception as ex:
             raise ex
@@ -53,35 +52,59 @@ class CrawlerCei():
         if self.debug: self.driver.save_screenshot(self.directory + r'03.png')
 
     def __abre_consulta_trades(self):
-        self.driver.get(self.BASE_URL + 'negociacao-de-ativos.aspx')
+        class AnyEc:
+            """ Use with WebDriverWait to combine expected_conditions
+                in an OR.
+            """
+            def __init__(self, *args):
+                self.ecs = args
+            def __call__(self, driver):
+                for fn in self.ecs:
+                    try:
+                        if fn(driver): return True
+                    except:
+                        pass
 
+        def consultar_click(driver):
+            btn_consultar = driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnConsultar')
+            btn_consultar.click()
+        
+        def not_disabled(driver):
+            try:
+                driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes')
+            except NoSuchElementException:
+                return False
+            return driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes').get_attribute(
+                "disabled") is None
+        df = []
+
+        self.driver.get(self.BASE_URL + 'negociacao-de-ativos.aspx')
         if self.debug: self.driver.save_screenshot(self.directory + r'04.png')
 
         from selenium.webdriver.support.select import Select
         ddlAgentes = Select(self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes'))
+        for i in range(1,len(ddlAgentes.options)):
+            ddlAgentes = Select(self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes'))
+            ddlAgentes.select_by_index(i)
+            consultar_click(self.driver)
 
-        if ddlAgentes.first_selected_option.text.upper() == 'SELECIONE':
-            ddlAgentes.select_by_value('3')
-        else:
-            btn_consultar = WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_btnConsultar')))
-            btn_consultar.click()
+            if self.debug: self.driver.save_screenshot(self.directory + r'05.png')
+            WebDriverWait(self.driver, 30).until(AnyEc(
+                EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_rptAgenteBolsa_ctl00_rptContaBolsa_ctl00_pnAtivosNegociados')),
+                EC.visibility_of_element_located((By.ID, 'CEIMessageDIV'))))
+            if self.debug: self.driver.save_screenshot(self.directory + r'06.png')
 
-            def not_disabled(driver):
-                try:
-                    driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes')
-                except NoSuchElementException:
-                    return False
-                return driver.find_element_by_id('ctl00_ContentPlaceHolder1_ddlAgentes').get_attribute(
-                    "disabled") is None
+            # checa se existem trades para essa corretora
+            aviso = self.driver.find_element_by_id("CEIMessageDIV")
+            if aviso.text == 'Não foram encontrados resultados para esta pesquisa.\n×' :
+                consultar_click(self.driver)
+                WebDriverWait(self.driver, 60).until(not_disabled)
+                continue
 
+            df.append(self.__converte_trades_para_dataframe())
+            consultar_click(self.driver)
             WebDriverWait(self.driver, 60).until(not_disabled)
-
-        btn_consultar = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnConsultar')
-        btn_consultar.click()
-
-        if self.debug: self.driver.save_screenshot(self.directory + r'05.png')
-        WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_rptAgenteBolsa_ctl00_rptContaBolsa_ctl00_pnAtivosNegociados')))
-        if self.debug: self.driver.save_screenshot(self.directory + r'06.png')
+        return pd.concat(df)
 
     def __converte_trades_para_dataframe(self):
 
