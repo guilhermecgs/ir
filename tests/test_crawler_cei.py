@@ -1,6 +1,6 @@
 import unittest
 
-from src.selenium import configure_driver
+from src.selenium_config import configure_driver
 from src.crawler_cei import CrawlerCei
 import pandas as pd
 
