@@ -1,7 +1,7 @@
 from enum import Enum
 
 from src.crawler_yahoo_bs4 import busca_preco_atual
-from  src.crawler_brinvesting_etfs import e_tipo_etf
+from src.crawler_b3_etfs import e_tipo_etf
 from src.crawler_funds_explorer_bs4 import e_tipo_fii
 
 __cache__ = {}
