@@ -10,19 +10,10 @@ class TestCrawlerYahoo(unittest.TestCase):
             busca_preco_atual('invalid')
 
         sdil11 = busca_preco_atual('SDIL11')
-        print(sdil11)
-
         maxr11 = busca_preco_atual('MAXR11')
-        print(maxr11)
-
         itsa4 = busca_preco_atual('ITSA4')
-        print(itsa4)
-
         vrta11 = busca_preco_atual('VRTA11')
-        print(vrta11)
-
         bova11 = busca_preco_atual('BOVA11')
-        print(bova11)
 
         assert type(itsa4) is float
         assert type(vrta11) is float

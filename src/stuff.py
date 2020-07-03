@@ -1,10 +1,11 @@
 import datetime
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 from dateutil.relativedelta import relativedelta
 
 from src.dropbox_files import OPERATIONS_FILEPATH
-from src.crawler_yahoo_bs4 import busca_preco_atual
+from src.preco_atual import busca_preco_atual
 from src.tipo_ticker import tipo_ticker
 
 
@@ -68,34 +69,35 @@ def calcula_custodia(df, data=None):
 
     precos_medios_de_compra = calcula_precos_medio_de_compra(df, data)
 
-    for ticker in df['ticker'].unique():
-        try:
-            qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
-            preco_atual = float('nan')
+    for ticker in tqdm(df['ticker'].unique()):
+        qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
+        if qtd_em_custodia > 0:
             try:
-                preco_atual = busca_preco_atual(ticker)
-            except:
-                pass
-            valor = preco_atual * qtd_em_custodia
-            preco_medio_de_compra = precos_medios_de_compra[ticker]['valor']
-            data_primeira_compra = precos_medios_de_compra[ticker]['data_primeira_compra']
+                preco_atual = float('nan')
+                try:
+                    preco_atual = busca_preco_atual(ticker)
+                except:
+                    pass
+                valor = preco_atual * qtd_em_custodia
+                preco_medio_de_compra = precos_medios_de_compra[ticker]['valor']
+                data_primeira_compra = precos_medios_de_compra[ticker]['data_primeira_compra']
 
-            if preco_medio_de_compra <= 0.0001:
-                valorizacao = 'NA'  # ex: direitos de compra com custo zero
-            else:
-                valorizacao = preco_atual / preco_medio_de_compra * 100.0 - 100.0
-                valorizacao = "{0:.2f}".format(valorizacao)
+                if preco_medio_de_compra <= 0.0001:
+                    valorizacao = 'NA'  # ex: direitos de compra com custo zero
+                else:
+                    valorizacao = preco_atual / preco_medio_de_compra * 100.0 - 100.0
+                    valorizacao = "{0:.2f}".format(valorizacao)
 
-            custodia.append({'ticker': ticker,
-                             'tipo': tipo_ticker(ticker).name,
-                             'qtd': int(qtd_em_custodia),
-                             'preco_medio_compra': preco_medio_de_compra,
-                             'valor': valor,
-                             'preco_atual': preco_atual,
-                             'valorizacao': valorizacao,
-                             'data_primeira_compra': data_primeira_compra})
-        except Exception as ex:
-            raise Exception('Erro ao calcular custodia do ticker {}'.format(ticker), ex)
+                custodia.append({'ticker': ticker,
+                                 'tipo': tipo_ticker(ticker).name,
+                                 'qtd': int(qtd_em_custodia),
+                                 'preco_medio_compra': preco_medio_de_compra,
+                                 'valor': valor,
+                                 'preco_atual': preco_atual,
+                                 'valorizacao': valorizacao,
+                                 'data_primeira_compra': data_primeira_compra})
+            except Exception as ex:
+                raise Exception('Erro ao calcular custodia do ticker {}'.format(ticker), ex)
 
     df_custodia = pd.DataFrame(custodia)
     df_custodia = df_custodia.sort_values(by=['valor'], ascending=False)

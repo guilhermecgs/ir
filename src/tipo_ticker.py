@@ -6,10 +6,13 @@ from src.crawler_funds_explorer_bs4 import e_tipo_fii
 
 __cache__ = {}
 
+
 class TipoTicker(Enum):
     ETF = 1
     FII = 2
     ACAO = 3
+    OPCAO = 4
+    FUTURO = 5
 
 
 def tipo_ticker(ticker):
@@ -30,5 +33,17 @@ def tipo_ticker(ticker):
             return TipoTicker.ACAO
         except:
             pass
+
+        from src.crawler_advfn import CrawlerAdvfn
+        crawlerAdvfn = CrawlerAdvfn()
+
+        if crawlerAdvfn.busca_tipo_ticker(ticker) == TipoTicker.ACAO:
+            return TipoTicker.ACAO
+
+        if crawlerAdvfn.busca_tipo_ticker(ticker) == TipoTicker.OPCAO:
+            return TipoTicker.OPCAO
+
+        if crawlerAdvfn.busca_tipo_ticker(ticker) == TipoTicker.FUTURO:
+            return TipoTicker.FUTURO
 
         return None

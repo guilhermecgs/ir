@@ -220,13 +220,11 @@ class TestStuff(unittest.TestCase):
 
     def test_tipo_ticker(self):
         assert tipo_ticker('GRLV11') is TipoTicker.FII
-        assert tipo_ticker('SDIL11') is TipoTicker.FII
-        assert tipo_ticker('MAXR11') is TipoTicker.FII
-        assert tipo_ticker('maxr11') is TipoTicker.FII
         assert tipo_ticker('VRTA11') is TipoTicker.FII
         assert tipo_ticker('ITSA4') is TipoTicker.ACAO
-        assert tipo_ticker('itsa4') is TipoTicker.ACAO
         assert tipo_ticker('BOVA11') is TipoTicker.ETF
-        assert tipo_ticker('bova11') is TipoTicker.ETF
-        assert tipo_ticker('MAXR11invalid') is None
+        assert tipo_ticker('SPXI11') is TipoTicker.ETF
+        assert tipo_ticker('ISPU20') is TipoTicker.FUTURO
+        assert tipo_ticker('ABEVH222') is TipoTicker.OPCAO
+        assert tipo_ticker('ABEVT40') is TipoTicker.OPCAO
         assert tipo_ticker('invalid') is None
