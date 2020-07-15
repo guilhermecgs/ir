@@ -27,7 +27,7 @@
 ## exemplo do relatorio gerado no seu email
 https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
-## Exemplo de varaiveis de ambiente:
+## Exemplo de variáveis de ambiente:
 
  - DROPBOX_FILE_LOCATION:/Finance/GCGS/export_operacoes_gcgs.txt
  - DROPBOX_API_KEY:jOznaw_xxxxxxxxxxxxxxxxxxxxtkw9ox_a9I_8-_aU2xw1xxxxxxxxxxKWek69Z
@@ -41,6 +41,7 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
  - Nao funciona com daytrade
+ - Desconsidera custos e emolumentos para simplificação do calculo
 
 
 # To do list

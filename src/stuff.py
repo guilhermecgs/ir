@@ -114,6 +114,10 @@ def calcula_precos_medio_de_compra(df, data=None):
 
     df = df.sort_values(by=['data'])
 
+    df['is_compra'] = df['qtd_ajustada'] >= 0
+    df = df.sort_values(by=['data', 'is_compra'], ascending=[True, False])
+    df = df.drop(['is_compra'], axis=1)
+
     for ticker in df['ticker'].unique():
         df_ticker = df.loc[df['ticker'] == ticker].copy()
         df_ticker = df_ticker.reset_index(drop=True)
