@@ -45,8 +45,6 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
 
 # To do list
-    - geracao de darf automaticamente - http://www.receita.fazenda.gov.br/Aplicacoes/ATSPO/SicalcWeb/default.asp?TipTributo=1&FormaPagto=1
-    - buscar a lista de ETFs automaticamente
     - Incluir gratuidade de 20k por mes para acoes
     - Incluir desconto de taxas, emolumentos e dedo duro - http://www.b3.com.br/pt_br/produtos-e-servicos/tarifas/listados-a-vista-e-derivativos/renda-variavel/tarifas-de-acoes-e-fundos-de-investimento/a-vista/
     - Passar vendas mes a mes para uma tabela para ficar mais facil visualizar
