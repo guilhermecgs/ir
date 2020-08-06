@@ -11,8 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-from src.selenium_config import configure_driver
+from src.driver_selenium import ChromeDriver
 
 
 class AnyEc:
@@ -35,7 +34,7 @@ class CrawlerCei():
 
     def __init__(self, headless=False, directory=None, debug=False):
         self.BASE_URL = 'https://cei.b3.com.br/'
-        self.driver = configure_driver(headless)
+        self.driver = ChromeDriver()
         self.directory = directory
         self.debug = debug
         self.__colunas_df_cei = ['Data do Negócio', 'Compra/Venda', 'Mercado', 'Prazo/Vencimento', 'Código Negociação',

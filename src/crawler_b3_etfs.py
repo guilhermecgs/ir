@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from src.selenium_config import configure_driver
+from src.driver_selenium import ChromeDriver
 
 this = sys.modules[__name__]
 this.etfs = None
@@ -24,7 +23,7 @@ def __converte_etfs_para_dataframe(driver):
 
 def __busca_etfs_na_b3():
     url = 'http://bvmf.bmfbovespa.com.br/etf/fundo-de-indice.aspx?idioma=pt-br&aba=tabETFsRendaVariavel'
-    driver = configure_driver(True)
+    driver = ChromeDriver()
     driver.get(url)
 
     etfs = __converte_etfs_para_dataframe(driver)

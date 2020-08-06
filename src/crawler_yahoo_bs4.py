@@ -23,15 +23,26 @@ def busca_preco_atual(ticker):
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         webpage = urlopen(req).read()
 
-        time.sleep(1)
+        time.sleep(0.3)
 
         soup = BeautifulSoup(webpage, 'html.parser')
         # html = soup.prettify('utf-8')
 
-        for span in soup.findAll('span', attrs={'class': 'Trsdu(0.3s) Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(b)'}):
+        def extract_price_from_span(span):
             preco_atual = float(span.text.replace(',', '').strip())
+
+            return preco_atual
+
+        for span in soup.findAll('span', attrs={'class': 'Trsdu(0.3s) Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(b)'}):
+            preco_atual = extract_price_from_span(span)
             __cache__[ticker] = preco_atual
             return preco_atual
+
+        for span in soup.findAll("span", {"data-reactid": "32"}):
+            preco_atual = extract_price_from_span(span)
+            __cache__[ticker] = preco_atual
+            return preco_atual
+
         raise Exception('Preco ticker nao encontrado ' + ticker)
     except Exception as ex:
         raise Exception('Preco ticker nao encontrado ' + ticker, ex)

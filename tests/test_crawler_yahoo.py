@@ -15,6 +15,8 @@ class TestCrawlerYahoo(unittest.TestCase):
         vrta11 = busca_preco_atual('VRTA11')
         bova11 = busca_preco_atual('BOVA11')
 
+        assert type(sdil11) is float
+        assert type(maxr11) is float
         assert type(itsa4) is float
         assert type(vrta11) is float
         assert type(bova11) is float

@@ -10,7 +10,7 @@ class TestCrawlerAdvfn(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.advfn = CrawlerAdvfn(headless=False)
+        cls.advfn = CrawlerAdvfn()
 
     def __reset_cache(self):
         crawler_advfn.cache = {}
@@ -72,7 +72,3 @@ class TestCrawlerAdvfn(TestCase):
         assert self.advfn.busca_tipo_ticker('CMIGG14') == TipoTicker.OPCAO
         assert self.advfn.busca_tipo_ticker('COGNG7') == TipoTicker.OPCAO
         assert self.advfn.busca_tipo_ticker('ITSA4') == self.advfn.busca_tipo_ticker('itsa4')
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.advfn.close_driver()

@@ -10,8 +10,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from src.selenium_config import configure_driver
-
 
 this = sys.modules[__name__]
 this.cache = {}
@@ -19,14 +17,9 @@ this.cache = {}
 
 class CrawlerAdvfn():
 
-    driver = None
-
-    def __init__(self, headless=False):
-        if not CrawlerAdvfn.driver:
-            CrawlerAdvfn.driver = configure_driver(headless)
-
-    def close_driver(self):
-        CrawlerAdvfn.driver.quit()
+    def __init__(self):
+        from src.driver_selenium import ChromeDriver
+        self.driver = ChromeDriver()
 
     def __get_url(self, ticker):
         return 'https://br.advfn.com/bolsa-de-valores/bmf/{ticker}/cotacao'.format(ticker=ticker)
@@ -60,7 +53,7 @@ class CrawlerAdvfn():
                 return None
 
     def __recupera_informacoes(self, ticker):
-        CrawlerAdvfn.driver.get(self.__get_url(ticker))
+        self.driver.get(self.__get_url(ticker))
 
         preco_atual = self.__recupera_preco_atual()
 
@@ -69,14 +62,14 @@ class CrawlerAdvfn():
         return {'tipo_ticker': tipo_ticker, 'preco_atual': preco_atual}
 
     def __recupera_preco_atual(self):
-        WebDriverWait(CrawlerAdvfn.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece10')))
-        preco_atual = float(CrawlerAdvfn.driver.find_element_by_id('quoteElementPiece10').text
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece10')))
+        preco_atual = float(self.driver.find_element_by_id('quoteElementPiece10').text
                             .replace('.', '').replace(',', '.'))
         return preco_atual
 
     def __recupera_tipo_ticker(self):
-        WebDriverWait(CrawlerAdvfn.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece5')))
-        tipo = CrawlerAdvfn.driver.find_element_by_id('quoteElementPiece5').text.lower()
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece5')))
+        tipo = self.driver.find_element_by_id('quoteElementPiece5').text.lower()
 
         if tipo == 'futuro':
             return TipoTicker.FUTURO
@@ -97,13 +90,13 @@ class CrawlerAdvfn():
         return None
 
     def __fundo_eh_etf(self):
-        if 'Exchange Traded Fund' in CrawlerAdvfn.driver.page_source:
+        if 'Exchange Traded Fund' in self.driver.page_source:
             return True
         return False
 
     def __fundo_eh_fii(self):
         try:
-            nome = CrawlerAdvfn.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
+            nome = self.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
             dividendos = self.__converte_tabela_dividendos_para_df();
 
             if 'FII' in nome.upper() and len(dividendos):
@@ -115,7 +108,7 @@ class CrawlerAdvfn():
 
     def __converte_tabela_dividendos_para_df(self):
         try:
-            soup = BeautifulSoup(CrawlerAdvfn.driver.page_source, 'html.parser')
+            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
             table = soup.find('table', {'id': 'id_stocks_dividends'})
 

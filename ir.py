@@ -36,12 +36,6 @@ def main(raw_args):
     do_busca_trades_e_faz_merge_operacoes()
     do_calculo_ir()
 
-    try:
-        from src.crawler_advfn import CrawlerAdvfn
-        CrawlerAdvfn().close_driver()
-    except Exception as ex:
-        pass
-
 
 def do_busca_trades_e_faz_merge_operacoes():
     from src.crawler_cei import CrawlerCei
