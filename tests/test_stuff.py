@@ -138,6 +138,7 @@ class TestStuff(unittest.TestCase):
         download_dropbox_file()
 
         df = get_operations_dataframe()
+        df = df.tail(80)
 
         data = datetime.datetime.now().date()
         custodia = calcula_custodia(df, data)
