@@ -34,9 +34,9 @@ simplejson==3.16.0
 six==1.12.0
 soupsieve==1.9.5
 tabulate==0.8.6
-twilio==6.42.0
 urllib3==1.25.6
 wcwidth==0.1.7
 webencodings==0.5.1
 zipp==0.6.0
 tqdm==4.47.0
+yahooquery==2.2.6
