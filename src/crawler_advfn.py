@@ -1,4 +1,5 @@
 import sys
+import logging
 from bs4 import BeautifulSoup
 
 import pandas as pd
@@ -13,6 +14,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 this = sys.modules[__name__]
 this.cache = {}
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
 
 
 class CrawlerAdvfn():
@@ -36,6 +41,7 @@ class CrawlerAdvfn():
                 return this.cache[ticker]['preco_atual']
 
             except Exception as ex:
+                logger.exception('ticker: {ticker}'.format(ticker=ticker), ex)
                 return None
 
     def busca_tipo_ticker(self, ticker):
@@ -50,6 +56,7 @@ class CrawlerAdvfn():
                 return this.cache[ticker]['tipo_ticker']
 
             except Exception as ex:
+                logger.exception('ticker: {ticker}'.format(ticker=ticker), ex)
                 return None
 
     def __recupera_informacoes(self, ticker):

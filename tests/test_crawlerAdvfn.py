@@ -29,7 +29,7 @@ class TestCrawlerAdvfn(TestCase):
             assert method.call_count == 2
 
     def test_busca_preco_atual(self):
-        assert self.advfn.busca_preco_atual('INVALID') is None
+        assert self.advfn.busca_preco_atual('INVALID_ticker') is None
         assert type(self.advfn.busca_preco_atual('SDIL11')) is float
         assert type(self.advfn.busca_preco_atual('MAXR11')) is float
         assert type(self.advfn.busca_preco_atual('ITSA4')) is float
