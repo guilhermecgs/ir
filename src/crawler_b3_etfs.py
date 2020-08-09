@@ -53,7 +53,9 @@ def __etfs():
         etfs_hardcoded.add('MATB')
         etfs_hardcoded.add('ISUS')
         etfs_hardcoded.add('PIBB')
+        etfs_hardcoded.add('SMAC')
         etfs_hardcoded.add('SPXI')
+
         this.etfs = this.etfs.union(etfs_hardcoded)
 
     return this.etfs

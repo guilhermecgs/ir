@@ -1,6 +1,9 @@
 import unittest
 from src.crawler_yahoo_bs4 import busca_preco_atual
 
+import warnings
+warnings.filterwarnings(action="ignore", message="unclosed",
+                         category=ResourceWarning)
 
 class TestCrawlerYahoo(unittest.TestCase):
 
