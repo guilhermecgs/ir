@@ -13,7 +13,6 @@ funcsigs==1.0.2
 html5lib==1.1
 idna==2.8
 importlib-metadata==0.23
-lxml==4.4.1
 more-itertools==5.0.0
 numpy==1.16.5
 packaging==19.2

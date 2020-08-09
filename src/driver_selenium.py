@@ -7,14 +7,14 @@ class ChromeDriver(object):
     instance = None
 
     def __new__(cls):
-
-        if cls.instance is None:
-            i = object.__new__(cls)
-            cls.instance = i
-            cls.driver = ChromeDriver.__configure_driver(headless=True)
-            i = cls.instance
-
-        return cls.driver
+        return ChromeDriver.__configure_driver(headless=True)
+        # if cls.instance is None:
+        #     i = object.__new__(cls)
+        #     cls.instance = i
+        #     cls.driver = ChromeDriver.__configure_driver(headless=False)
+        #     i = cls.instance
+        #
+        # return cls.driver
 
     @staticmethod
     def __configure_driver(headless):

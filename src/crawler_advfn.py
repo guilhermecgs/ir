@@ -41,7 +41,7 @@ class CrawlerAdvfn():
                 return this.cache[ticker]['preco_atual']
 
             except Exception as ex:
-                logger.exception('ticker: {ticker}'.format(ticker=ticker), ex)
+                logger.exception('busca_preco_atual ticker: {ticker}'.format(ticker=ticker))
                 return None
 
     def busca_tipo_ticker(self, ticker):
@@ -56,7 +56,7 @@ class CrawlerAdvfn():
                 return this.cache[ticker]['tipo_ticker']
 
             except Exception as ex:
-                logger.exception('ticker: {ticker}'.format(ticker=ticker), ex)
+                logger.exception('busca_tipo_ticker ticker: {ticker}'.format(ticker=ticker))
                 return None
 
     def __recupera_informacoes(self, ticker):
