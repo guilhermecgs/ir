@@ -138,6 +138,7 @@ class TestStuff(unittest.TestCase):
         download_dropbox_file()
 
         df = get_operations_dataframe()
+        df = df.tail(80)
 
         data = datetime.datetime.now().date()
         custodia = calcula_custodia(df, data)
@@ -247,4 +248,5 @@ class TestStuff(unittest.TestCase):
         assert tipo_ticker('ISPU20') is TipoTicker.FUTURO
         assert tipo_ticker('ABEVH222') is TipoTicker.OPCAO
         assert tipo_ticker('ABEVT40') is TipoTicker.OPCAO
+        assert tipo_ticker('IRDM11') is TipoTicker.FII
         assert tipo_ticker('invalid') is None

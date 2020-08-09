@@ -1,10 +1,13 @@
 import unittest
-from src.crawler_yahoo_bs4 import busca_preco_atual
+from src.crawler_yahoo import busca_preco_atual
 
+import warnings
+warnings.filterwarnings(action="ignore", message="unclosed",
+                         category=ResourceWarning)
 
 class TestCrawlerYahoo(unittest.TestCase):
 
-    def test_get_ticker_price_bs4(self):
+    def test_get_ticker_price(self):
 
         with self.assertRaises(Exception):
             busca_preco_atual('invalid')
@@ -15,6 +18,8 @@ class TestCrawlerYahoo(unittest.TestCase):
         vrta11 = busca_preco_atual('VRTA11')
         bova11 = busca_preco_atual('BOVA11')
 
+        assert type(sdil11) is float
+        assert type(maxr11) is float
         assert type(itsa4) is float
         assert type(vrta11) is float
         assert type(bova11) is float

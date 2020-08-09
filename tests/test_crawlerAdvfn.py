@@ -10,7 +10,7 @@ class TestCrawlerAdvfn(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.advfn = CrawlerAdvfn(headless=False)
+        cls.advfn = CrawlerAdvfn()
 
     def __reset_cache(self):
         crawler_advfn.cache = {}
@@ -29,18 +29,11 @@ class TestCrawlerAdvfn(TestCase):
             assert method.call_count == 2
 
     def test_busca_preco_atual(self):
-        assert self.advfn.busca_preco_atual('INVALID') is None
+        assert self.advfn.busca_preco_atual('INVALID_ticker') is None
         assert type(self.advfn.busca_preco_atual('SDIL11')) is float
-        assert type(self.advfn.busca_preco_atual('MAXR11')) is float
         assert type(self.advfn.busca_preco_atual('ITSA4')) is float
-        assert type(self.advfn.busca_preco_atual('VRTA11')) is float
         assert type(self.advfn.busca_preco_atual('BOVA11')) is float
-        assert type(self.advfn.busca_preco_atual('ABEVH222')) is float
-        assert type(self.advfn.busca_preco_atual('ABEVT40')) is float
         assert type(self.advfn.busca_preco_atual('ABEVT45')) is float
-        assert type(self.advfn.busca_preco_atual('AZULG525')) is float
-        assert type(self.advfn.busca_preco_atual('PETRG229')) is float
-        assert type(self.advfn.busca_preco_atual('IRBRH115')) is float
         assert type(self.advfn.busca_preco_atual('ABEVS41')) is float
         assert type(self.advfn.busca_preco_atual('MRFGH18')) is float
         assert type(self.advfn.busca_preco_atual('CMIGG14')) is float
@@ -52,27 +45,9 @@ class TestCrawlerAdvfn(TestCase):
     def test_busca_tipo_ticker(self):
         assert self.advfn.busca_tipo_ticker('INVALID') is None
         assert self.advfn.busca_tipo_ticker('SDIL11') == TipoTicker.FII
-        assert self.advfn.busca_tipo_ticker('MAXR11') == TipoTicker.FII
-        assert self.advfn.busca_tipo_ticker('VRTA11') == TipoTicker.FII
-        assert self.advfn.busca_tipo_ticker('VILG11') == TipoTicker.FII
         assert self.advfn.busca_tipo_ticker('BOVA11') == TipoTicker.ETF
-        assert self.advfn.busca_tipo_ticker('DIVO11') == TipoTicker.ETF
-        assert self.advfn.busca_tipo_ticker('SPXI11') == TipoTicker.ETF
         assert self.advfn.busca_tipo_ticker('ISPU20') == TipoTicker.FUTURO
         assert self.advfn.busca_tipo_ticker('WSPU20') == TipoTicker.FUTURO
         assert self.advfn.busca_tipo_ticker('ITSA4') == TipoTicker.ACAO
-        assert self.advfn.busca_tipo_ticker('ABEVH222') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('ABEVT40') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('ABEVT45') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('AZULG525') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('PETRG229') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('IRBRH115') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('ABEVS41') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('MRFGH18') == TipoTicker.OPCAO
-        assert self.advfn.busca_tipo_ticker('CMIGG14') == TipoTicker.OPCAO
         assert self.advfn.busca_tipo_ticker('COGNG7') == TipoTicker.OPCAO
         assert self.advfn.busca_tipo_ticker('ITSA4') == self.advfn.busca_tipo_ticker('itsa4')
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.advfn.close_driver()

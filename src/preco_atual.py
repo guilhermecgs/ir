@@ -1,4 +1,4 @@
-from src.crawler_yahoo_bs4 import busca_preco_atual as preco_atual_yahoo
+from src.crawler_yahoo import busca_preco_atual as preco_atual_yahoo
 
 __cache__ = {}
 

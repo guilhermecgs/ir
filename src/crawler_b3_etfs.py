@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from src.selenium_config import configure_driver
+from src.driver_selenium import ChromeDriver
 
 this = sys.modules[__name__]
 this.etfs = None
@@ -23,19 +22,43 @@ def __converte_etfs_para_dataframe(driver):
 
 
 def __busca_etfs_na_b3():
-    url = 'http://bvmf.bmfbovespa.com.br/etf/fundo-de-indice.aspx?idioma=pt-br&aba=tabETFsRendaVariavel'
-    driver = configure_driver(True)
-    driver.get(url)
+    try:
+        url = 'http://bvmf.bmfbovespa.com.br/etf/fundo-de-indice.aspx?idioma=pt-br&aba=tabETFsRendaVariavel'
+        driver = ChromeDriver()
+        driver.get(url)
 
-    etfs = __converte_etfs_para_dataframe(driver)
-    return etfs['Código'].tolist()
+        etfs = __converte_etfs_para_dataframe(driver)
+        return set(etfs['Código'])
+    except:
+        return set()
 
 
 def __etfs():
     if this.etfs is None:
         this.etfs = __busca_etfs_na_b3()
-    return this.etfs
 
+        etfs_hardcoded = set()  # b3 site não tem uma disponibilidade boa
+        etfs_hardcoded.add('BBSD')
+        etfs_hardcoded.add('XBOV')
+        etfs_hardcoded.add('BOVB')
+        etfs_hardcoded.add('IVVB')
+        etfs_hardcoded.add('BOVA')
+        etfs_hardcoded.add('BRAX')
+        etfs_hardcoded.add('ECOO')
+        etfs_hardcoded.add('SMAL')
+        etfs_hardcoded.add('BOVV')
+        etfs_hardcoded.add('DIVO')
+        etfs_hardcoded.add('FIND')
+        etfs_hardcoded.add('GOVE')
+        etfs_hardcoded.add('MATB')
+        etfs_hardcoded.add('ISUS')
+        etfs_hardcoded.add('PIBB')
+        etfs_hardcoded.add('SMAC')
+        etfs_hardcoded.add('SPXI')
+
+        this.etfs = this.etfs.union(etfs_hardcoded)
+
+    return this.etfs
 
 def e_tipo_etf(ticker: str):
     return ticker.replace('11', '').upper() in __etfs()

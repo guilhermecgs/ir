@@ -12,7 +12,7 @@ class TestCrawlerEtfsB3(unittest.TestCase):
     @patch('src.crawler_b3_etfs.__busca_etfs_na_b3')
     def test_deve_buscar_etfs_apenas_uma_vez_na_b3(self, busca_etfs_na_b3):
         self.__reset_etfs()
-        busca_etfs_na_b3.return_value = ['BOVA', 'DIVO']
+        busca_etfs_na_b3.return_value = {'BOVA', 'DIVO'}
         assert e_tipo_etf('BOVA11')
         assert e_tipo_etf('BOVA11')
         assert e_tipo_etf('DIVO11')
