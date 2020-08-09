@@ -1,8 +1,9 @@
 from enum import Enum
 
-from src.crawler_yahoo_bs4 import busca_preco_atual
+from src.crawler_yahoo import busca_preco_atual
 from src.crawler_b3_etfs import e_tipo_etf
 from src.crawler_funds_explorer_bs4 import e_tipo_fii
+from src.crawler_opcoes_net import eh_tipo_opcao
 
 __cache__ = {}
 
@@ -23,6 +24,10 @@ def tipo_ticker(ticker):
             __cache__[ticker] = TipoTicker.FII
             return TipoTicker.FII
 
+        if eh_tipo_opcao(ticker):
+            __cache__[ticker] = TipoTicker.OPCAO
+            return TipoTicker.OPCAO
+
         if e_tipo_etf(ticker):
             __cache__[ticker] = TipoTicker.ETF
             return TipoTicker.ETF
@@ -35,15 +40,15 @@ def tipo_ticker(ticker):
             pass
 
         from src.crawler_advfn import CrawlerAdvfn
-        crawlerAdvfn = CrawlerAdvfn()
+        crawler_advfn = CrawlerAdvfn()
 
-        if crawlerAdvfn.busca_tipo_ticker(ticker) == TipoTicker.ACAO:
+        if crawler_advfn.busca_tipo_ticker(ticker) == TipoTicker.ACAO:
             return TipoTicker.ACAO
 
-        if crawlerAdvfn.busca_tipo_ticker(ticker) == TipoTicker.OPCAO:
+        if crawler_advfn.busca_tipo_ticker(ticker) == TipoTicker.OPCAO:
             return TipoTicker.OPCAO
 
-        if crawlerAdvfn.busca_tipo_ticker(ticker) == TipoTicker.FUTURO:
+        if crawler_advfn.busca_tipo_ticker(ticker) == TipoTicker.FUTURO:
             return TipoTicker.FUTURO
 
         return None

@@ -1,5 +1,5 @@
 import unittest
-from src.crawler_yahoo_bs4 import busca_preco_atual
+from src.crawler_yahoo import busca_preco_atual
 
 import warnings
 warnings.filterwarnings(action="ignore", message="unclosed",
@@ -7,7 +7,7 @@ warnings.filterwarnings(action="ignore", message="unclosed",
 
 class TestCrawlerYahoo(unittest.TestCase):
 
-    def test_get_ticker_price_bs4(self):
+    def test_get_ticker_price(self):
 
         with self.assertRaises(Exception):
             busca_preco_atual('invalid')
