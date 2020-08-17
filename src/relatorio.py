@@ -3,6 +3,8 @@ import datetime
 from tabulate import tabulate
 from src.stuff import calcula_custodia
 from src.tipo_ticker import TipoTicker
+from pretty_html_table import build_table
+import pandas as pd
 
 
 def __tab(tamanho):
@@ -35,31 +37,30 @@ def relatorio_txt(ir):
         if ir.possui_vendas_no_mes(data):
             relatorio.append('')
             relatorio.append(__tab(1) + 'MES : ' + str(data.month) + '/' + str(data.year))
-            relatorio.append(__tab(2) + 'Vendas:')
+            relatorio.append(__tab(1) + 'Vendas:')
 
             vendas_no_mes_por_tipo = ir.get_vendas_no_mes_por_tipo(data)
             for tipo in TipoTicker:
                 if len(vendas_no_mes_por_tipo[tipo]):
-                    relatorio.append(__tab(3) + tipo.name + ':')
+                    relatorio.append(__tab(2) + tipo.name + ':')
+                    df_mes_por_tipo = pd.DataFrame(columns=['ticker', 'Qtd Vendida [#]', 'Preco Médio de Compra [R$]', 'Preco Médio de Venda [R$]', 'Resultado Apurado [R$]'])
+
                     for venda in vendas_no_mes_por_tipo[tipo]:
-                        relatorio.append(__tab(4) + __format_venda(venda))
+                        df_mes_por_tipo.loc[len(df_mes_por_tipo)] = [venda['ticker'],
+                                                                     str(int(venda['qtd_vendida'])),
+                                                                     venda['preco_medio_compra'],
+                                                                     venda['preco_medio_venda'],
+                                                                     venda['resultado_apurado']]
 
-                    relatorio.append(__tab(4) + 'Lucro/Prejuizo no mês: ' + __format(ir.calcula_prejuizo_por_tipo(data, tipo)))
-                    relatorio.append(__tab(4) + 'Lucro/Prejuizo acumulado: ' + __format(ir.calcula_prejuizo_acumulado(data, tipo)))
-                    relatorio.append(__tab(4) + 'IR no mês para ' + tipo.name + ': ' + __format(ir.calcula_ir_a_pagar(ir.calcula_prejuizo_acumulado(data, tipo), tipo)))
+                    relatorio.append(__tab(3) + tabulate(df_mes_por_tipo, headers=df_mes_por_tipo.columns, showindex=False, tablefmt='psql').replace('\n', '\n' + __tab(3)))
+                    relatorio.append(__tab(3) + 'Lucro/Prejuizo no mês: ' + __format(ir.calcula_prejuizo_por_tipo(data, tipo)))
+                    relatorio.append(__tab(3) + 'Lucro/Prejuizo acumulado: ' + __format(ir.calcula_prejuizo_acumulado(data, tipo)))
+                    relatorio.append(__tab(3) + 'IR no mês para ' + tipo.name + ': ' + __format(ir.calcula_ir_a_pagar(ir.calcula_prejuizo_acumulado(data, tipo), tipo)))
 
-            relatorio.append(__tab(3) + 'Dedo-Duro TOTAL no mês: ' + __format(ir.calcula_dedo_duro_no_mes(data)))
-            relatorio.append(__tab(3) + 'IR a pagar TOTAL no mês: ' + __format(ir.calcula_ir_a_pagar_no_mes(data)))
+            relatorio.append(__tab(2) + 'Dedo-Duro TOTAL no mês: ' + __format(ir.calcula_dedo_duro_no_mes(data)))
+            relatorio.append(__tab(2) + 'IR a pagar TOTAL no mês: ' + __format(ir.calcula_ir_a_pagar_no_mes(data)))
 
     return '\n'.join(relatorio)
-
-
-def __format_venda(venda):
-    return venda['ticker'] + ' - ' + __tab(1) + \
-             'Qtd Vendida: ' + str(int(venda['qtd_vendida'])) + __tab(1) + \
-             'Preco Médio de Compra: ' + __format(venda['preco_medio_compra']) + __tab(1) + \
-             'Preco Médio de Venda: ' + __format(venda['preco_medio_venda']) + __tab(1) + \
-             'Resultado Apurado: ' + __format(venda['resultado_apurado'])
 
 
 def relatorio_html(ir):
@@ -78,29 +79,37 @@ def relatorio_html(ir):
     columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'tipo', 'data_primeira_compra']
     custodia = custodia[columns]
     custodia.columns = headers
-    relatorio += custodia.to_html(index=False)
-    relatorio += __p('Total na carteira : ' + __format(total_na_carteira), tab=3)
+    relatorio += build_table(custodia, __cor_tabela())
+    relatorio += __p('Total na carteira : ' + __format(total_na_carteira))
     relatorio += __hr()
 
     for data in ir.datas:
         if ir.possui_vendas_no_mes(data):
+
             relatorio += __p('')
             relatorio += __h3('MES : ' + str(data.month) + '/' + str(data.year))
-            relatorio += __p('Vendas:', tab=2)
+            relatorio += __p('Vendas:', tab=1)
 
             vendas_no_mes_por_tipo = ir.get_vendas_no_mes_por_tipo(data)
             for tipo in TipoTicker:
                 if len(vendas_no_mes_por_tipo[tipo]):
-                    relatorio += __p(tipo.name + ':', tab=3)
+                    relatorio += __p(tipo.name + ':', tab=2)
+                    df_mes_por_tipo = pd.DataFrame(columns=['ticker', 'Qtd Vendida [#]', 'Preco Médio de Compra [R$]', 'Preco Médio de Venda [R$]', 'Resultado Apurado [R$]'])
+
                     for venda in vendas_no_mes_por_tipo[tipo]:
-                        relatorio += __p(__format_venda(venda), tab=4)
+                        df_mes_por_tipo.loc[len(df_mes_por_tipo)] = [venda['ticker'],
+                                                                     str(int(venda['qtd_vendida'])),
+                                                                     venda['preco_medio_compra'],
+                                                                     venda['preco_medio_venda'],
+                                                                     venda['resultado_apurado']]
 
-                    relatorio += __p('Lucro/Prejuizo no mês: ' + __format(ir.calcula_prejuizo_por_tipo(data, tipo)), tab=4)
-                    relatorio += __p('Lucro/Prejuizo acumulado: ' + __format(ir.calcula_prejuizo_acumulado(data, tipo)), tab=4)
-                    relatorio += __p('IR no mês para ' + tipo.name + ': ' + __format(ir.calcula_ir_a_pagar(ir.calcula_prejuizo_acumulado(data, tipo), tipo)), tab=4)
+                    relatorio += __p(build_table(df_mes_por_tipo, __cor_tabela(tipo)), tab=3)
+                    relatorio += __p('Lucro/Prejuizo no mês: ' + __format(ir.calcula_prejuizo_por_tipo(data, tipo)), tab=3)
+                    relatorio += __p('Lucro/Prejuizo acumulado: ' + __format(ir.calcula_prejuizo_acumulado(data, tipo)), tab=3)
+                    relatorio += __p('IR no mês para ' + tipo.name + ': ' + __format(ir.calcula_ir_a_pagar(ir.calcula_prejuizo_acumulado(data, tipo), tipo)), tab=3)
 
-            relatorio += __p('Dedo-Duro TOTAL no mês: ' + __format(ir.calcula_dedo_duro_no_mes(data)), tab=3)
-            relatorio += __p('IR a pagar TOTAL no mês: ' + __format(ir.calcula_ir_a_pagar_no_mes(data)), tab=3)
+            relatorio += __p('Dedo-Duro TOTAL no mês: ' + __format(ir.calcula_dedo_duro_no_mes(data)), tab=2)
+            relatorio += __p('IR a pagar TOTAL no mês: ' + __format(ir.calcula_ir_a_pagar_no_mes(data)), tab=2)
             relatorio += __hr()
 
     relatorio += __close_html()
@@ -132,6 +141,18 @@ def __close_html():
     return '    </body></html>'
 
 
+def __cor_tabela(tipo=None):
+    if tipo is None:
+        return 'blue_light'
+    elif tipo == TipoTicker.ACAO:
+        return 'grey_light'
+    elif tipo == TipoTicker.FII:
+        return 'yellow_light'
+    elif tipo == TipoTicker.ETF:
+        return 'orange_light'
+    return 'blue_light'
+
+
 def __hr():
     return '<hr/>'
 
@@ -141,7 +162,11 @@ def __p(text, tab=None):
     if tab:
         padding = tab * 30
         style = ' style="padding-left: ' + str(padding) + 'px;" '
-    return '<p' + style + '>' + text + '</p>'
+
+    if '<p' in text:
+        return text.replace('<p', '<p' + style)
+    else:
+        return '<p' + style + '>' + text + '</p>'
 
 
 def __h1(text):

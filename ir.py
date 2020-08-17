@@ -7,7 +7,7 @@ import pandas as pd
 from src.calculo_ir import CalculoIr
 from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 from src.envia_relatorio_por_email import envia_relatorio_html_por_email
-from src.relatorio.relatorio import relatorio_txt, relatorio_html, assunto
+from src.relatorio import relatorio_txt, relatorio_html, assunto
 from src.stuff import get_operations_dataframe, \
     merge_operacoes, \
     df_to_csv
