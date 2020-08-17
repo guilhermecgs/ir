@@ -18,8 +18,9 @@ class TestRelatorio(TestCase):
         calculo_ir = CalculoIr(df=df)
         calculo_ir.calcula()
 
-        with open("relatorio.html", "w") as relatorio:
-            relatorio.write(relatorio_html(calculo_ir))
+        from py_w3c.validators.html.validator import HTMLValidator
+
+        assert HTMLValidator().validate_fragment(relatorio_html(calculo_ir))
 
 
     def test_relatorio_txt(self):

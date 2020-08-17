@@ -48,9 +48,9 @@ def relatorio_txt(ir):
                     for venda in vendas_no_mes_por_tipo[tipo]:
                         df_mes_por_tipo.loc[len(df_mes_por_tipo)] = [venda['ticker'],
                                                                      str(int(venda['qtd_vendida'])),
-                                                                     venda['preco_medio_compra'],
-                                                                     venda['preco_medio_venda'],
-                                                                     venda['resultado_apurado']]
+                                                                     __format(venda['preco_medio_compra']),
+                                                                     __format(venda['preco_medio_venda']),
+                                                                     __format(venda['resultado_apurado'])]
 
                     relatorio.append(__tab(3) + tabulate(df_mes_por_tipo, headers=df_mes_por_tipo.columns, showindex=False, tablefmt='psql').replace('\n', '\n' + __tab(3)))
                     relatorio.append(__tab(3) + 'Lucro/Prejuizo no mês: ' + __format(ir.calcula_prejuizo_por_tipo(data, tipo)))
@@ -99,9 +99,9 @@ def relatorio_html(ir):
                     for venda in vendas_no_mes_por_tipo[tipo]:
                         df_mes_por_tipo.loc[len(df_mes_por_tipo)] = [venda['ticker'],
                                                                      str(int(venda['qtd_vendida'])),
-                                                                     venda['preco_medio_compra'],
-                                                                     venda['preco_medio_venda'],
-                                                                     venda['resultado_apurado']]
+                                                                     __format(venda['preco_medio_compra']),
+                                                                     __format(venda['preco_medio_venda']),
+                                                                     __format(venda['resultado_apurado'])]
 
                     relatorio += __p(build_table(df_mes_por_tipo, __cor_tabela(tipo)), tab=3)
                     relatorio += __p('Lucro/Prejuizo no mês: ' + __format(ir.calcula_prejuizo_por_tipo(data, tipo)), tab=3)

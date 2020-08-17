@@ -21,6 +21,7 @@ pathlib2==2.3.5
 pluggy==0.13.0
 pretty-html-table==0.9.dev0
 py==1.8.0
+py-w3c==0.3.1
 PyJWT==1.7.1
 pyparsing==2.4.2
 pytest==4.6.6
