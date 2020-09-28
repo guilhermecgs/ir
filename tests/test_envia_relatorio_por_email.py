@@ -1,11 +1,11 @@
 from unittest import TestCase
 import datetime
 
-from calculo_ir import CalculoIr
-from relatorio import relatorio_html
-from stuff import calcula_custodia
-from utils import create_testing_dataframe
+from src.calculo_ir import CalculoIr
+from src.relatorio import relatorio_html
+from src.stuff import calcula_custodia
 from src.envia_relatorio_por_email import envia_relatorio_txt_por_email, envia_relatorio_html_por_email
+from tests.utils import create_testing_dataframe
 
 
 class TestEnvia_relatorio_por_email(TestCase):

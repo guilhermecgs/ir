@@ -1,6 +1,6 @@
 import pandas as pd
 
-from stuff import colunas_obrigatorias, calcula_valor
+from src.stuff import colunas_obrigatorias, calcula_valor
 
 
 def create_testing_dataframe(data):

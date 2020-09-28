@@ -1,6 +1,6 @@
 # ir - Projeto de calculo de Imposto de Renda em operacoes na bovespa automaticamente
 
-## o que ele se propoe a fazer
+## o que se propoe a fazer
  - Automaticamente busca todos as suas operacoes na bolsa no site do canal eletronico do investidor (CEI) (https://cei.b3.com.br/)
  - Funciona com FIIs, ETFs e Acoes
  - Apos buscar os trades no CEI, salva tudo em um arquivo csv no dropbox da sua conta
