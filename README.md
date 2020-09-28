@@ -14,7 +14,6 @@
  - A ideia é ser TUDO automatico, mas ainda ter a opcao de voce manualmente ter controle de tudo via um arquivo csv caso algum papel sofra desdobramento ou seja mude o ticker de negociacao
 
 ## o que voce vai precisar
- - Ser um programador python
  - Uma conta no CEI (https://cei.b3.com.br/)
  - Uma conta no dropbox com API habilitada (https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account/)
  - Configurar as variaveis de ambiente conforme (https://github.com/guilhermecgs/ir/blob/master/tests/test_environment_variables.py)
@@ -47,8 +46,7 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 # To do list
     - Incluir gratuidade de 20k por mes para acoes
     - Incluir desconto de taxas, emolumentos e dedo duro - http://www.b3.com.br/pt_br/produtos-e-servicos/tarifas/listados-a-vista-e-derivativos/renda-variavel/tarifas-de-acoes-e-fundos-de-investimento/a-vista/
-    - Passar vendas mes a mes para uma tabela para ficar mais facil visualizar
-    - Utilizar pytest
+    - Aumentar cobertura de testes
    
 # techstack
     - python

@@ -4,25 +4,8 @@ import pandas as pd
 import datetime
 from src.tipo_ticker import TipoTicker
 from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, \
-    calcula_custodia, calcula_valor, tipo_ticker, merge_operacoes, colunas_obrigatorias, \
-    df_to_csv, vendas_no_mes, todas_as_colunas
-
-
-def create_testing_dataframe(data):
-    for row in data:
-        for column in colunas_obrigatorias():
-            if column not in row:
-                row[column] = None
-
-    if len(data):
-        df = pd.DataFrame(data)
-        df['qtd_ajustada'] = df['qtd']
-        df['qtd'] = df.apply(lambda row: abs(row.qtd), axis=1)
-        df['valor'] = df.apply(lambda row: calcula_valor(row.qtd, row.preco), axis=1)
-    else:
-        df = pd.DataFrame(columns=colunas_obrigatorias())
-
-    return df
+    calcula_custodia, tipo_ticker, merge_operacoes, df_to_csv, vendas_no_mes, todas_as_colunas
+from tests.utils import create_testing_dataframe
 
 
 class TestStuff(unittest.TestCase):
