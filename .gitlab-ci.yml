@@ -48,3 +48,4 @@ relatorio:
         - python ./ir.py --do check_environment_variables
         - python ./ir.py --do busca_trades_e_faz_merge_operacoes
         - python ./ir.py --do calculo_ir
+    retry: 4
