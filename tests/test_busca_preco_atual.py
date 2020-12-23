@@ -9,4 +9,4 @@ class TestBuscaPrecoAtual(TestCase):
         assert type(busca_preco_atual('ITSA4')) is float
         assert type(busca_preco_atual('VRTA11')) is float
         assert type(busca_preco_atual('BOVA11')) is float
-        assert type(busca_preco_atual('ABEVT40')) is float
+

@@ -69,10 +69,13 @@ class CrawlerAdvfn():
         return {'tipo_ticker': tipo_ticker, 'preco_atual': preco_atual}
 
     def __recupera_preco_atual(self):
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece10')))
-        preco_atual = float(self.driver.find_element_by_id('quoteElementPiece10').text
-                            .replace('.', '').replace(',', '.'))
-        return preco_atual
+        try:
+            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece10')))
+            preco_atual = float(self.driver.find_element_by_id('quoteElementPiece10').text
+                                .replace('.', '').replace(',', '.'))
+            return preco_atual
+        except Exception as ex:
+            return None
 
     def __recupera_tipo_ticker(self):
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece5')))
