@@ -30,8 +30,7 @@ class TestCrawlerAdvfn(TestCase):
             assert method.call_count == 2
 
     def test_busca_preco_atual(self):
-        for i in range(3):
-            assert type(self.advfn.busca_preco_atual(get_random_opcoes_tickers()[i])) is float
+        assert type(self.advfn.busca_preco_atual('PETRA253')) is float
         assert self.advfn.busca_preco_atual('INVALID_ticker') is None
         assert type(self.advfn.busca_preco_atual('SDIL11')) is float
         assert type(self.advfn.busca_preco_atual('ITSA4')) is float
@@ -40,8 +39,7 @@ class TestCrawlerAdvfn(TestCase):
 
 
     def test_busca_tipo_ticker(self):
-        for i in range(2):
-            assert self.advfn.busca_tipo_ticker(get_random_opcoes_tickers()[i]) == TipoTicker.OPCAO
+        assert self.advfn.busca_tipo_ticker('PETRA253') == TipoTicker.OPCAO
         assert self.advfn.busca_tipo_ticker('INVALID') is None
         assert self.advfn.busca_tipo_ticker('SDIL11') == TipoTicker.FII
         assert self.advfn.busca_tipo_ticker('BOVA11') == TipoTicker.ETF

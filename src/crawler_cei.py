@@ -33,7 +33,7 @@ class AnyEc:
 class CrawlerCei():
 
     def __init__(self, headless=False, directory=None, debug=False):
-        self.BASE_URL = 'https://ceiapp.b3.com.br/CEI_Responsivo/login.aspx'
+        self.BASE_URL = 'https://ceiapp.b3.com.br/CEI_Responsivo/'
         self.driver = ChromeDriver()
         self.directory = directory
         self.debug = debug
