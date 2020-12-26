@@ -27,4 +27,4 @@ class TestCrawlerAdvfn(TestCase):
     def test_busca_tipo_ticker(self):
         assert eh_tipo_opcao('INVALID') is False
         for i in range(4):
-            assert eh_tipo_opcao(get_random_opcoes_tickers()[i]) == True
+            assert eh_tipo_opcao(get_random_opcoes_tickers()[i])
