@@ -37,13 +37,11 @@ class TestCrawlerAdvfn(TestCase):
         assert type(self.advfn.busca_preco_atual('BOVA11')) is float
         assert self.advfn.busca_preco_atual('SDIL11') == self.advfn.busca_preco_atual('sdil11')
 
-
     def test_busca_tipo_ticker(self):
+        assert self.advfn.busca_tipo_ticker('ISPU20') == TipoTicker.FUTURO
         assert self.advfn.busca_tipo_ticker('PETRA253') == TipoTicker.OPCAO
         assert self.advfn.busca_tipo_ticker('INVALID') is None
         assert self.advfn.busca_tipo_ticker('SDIL11') == TipoTicker.FII
         assert self.advfn.busca_tipo_ticker('BOVA11') == TipoTicker.ETF
-        assert self.advfn.busca_tipo_ticker('ISPU20') == TipoTicker.FUTURO
-        assert self.advfn.busca_tipo_ticker('WSPU20') == TipoTicker.FUTURO
         assert self.advfn.busca_tipo_ticker('ITSA4') == TipoTicker.ACAO
         assert self.advfn.busca_tipo_ticker('ITSA4') == self.advfn.busca_tipo_ticker('itsa4')
