@@ -13,8 +13,6 @@ class TestCrawlerFundsExplorer(unittest.TestCase):
         assert e_tipo_fii('VRTA11')
         assert e_tipo_fii('LVBI11')
         assert e_tipo_fii('VILG12')
-
         assert not e_tipo_fii('ITSA4')
         assert not e_tipo_fii('BOVA11')
         assert not e_tipo_fii('invalid')
-

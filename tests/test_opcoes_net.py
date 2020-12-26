@@ -1,6 +1,6 @@
 import unittest.mock as mock
 from unittest import TestCase
-
+from tests.utils import get_random_opcoes_tickers
 
 from src import crawler_opcoes_net
 from src.crawler_opcoes_net import eh_tipo_opcao
@@ -26,13 +26,5 @@ class TestCrawlerAdvfn(TestCase):
 
     def test_busca_tipo_ticker(self):
         assert eh_tipo_opcao('INVALID') is False
-        assert eh_tipo_opcao('ABEVH222') == True
-        assert eh_tipo_opcao('ABEVT40') == True
-        assert eh_tipo_opcao('ABEVT45') == True
-        assert eh_tipo_opcao('AZULG525') == True
-        assert eh_tipo_opcao('PETRG229') == True
-        assert eh_tipo_opcao('IRBRH115') == True
-        assert eh_tipo_opcao('ABEVS41') == True
-        assert eh_tipo_opcao('MRFGH18') == True
-        assert eh_tipo_opcao('CMIGG14') == True
-        assert eh_tipo_opcao('COGNG7') == True
+        for i in range(4):
+            assert eh_tipo_opcao(get_random_opcoes_tickers()[i])
