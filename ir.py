@@ -8,7 +8,7 @@ from src.calculo_ir import CalculoIr
 from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 from src.envia_relatorio_por_email import envia_relatorio_html_por_email
 from src.relatorio import relatorio_txt, relatorio_html, assunto
-from src.stuff import get_operations_dataframe, \
+from src.stuff import get_operations, \
     merge_operacoes, \
     df_to_csv
 
@@ -45,7 +45,7 @@ def do_busca_trades_e_faz_merge_operacoes():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
 
-    df = get_operations_dataframe()
+    df = get_operations()
     df = merge_operacoes(df, df_cei)
     df_to_csv(df, OPERATIONS_FILEPATH)
 
@@ -60,7 +60,7 @@ def do_check_environment_variables():
 def do_calculo_ir():
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
-    df = get_operations_dataframe()
+    df = get_operations()
 
     from src.stuff import calcula_custodia
 

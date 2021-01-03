@@ -3,7 +3,7 @@ import pytest
 import pandas as pd
 import datetime
 from src.tipo_ticker import TipoTicker
-from src.stuff import get_operations_dataframe, calcula_precos_medio_de_compra, \
+from src.stuff import get_operations, calcula_precos_medio_de_compra, \
     calcula_custodia, tipo_ticker, merge_operacoes, df_to_csv, vendas_no_mes, todas_as_colunas
 from tests.utils import create_testing_dataframe
 
@@ -11,7 +11,7 @@ from tests.utils import create_testing_dataframe
 class TestStuff(unittest.TestCase):
 
     def test_deve_criar_dataframe_vazio_se_arquivo_vazio(self):
-        df = get_operations_dataframe('arquivo_invalido.txt')
+        df = get_operations('arquivo_invalido.txt')
         self.assertListEqual(list(df.columns), todas_as_colunas())
 
     def test_descobre_vendas_no_mes(self):
@@ -109,18 +109,18 @@ class TestStuff(unittest.TestCase):
         assert len(result) == (len(df) + 2)
 
     def test_df_to_csv(self):
-        df_original = get_operations_dataframe()
+        df_original = get_operations()
 
         df_to_csv(df_original, 'df_to_csv_testing.txt')
 
-        df_lido = get_operations_dataframe('df_to_csv_testing.txt')
+        df_lido = get_operations('df_to_csv_testing.txt')
         assert df_lido.equals(df_original)
 
     def test_calcula_custodia(self):
         from src.dropbox_files import download_dropbox_file
         download_dropbox_file()
 
-        df = get_operations_dataframe()
+        df = get_operations()
         df = df.tail(80)
 
         data = datetime.datetime.now().date()
@@ -140,7 +140,7 @@ class TestStuff(unittest.TestCase):
         from src.dropbox_files import download_dropbox_file
         download_dropbox_file()
 
-        df = get_operations_dataframe()
+        df = get_operations()
 
         precos_medios_de_compra = calcula_precos_medio_de_compra(df)
         assert type(precos_medios_de_compra) is dict

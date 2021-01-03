@@ -30,7 +30,7 @@ def calculate_add(row):
         return row['qtd'] * -1
 
 
-def get_operations_dataframe(filepath=None):
+def get_operations(filepath=None):
     if not filepath:
         filepath = OPERATIONS_FILEPATH
 

@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from src.calculo_ir import CalculoIr
 from src.relatorio import relatorio_html, relatorio_txt
-from src.stuff import get_operations_dataframe, calcula_custodia
+from src.stuff import get_operations, calcula_custodia
 from tests.utils import create_testing_dataframe
 
 
@@ -34,7 +34,7 @@ class TestRelatorio(TestCase):
         from src.dropbox_files import download_dropbox_file
         download_dropbox_file()
 
-        df = get_operations_dataframe()
+        df = get_operations()
         df = df.tail(150)
 
         calcula_custodia(df)
