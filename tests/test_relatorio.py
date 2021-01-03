@@ -29,13 +29,12 @@ class TestRelatorio(TestCase):
 
         assert HTMLValidator().validate_fragment(relatorio_html(calculo_ir))
 
-
     def test_relatorio_txt(self):
         from src.dropbox_files import download_dropbox_file
         download_dropbox_file()
 
         df = get_operations()
-        df = df.tail(150)
+        df = df.tail(60)
 
         calcula_custodia(df)
         calculo_ir = CalculoIr(df=df)

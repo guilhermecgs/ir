@@ -21,8 +21,8 @@ def relatorio_txt(ir):
     relatorio.append('')
     relatorio.append('Custódia')
     custodia = calcula_custodia(ir.df, datetime.datetime.now().date())
-    columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'tipo', 'data_primeira_compra']
-    headers = ['ticker', 'qtd', 'valor (R$)', 'PrecoAtual(R$)', 'PrecoMedioCompra(R$)', 'valorizacao (%)', 'tipo', 'PrimeiraCompra']
+    columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'ultimo_yield', 'tipo', 'data_primeira_compra']
+    headers = ['ticker', 'qtd', 'valor (R$)', 'Preco Atual (R$)', 'Preco Medio Compra (R$)', 'valorizacao (%)', 'Ultimo Yield [%]', 'tipo', 'Dt.Compra']
     custodia = custodia[columns]
     custodia = custodia[custodia.valor > 0]
     total_na_carteira = custodia['valor'].sum()
@@ -30,6 +30,7 @@ def relatorio_txt(ir):
     custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
     custodia['preco_atual'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_atual), axis=1)
     custodia['preco_medio_compra'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_medio_compra), axis=1)
+    custodia['ultimo_yield'] = custodia.apply(lambda row: '' if row.ultimo_yield is None else '{:.2f}'.format(row.ultimo_yield), axis=1)
     relatorio.append(tabulate(custodia, showindex=False, headers=headers, tablefmt='psql'))
     relatorio.append('Total na carteira : ' + __format(total_na_carteira))
 
@@ -75,8 +76,9 @@ def relatorio_html(ir):
     custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
     custodia['preco_atual'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_atual), axis=1)
     custodia['preco_medio_compra'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_medio_compra), axis=1)
-    headers = ['ticker', 'qtd', 'valor (R$)', 'Preco Atual (R$)', 'Preco Medio Compra (R$)', 'valorizacao (%)', 'tipo', 'Primeira Compra']
-    columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'tipo', 'data_primeira_compra']
+    custodia['ultimo_yield'] = custodia.apply(lambda row: '' if row.ultimo_yield is None else '{:.2f}'.format(row.ultimo_yield), axis=1)
+    headers = ['ticker', 'qtd', 'valor (R$)', 'Preco Atual (R$)', 'Preco Medio Compra (R$)', 'valorizacao (%)', 'Ultimo Yield [%]', 'tipo', 'Dt.Compra']
+    columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'ultimo_yield', 'tipo', 'data_primeira_compra']
     custodia = custodia[columns]
     custodia.columns = headers
     relatorio += build_table(custodia, __cor_tabela())

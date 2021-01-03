@@ -132,6 +132,7 @@ class TestStuff(unittest.TestCase):
         assert 'qtd' in custodia.columns
         assert 'preco_atual' in custodia.columns
         assert 'valorizacao' in custodia.columns
+        assert 'ultimo_yield' in custodia.columns
         assert 'valor' in custodia.columns
         assert 'tipo' in custodia.columns
         assert 'data_primeira_compra' in custodia.columns

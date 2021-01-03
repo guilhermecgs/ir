@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from src.dropbox_files import OPERATIONS_FILEPATH
 from src.preco_atual import busca_preco_atual
 from src.tipo_ticker import tipo_ticker
+from src.crawler_funds_explorer_bs4 import fii_dividend_yield
 
 
 def todas_as_colunas():
@@ -95,6 +96,7 @@ def calcula_custodia(df, data=None):
                                  'valor': valor,
                                  'preco_atual': preco_atual,
                                  'valorizacao': valorizacao,
+                                 'ultimo_yield': fii_dividend_yield(ticker),
                                  'data_primeira_compra': data_primeira_compra})
             except Exception as ex:
                 raise Exception('Erro ao calcular custodia do ticker {}'.format(ticker), ex)

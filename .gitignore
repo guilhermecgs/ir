@@ -17,6 +17,8 @@ export_operacoes.txt
 
 .coverage
 
+.coverage*
+
 public/
 
 df_to_csv_testing.txt
