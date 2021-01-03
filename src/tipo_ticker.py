@@ -3,7 +3,7 @@ from enum import Enum
 from src.crawler_yahoo import busca_preco_atual
 from src.crawler_b3_etfs import e_tipo_etf
 from src.crawler_funds_explorer_bs4 import eh_tipo_fii
-from src.crawler_opcoes_net import eh_tipo_opcao
+
 
 __cache__ = {}
 
@@ -23,10 +23,6 @@ def tipo_ticker(ticker):
         if eh_tipo_fii(ticker):
             __cache__[ticker] = TipoTicker.FII
             return TipoTicker.FII
-
-        if eh_tipo_opcao(ticker):
-            __cache__[ticker] = TipoTicker.OPCAO
-            return TipoTicker.OPCAO
 
         if e_tipo_etf(ticker):
             __cache__[ticker] = TipoTicker.ETF
