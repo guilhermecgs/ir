@@ -28,3 +28,5 @@ temp_test_file.txt
 relatorio.txt
 
 temp/
+
+tests_data/private*

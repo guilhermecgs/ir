@@ -6,8 +6,17 @@ import pandas as pd
 import os
 import datetime
 
+
+# Como o arquivo tem dados pessoais não faz parte do repositório
+# Então executa o teste quando o desenvolvedor baixar o arquivo e deixar em seu ambiente com esse nome
+# O teste online é habilitado quando for definida a senha de acesso CEI
+HTML_CARTEIRA = 'tests_data/private_carteira_cei.html'
+
 class TestCrawlerCei(unittest.TestCase):
 
+
+
+    @unittest.skipUnless('SENHA_CEI' in os.environ, "sem configuracao de acesso CEI")
     def test_busca_trades(self):
         # Permite separar os arquivos de testes por CPF
         directory = os.getenv('DIR_TESTES_CEI','./temp/tests_cei_trades/') + os.environ['CPF'] + '/'
@@ -34,7 +43,7 @@ class TestCrawlerCei(unittest.TestCase):
         
         
         
-        
+    @unittest.skipUnless('SENHA_CEI' in os.environ, "sem configuracao de acesso CEI")
     def test_busca_carteira(self):
         # Permite separar os arquivos de testes por CPF
         directory = os.getenv('DIR_TESTES_CEI','./temp/tests_cei_carteira/') + os.environ['CPF'] + '/'
@@ -43,6 +52,26 @@ class TestCrawlerCei(unittest.TestCase):
 
         crawler_cei = CrawlerCei(headless=True, directory=directory, debug=True)
         carteira = crawler_cei.busca_carteira(datetime.date(2020,12,31))
+        verifica_carteira(carteira, directory)
+        
+
+    @unittest.skipUnless(os.path.exists(HTML_CARTEIRA), "sem arquivo de teste de carteira")
+    def test_busca_carteira_html(self):
+        # Permite separar os arquivos de testes por CPF
+        directory = os.getenv('DIR_TESTES_CEI','./temp/tests_cei_carteira/') + os.environ['CPF'] + '/'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        crawler_cei = CrawlerCei(headless=True, directory=directory, debug=True)
+        with open(HTML_CARTEIRA) as file:
+            carteira = crawler_cei.converte_html_carteira(file.read())
+            self.verifica_carteira(carteira, directory)
+        
+        
+
+
+    # Verifica se dados da carteira foram tratados e estao com estrutura esperada
+    def verifica_carteira(self, carteira, directory):
         assert type(carteira) is pd.DataFrame
         assert len(carteira)
         assert 'valor' in carteira.columns
