@@ -41,6 +41,6 @@ class TestRelatorio(TestCase):
         calculo_ir = CalculoIr(df=df)
         calculo_ir.calcula()
 
-        with open("relatorio_teste.txt", "w") as relatorio:
+        with open("temp/relatorio_teste.txt", "w") as relatorio:
             relatorio.write(relatorio_txt(custodia, calculo_ir, datetime.date.today(), False))
 

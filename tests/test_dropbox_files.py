@@ -18,7 +18,7 @@ class TestDropbox(unittest.TestCase):
 
     @unittest.skipUnless('DROPBOX_API_KEY' in os.environ, "sem configuracao para api dropbox")
     def test_upload_dropbox_file(self):
-        TEMP_TEST_FILE = 'temp_test_file.txt'
+        TEMP_TEST_FILE = 'temp/dropbox_test_file.txt'
         TEMP_TEST_FILE_UPLOADED = r'/uploaded' + TEMP_TEST_FILE
 
         with open(TEMP_TEST_FILE, 'w') as file:
