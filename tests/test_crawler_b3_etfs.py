@@ -16,7 +16,8 @@ class TestCrawlerEtfsB3(unittest.TestCase):
         assert e_tipo_etf('BOVA11')
         assert e_tipo_etf('BOVA11')
         assert e_tipo_etf('DIVO11')
-        assert busca_etfs_na_b3.call_count == 1
+        # Como tem cachier pode ter resultados sem executar sem nenhuma chamada do metodo....
+        assert busca_etfs_na_b3.call_count <= 1
 
     def test_crawler(self):
         self.__reset_etfs()

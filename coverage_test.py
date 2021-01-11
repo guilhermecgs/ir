@@ -1,9 +1,10 @@
 import pytest
+import sys
 
 
 def main():
 
-    argv = ['--cov-report=term', '--cov-report=html:./coverage_report', '--cov=./src', '--cov-fail-under=30']
+    argv = ['--cov-report=term', '--cov-report=html:./coverage_report', '--cov=./src', '--cov-fail-under=30'].append(sys.argv[1:])
 
     out = 1
     try:

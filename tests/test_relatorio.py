@@ -4,8 +4,8 @@ from unittest import TestCase
 from src.calculo_ir import CalculoIr
 from src.relatorio import relatorio_html, relatorio_txt
 from src.stuff import get_operations, calcula_custodia
-from tests.utils import create_testing_dataframe
-
+from tests.utils import create_testing_dataframe, OPERACOES_DE_TESTE
+from src.dropbox_files import OPERATIONS_FILEPATH
 
 class TestRelatorio(TestCase):
 
@@ -21,25 +21,26 @@ class TestRelatorio(TestCase):
 
         df = create_testing_dataframe(data)
 
-        calcula_custodia(df)
+        custodia = calcula_custodia(df)
         calculo_ir = CalculoIr(df=df)
         calculo_ir.calcula()
 
         from py_w3c.validators.html.validator import HTMLValidator
 
-        assert HTMLValidator().validate_fragment(relatorio_html(calculo_ir))
+        assert HTMLValidator().validate_fragment(relatorio_html(custodia, calculo_ir, datetime.date.today(), False))
 
     def test_relatorio_txt(self):
         from src.dropbox_files import download_dropbox_file
-        download_dropbox_file()
+        download_dropbox_file(OPERACOES_DE_TESTE)
 
-        df = get_operations()
+        df = get_operations(OPERACOES_DE_TESTE)
+        assert len(df.count()) > 0
         df = df.tail(60)
 
-        calcula_custodia(df)
+        custodia = calcula_custodia(df)
         calculo_ir = CalculoIr(df=df)
         calculo_ir.calcula()
 
-        with open("relatorio.txt", "w") as relatorio:
-            relatorio.write(relatorio_txt(calculo_ir))
+        with open("relatorio_teste.txt", "w") as relatorio:
+            relatorio.write(relatorio_txt(custodia, calculo_ir, datetime.date.today(), False))
 

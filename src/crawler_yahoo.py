@@ -1,15 +1,14 @@
-__cache__ = {}
+from cachier import cachier
+import datetime
 
 
+@cachier(stale_after=datetime.timedelta(hours=2))
 def busca_preco_atual(ticker):
-    if ticker in __cache__:
-        return __cache__[ticker]
+    preco = __third_party_lib(ticker)
+    if type(preco) is float:
+        return preco
     else:
-        preco = __third_party_lib(ticker)
-        if type(preco) is float:
-            return preco
-        else:
-            return None
+        return None
 
 
 def __third_party_lib(ticker):

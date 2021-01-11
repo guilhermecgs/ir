@@ -3,10 +3,10 @@ import pytest
 import pandas as pd
 import datetime
 from src.tipo_ticker import TipoTicker
-from src.stuff import get_operations, calcula_precos_medio_de_compra, \
+from src.stuff import get_operations, check_split_operations, calcula_precos_medio_de_compra, \
     calcula_custodia, tipo_ticker, merge_operacoes, df_to_csv, vendas_no_mes, todas_as_colunas
-from tests.utils import create_testing_dataframe
-from tests.utils import get_random_opcoes_tickers
+from tests.utils import create_testing_dataframe, get_random_opcoes_tickers, OPERACOES_DE_TESTE
+
 
 
 class TestStuff(unittest.TestCase):
@@ -110,7 +110,8 @@ class TestStuff(unittest.TestCase):
         assert len(result) == (len(df) + 2)
 
     def test_df_to_csv(self):
-        df_original = get_operations()
+        df_original = get_operations(OPERACOES_DE_TESTE)
+        assert len(df_original) > 0
 
         df_to_csv(df_original, 'df_to_csv_testing.txt')
 
@@ -119,9 +120,10 @@ class TestStuff(unittest.TestCase):
 
     def test_calcula_custodia(self):
         from src.dropbox_files import download_dropbox_file
-        download_dropbox_file()
+        download_dropbox_file(OPERACOES_DE_TESTE)
 
-        df = get_operations()
+        df = get_operations(OPERACOES_DE_TESTE)
+        assert len(df) > 0
         df = df.tail(80)
 
         data = datetime.datetime.now().date()
@@ -140,9 +142,10 @@ class TestStuff(unittest.TestCase):
 
     def test_calcula_precos_medios_do_dropbox(self):
         from src.dropbox_files import download_dropbox_file
-        download_dropbox_file()
+        download_dropbox_file(OPERACOES_DE_TESTE)
 
-        df = get_operations()
+        df = get_operations(OPERACOES_DE_TESTE)
+        assert len(df) > 0
 
         precos_medios_de_compra = calcula_precos_medio_de_compra(df)
         assert type(precos_medios_de_compra) is dict
@@ -236,3 +239,34 @@ class TestStuff(unittest.TestCase):
         assert tipo_ticker(get_random_opcoes_tickers()[1]) is TipoTicker.OPCAO
         assert tipo_ticker('IRDM11') is TipoTicker.FII
         assert tipo_ticker('invalid') is None
+
+    def test_split_operations_by_defs(self):
+        data = [{'ticker': 'id1:1|id2:3', 'qtd': 0,  'data': datetime.date(2019, 4, 11), 'preco': 0, 'taxas' : 4, 'aquisicao_via' : 'teste'}]
+
+        df = create_testing_dataframe(data)
+
+        split_data = check_split_operations(df)
+        assert len(split_data) == 2
+        assert split_data['ticker'][0] == 'id1'
+        assert split_data['ticker'][1] == 'id2'
+        assert split_data['taxas'][0] == 1
+        assert split_data['taxas'][1] == 3
+
+
+    def test_split_operations(self):
+        data = [{'ticker': 'id1', 'qtd': 1,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                {'ticker': 'id2', 'qtd': 3,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                ]
+        notas = [{'ticker': '@SPLIT', 'qtd': 0,  'data': datetime.date(2019, 4, 11), 'preco': 0, 'taxas' : 4.00, 'aquisicao_via' : 'teste'},                
+                ]
+
+        df = create_testing_dataframe(data)
+        dfNotas = create_testing_dataframe(notas)
+
+        split_data = check_split_operations(dfNotas, df)
+        print(split_data)
+        assert len(split_data) == 2
+        assert split_data['ticker'][0] == 'id1'
+        assert split_data['ticker'][1] == 'id2'
+        assert split_data['taxas'][0] == 1
+        assert split_data['taxas'][1] == 3

@@ -4,6 +4,10 @@ from urllib.request import Request, urlopen
 
 from bs4 import BeautifulSoup, Tag
 
+from cachier import cachier
+import datetime
+import re
+
 # For ignoring SSL certificate errors
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
@@ -11,38 +15,41 @@ ctx.verify_mode = ssl.CERT_NONE
 
 
 this = sys.modules[__name__]
-this.__cache__ = {}
 
 
 def eh_tipo_fii(ticker):
-
-    ticker_corrigido = __corrige_ticker(ticker)
-
-    if ticker_corrigido in this.__cache__:
-        return this.__cache__[ticker_corrigido]['eh_tipo_fii']
-    else:
-        this.__cache__[ticker_corrigido] = __recupera_informacoes(ticker_corrigido)
-        return this.__cache__[ticker_corrigido]['eh_tipo_fii']
+    return __pega_parametro(ticker,'eh_tipo_fii')
 
 
 def fii_dividend_yield(ticker):
+    return __pega_parametro(ticker,'dividend_yield')
+
+
+def fii_p_vp(ticker):
+    return __pega_parametro(ticker,'p_vp')
+
+def fii_nome(ticker):
+    return __pega_parametro(ticker,'nome')
+
+def fii_razao_social(ticker):
+    return __pega_parametro(ticker,'razao_social')
+
+def fii_cnpj(ticker):
+    return __pega_parametro(ticker,'cnpj')
+
+
+def __pega_parametro(ticker, parametro):
 
     ticker_corrigido = __corrige_ticker(ticker)
 
-    if ticker_corrigido in this.__cache__:
-        return this.__cache__[ticker_corrigido]['dividend_yield']
-    else:
-        this.__cache__[ticker_corrigido] = __recupera_informacoes(ticker_corrigido)
-        return this.__cache__[ticker_corrigido]['dividend_yield']
+    return __recupera_informacoes(ticker_corrigido)[parametro]
 
 
 def __corrige_ticker(ticker):
-    ticker_corrigido = ticker
-    if ticker.endswith('12'):
-        ticker_corrigido = ticker.replace('12', '11')
+    ticker_corrigido = re.sub("1[234]$","11", ticker)
     return ticker_corrigido
 
-
+@cachier(stale_after=datetime.timedelta(days=1))
 def __recupera_informacoes(ticker_corrigido):
     try:
         url = "https://www.fundsexplorer.com.br/funds/%s" % (ticker_corrigido)
@@ -54,9 +61,25 @@ def __recupera_informacoes(ticker_corrigido):
         soup = BeautifulSoup(webpage, 'html.parser')
         # html = soup.prettify('utf-8')
 
-        return {'eh_tipo_fii': __obtem_tipo(soup), 'dividend_yield': __obtem_dividend_yield(soup)}
+        return {'eh_tipo_fii': __obtem_tipo(soup), 
+            'dividend_yield': __obtem_valor(soup, 'Dividend Yield'), 
+            'p_vp' : __obtem_valor(soup, 'P/VP'), 
+            'razao_social' : __obtem_dados(soup, 'Razão Social'),
+            'cnpj' : __obtem_dados(soup, 'CNPJ'),
+            'nome' : __obtem_nome(soup) }
     except:
-        return {'eh_tipo_fii': False, 'dividend_yield': None}
+        return {'eh_tipo_fii': False, 'dividend_yield': None, 'p_vp' : None, 'razao_social' : None, 'cnpj' : None, 'nome' : None }
+
+
+def __obtem_nome(soup):
+    try:
+        titles = soup.findAll('h3', attrs={'class': 'section-subtitle'})
+        if len(titles):
+            return titles[0].text
+        else:
+            return None
+    except:
+        return None
 
 
 def __obtem_tipo(soup):
@@ -70,9 +93,9 @@ def __obtem_tipo(soup):
         return False
 
 
-def __obtem_dividend_yield(soup):
+def __obtem_valor(soup, titulo):
     try:
-        span = soup.findAll('span', string='Dividend Yield')
+        span = soup.findAll('span', string=titulo)
 
         if len(span):
             span = span[0]
@@ -81,9 +104,24 @@ def __obtem_dividend_yield(soup):
                 if isinstance(element, Tag) \
                         and 'class' in element.attrs \
                         and 'indicator-value' in element.attrs['class']:
-                    yield_string = element.text
-                    return float(yield_string.replace(' ', '').replace('%', '')
+                    value_string = element.text
+                    return float(value_string.replace(' ', '').replace('%', '')
                                  .replace('\n', '').replace('.', '').replace(',', '.'))
+        return None
+    except Exception as ex:
+        return None
+
+def __obtem_dados(soup, titulo):
+    try:
+        span = soup.findAll('span', string=titulo)
+
+        if len(span):
+            span = span[0]
+            for element in span.parent.descendants:
+                if isinstance(element, Tag) \
+                        and 'class' in element.attrs \
+                        and 'description' in element.attrs['class']:
+                    return element.text.strip()
         return None
     except Exception as ex:
         return None

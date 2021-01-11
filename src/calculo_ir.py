@@ -64,8 +64,11 @@ class CalculoIr():
                 return lucro * 0.15
             if tipo == TipoTicker.ETF:
                 return lucro * 0.15
-            if tipo == TipoTicker.FII:
+            if tipo == TipoTicker.FII or tipo == TipoTicker.FIP:
                 return lucro * 0.2
+            # FIP-IE não tem IR para Pessoa Fisica
+            if tipo == TipoTicker.FIPIE:
+                return lucro * 0
         return 0.0
 
     def calcula_dedo_duro_no_mes(self, data):

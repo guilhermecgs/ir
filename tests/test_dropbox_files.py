@@ -7,14 +7,16 @@ from src.dropbox_files import OPERATIONS_FILEPATH, upload_dropbox_file, download
 
 class TestDropbox(unittest.TestCase):
 
+    @unittest.skipUnless('DROPBOX_API_KEY' in os.environ, "sem configuracao para api dropbox")
     def test_download_dropbox_file(self):
         if os.path.exists(OPERATIONS_FILEPATH):
             os.remove(OPERATIONS_FILEPATH)
 
-        download_dropbox_file()
+        download_dropbox_file(OPERATIONS_FILEPATH)
 
         assert os.path.isfile(OPERATIONS_FILEPATH)
 
+    @unittest.skipUnless('DROPBOX_API_KEY' in os.environ, "sem configuracao para api dropbox")
     def test_upload_dropbox_file(self):
         TEMP_TEST_FILE = 'temp_test_file.txt'
         TEMP_TEST_FILE_UPLOADED = r'/uploaded' + TEMP_TEST_FILE

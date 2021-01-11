@@ -6,6 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from src.driver_selenium import ChromeDriver
+from cachier import cachier
+import datetime
 
 this = sys.modules[__name__]
 this.etfs = None
@@ -21,13 +23,17 @@ def __converte_etfs_para_dataframe(driver):
     return df
 
 
+@cachier(stale_after=datetime.timedelta(days=7))
+def __busca_etfs_na_b3_cache():
+    url = 'http://bvmf.bmfbovespa.com.br/etf/fundo-de-indice.aspx?idioma=pt-br&aba=tabETFsRendaVariavel'
+    driver = ChromeDriver()
+    driver.get(url)
+
+    return __converte_etfs_para_dataframe(driver)
+
 def __busca_etfs_na_b3():
     try:
-        url = 'http://bvmf.bmfbovespa.com.br/etf/fundo-de-indice.aspx?idioma=pt-br&aba=tabETFsRendaVariavel'
-        driver = ChromeDriver()
-        driver.get(url)
-
-        etfs = __converte_etfs_para_dataframe(driver)
+        etfs = __busca_etfs_na_b3_cache()
         return set(etfs['Código'])
     except:
         return set()
@@ -60,5 +66,6 @@ def __etfs():
 
     return this.etfs
 
+@cachier(stale_after=datetime.timedelta(days=1))
 def e_tipo_etf(ticker: str):
     return ticker.replace('11', '').upper() in __etfs()
