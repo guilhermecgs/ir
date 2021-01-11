@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from src.stuff import colunas_obrigatorias, calcula_valor
 
 # Operacoes especificas de testes
-OPERACOES_DE_TESTE = 'operacoes_teste.txt'
+OPERACOES_DE_TESTE = 'tests_data/operacoes_teste.txt'
 
 
 def create_testing_dataframe(data):
