@@ -58,6 +58,9 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
  - SMTP_PASSWORD:minha_senha_gmail
  - CPF:00098765434
  - SENHA_CEI:minha_senha_cei
+ - IGNORA_AGENTES_OPERACOES
+    - Lista com numeros dos agentes/corretoras a ignorar operações, separados por hifen ex: 3-308-4015
+    - Não vai buscar no sistema CEI operações dos agentes/corretoras com os números especificados
  - WORK_DIR:./00098765434/
     - Caso seja definido permite armazenar arquivos em um diretório especifico
     - Recomendado para quem for utilizar para mais de uma pessoa, criando um diretório para cada CPF

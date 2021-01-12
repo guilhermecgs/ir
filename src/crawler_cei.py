@@ -50,6 +50,10 @@ class CrawlerCei():
         self.id_selecao_corretoras = 'ctl00_ContentPlaceHolder1_ddlAgentes'
         self.id_btn_consultar = 'ctl00_ContentPlaceHolder1_btnConsultar'
         self.id_selecao_data = 'ctl00_ContentPlaceHolder1_txtData'
+        self.agentes_ignorar = {}
+        if 'IGNORA_AGENTES_OPERACOES' in os.environ:
+            self.agentes_ignorar = set(os.environ['IGNORA_AGENTES_OPERACOES'].split("-"))
+        
 
     def busca_trades(self, dropExtras=True):
         try:
@@ -63,6 +67,7 @@ class CrawlerCei():
                 return self.__converte_dataframe_para_formato_padrao(df, dropExtras)
             except Exception as ex:
                 if self.debug:
+                    print("*** Erro buscando operações")
                     print(df)
                 raise ex
         except Exception as ex:
@@ -143,6 +148,14 @@ class CrawlerCei():
 
         def __busca_trades_de_uma_corretora(i, nomeAgente):
             print("Verificando Operações : " + str(i) + " " + nomeAgente)
+            # O nome do agente é um número/ código e depois vem o nome
+            # Utilizar isso para ignorar alguns agentes, não existe motivo para tentar buscar operações se o usuário não faz operações com o agente...
+            #  3 - XP INVESTIMENTOS CCTVM S/A
+            numeroAgente = nomeAgente.split(" ")[0]
+            if numeroAgente in self.agentes_ignorar:
+                print("\tIgnorando agente no download de operações")
+                return
+                
             if self.debug: self.driver.save_screenshot(self.directory + r'05_01-' + str(i) + '.png')
             ddlAgentes = Select(self.driver.find_element_by_id(self.id_selecao_corretoras))
             ddlAgentes.select_by_index(i)
@@ -171,6 +184,7 @@ class CrawlerCei():
                 except StaleElementReferenceException as ex:
                     # Pode ignorar já que não teve dados
                     pass
+                print("\tNão existem operações")
             else:
                 if not self.exists_and_not_disabled(self.id_tabela_negociacao_ativos)(self.driver):
                     self.consultar_click(self.driver)
@@ -179,7 +193,9 @@ class CrawlerCei():
                     (By.ID, self.id_tabela_negociacao_ativos)))
 
                 if self.debug: self.driver.save_screenshot(self.directory + r'05_05-' + str(i) + '.png')
-                dfs_to_concat.append(self.__converte_trades_para_dataframe(i, nomeAgente))
+                operacoes = self.__converte_trades_para_dataframe(i, nomeAgente)
+                print("\tOperações encontradas : " + str(len(operacoes)))
+                dfs_to_concat.append(operacoes)
                 self.consultar_click(self.driver)
                 WebDriverWait(self.driver, 60).until(self.exists_and_not_disabled(self.id_selecao_corretoras))
 
