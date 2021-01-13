@@ -3,6 +3,7 @@ import os
 import sys
 
 import pandas as pd
+import numpy as np
 
 from datetime import datetime,date
 from dateutil.relativedelta import relativedelta
@@ -163,28 +164,41 @@ def carrega_notas_corretagem(pref):
         notas['data'] = notas.apply(lambda row: row['data'].date(), axis=1)
         notas.drop(notas[notas['data'] > data_referencia].index, inplace=True)
     return notas
-        
+
+def ajusta_tickers(t):
+   s = set(np.unique(t))
+   s.discard('')
+   return ' '.join(sorted(s)) if len(s) > 0 else ''
+           
 #
 # Gera resumo de operações diarias
 # Caso tenha arquivo com valores das notas de corretagem compara para detectar possiveis erros nos dados
 #
 def do_diario(df, first_year, last_year):
     diario = df.copy()
-    diario['valor_operacao'] = diario.apply(lambda row: row.qtd * row.preco, axis=1)
-    diario['compra'] = diario.apply(lambda row: row.ticker if row.qtd > 0 else '', axis=1)
-    diario['venda'] = diario.apply(lambda row: row.ticker if row.qtd < 0 else '', axis=1)
-    diario = diario.groupby('data', as_index=False, sort=True).agg({ 'valor_operacao' : 'sum', 'taxas' : 'sum', 'compra' : 'unique', 'venda' : 'unique' })
-    diario['total'] = diario.apply(lambda row: row.valor_operacao + row.taxas, axis=1)
+    diario['compra'] = diario.apply(lambda row: row.qtd_ajustada * row.preco if row.qtd_ajustada > 0 else 0, axis=1)
+    diario['venda'] = diario.apply(lambda row: row.qtd_ajustada * row.preco if row.qtd_ajustada < 0 else 0, axis=1)
+    diario['ticker_compra'] = diario.apply(lambda row: row.ticker if row.qtd_ajustada > 0 else '', axis=1)
+    diario['ticker_venda'] = diario.apply(lambda row: row.ticker if row.qtd_ajustada < 0 else '', axis=1)
+    diario = diario.groupby('data', as_index=False, sort=True).agg({ 'compra' : 'sum', 'venda' : 'sum', 'taxas' : 'sum', 'ticker_compra' : 'unique', 'ticker_venda' : 'unique' })
+    
+    diario['total'] = diario.apply(lambda row: (row.compra + row.venda) + row.taxas, axis=1)
+
+    # Ajustando formato para ficar em ordem alfabetica
+    diario['ticker_compra'] = diario.apply(lambda row: ajusta_tickers(row.ticker_compra), axis=1)
+    diario['ticker_venda'] = diario.apply(lambda row: ajusta_tickers(row.ticker_venda), axis=1)
+    
     diario['notas_corretagem'] = diario.apply(lambda row: 0, axis=1)
 
     txtNotas = ''
     
     try:
         notas = carrega_notas_corretagem('')
-        for year in range(first_year,last_year):
+        for year in range(first_year,last_year+1):
            n = carrega_notas_corretagem('/' + str(year) + '/')
            notas = notas.append(n, ignore_index=True)
-        
+
+        #TODO fazer de forma mais eficiente        
         for i, row in diario.iterrows():
             for iN, rowN in notas.iterrows():
                if row['data'] == rowN['data']:
@@ -201,8 +215,9 @@ def do_diario(df, first_year, last_year):
         print(e)
 
     diario['diferenca_notas_corretagem'] = diario.apply(lambda row: round(row.total - row.notas_corretagem,2), axis=1)
+    diario = diario.drop(['notas_corretagem'], axis=1)
 
-    txt = tabulate(diario, showindex=False, headers=['Data','Operações','Custos', 'Compras', 'Vendas','Total', 'Notas', 'Diferença Notas'], tablefmt='psql')
+    txt = tabulate(diario, showindex=False, headers=['Data','Compras\n(R$)', 'Vendas\n(R$)', 'Custos\n(R$)', 'Compras\n(Ativos)', 'Vendas\n(Ativos)','Total (R$)', 'Diferença\nNotas (R$)'], tablefmt='psql')
     save_to_file(nome_com_referencia('diario.txt'), txt + '\n' + txtNotas)
 
 def do_calculo_ir():
@@ -214,7 +229,7 @@ def do_calculo_ir():
     last_year = df['data'].max().year
     # Permite separar as outras operações de forma organizada
     for f in ['outras_operacoes.txt', 'custos.txt', 'ofertas_publicas.txt', 'subscricoes.txt']:
-       for year in range(first_year, last_year):
+       for year in range(first_year, last_year+1):
           outros = get_operations(WORK_DIR + str(year) + '/' + f, operations=df)
           df = merge_outros(df, outros)
        outros = get_operations(WORK_DIR + f, operations=df)
