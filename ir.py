@@ -141,16 +141,20 @@ def ajusta_datas(df, coluna):
 
 
 def carrega_notas_corretagem(pref):
-    colunasNotasCorretagem = [ 'data','corretora','valor' ]
+    colunasNotasCorretagem = [ 'data', 'corretora', 'valor', 'irrf' ]
     try:
-        # DATA(DD/MM/YYYY) CORRETORA VALOR
+        # DATA(DD/MM/YYYY) CORRETORA VALOR IRRF
+        # Valor : Liquido da nota de corretagem
+        #	positivo para debito (mais compras do que vendas)
+        # 	negativo para credito (mais vendas do que compras)
+        # IRRF sempre positivo
         notas = pd.read_csv(WORK_DIR + pref + 'notas-corretagem.txt', 
                          sep='\t',
                          header=None,
                          parse_dates=[0],
                          dayfirst=True,
                          comment='#')
-        notas = notas[[0,1,2]]
+        notas = notas[[0,1,2,3]]
         notas.columns = colunasNotasCorretagem
     except FileNotFoundError:
         notas = pd.DataFrame(columns=colunasNotasCorretagem)
@@ -177,12 +181,13 @@ def ajusta_tickers(t):
 def do_diario(df, first_year, last_year):
     diario = df.copy()
     diario['compra'] = diario.apply(lambda row: row.qtd_ajustada * row.preco if row.qtd_ajustada > 0 else 0, axis=1)
-    diario['venda'] = diario.apply(lambda row: row.qtd_ajustada * row.preco if row.qtd_ajustada < 0 else 0, axis=1)
+    # Utiliza qtde para apresentar o valor absoluto
+    diario['venda'] = diario.apply(lambda row: row.qtd * row.preco if row.qtd_ajustada < 0 else 0, axis=1)
     diario['ticker_compra'] = diario.apply(lambda row: row.ticker if row.qtd_ajustada > 0 else '', axis=1)
     diario['ticker_venda'] = diario.apply(lambda row: row.ticker if row.qtd_ajustada < 0 else '', axis=1)
     diario = diario.groupby('data', as_index=False, sort=True).agg({ 'compra' : 'sum', 'venda' : 'sum', 'taxas' : 'sum', 'ticker_compra' : 'unique', 'ticker_venda' : 'unique' })
     
-    diario['total'] = diario.apply(lambda row: (row.compra + row.venda) + row.taxas, axis=1)
+    diario['total'] = diario.apply(lambda row: (row.compra - row.venda) + row.taxas, axis=1)
 
     # Ajustando formato para ficar em ordem alfabetica
     diario['ticker_compra'] = diario.apply(lambda row: ajusta_tickers(row.ticker_compra), axis=1)
@@ -206,8 +211,8 @@ def do_diario(df, first_year, last_year):
                   notas.loc[iN,'verificado'] = True
         notas = notas[notas.verificado == False]
         if notas.size > 0:
-           notas = notas[['data','corretora','valor']]
-           txtNotas = "*** NOTAS SEM OPERACOES NO DIA : \n" + tabulate(notas, headers=['Data', 'Corretora', 'Valor'], showindex=False, tablefmt='psql')
+           notas = notas[['data','corretora','valor','irrf']]
+           txtNotas = "*** NOTAS SEM OPERACOES NO DIA : \n" + tabulate(notas, headers=['Data', 'Corretora', 'Valor\n(R$)','IRRF\n(R$)'], showindex=False, tablefmt='psql')
            print(txtNotas)
                   
     except Exception as e:
