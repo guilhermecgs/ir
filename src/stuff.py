@@ -75,6 +75,16 @@ def check_split_operations(df, operations=None):
     # 	1 - indicar o ticket como   ID1:VALOR1|ID2:VALOR2|ID3:VALOR2|...
     #   2 - indicar o ticket como   @SPLIT (vai buscar os tickets e valores nas operacoes já carregadas)
     # A rotina vai calcular os percentuais e dividir os custos pelos percentuais
+
+    # As taxas gerais são cobradas tanto na compra como na venda então a divisão é feita percentualmente pelos valores das operações
+    # Como não é possivel identificar pelos dados os valores de taxa de corretagem por operação 
+    # se esses valores não puderem ser divididos de forma proporcional devem ser registrados individualmente nos arquivos em linhas separadas
+    # ex.
+    #    ACAO	Compra	0	01/01/20	0	4.90	TX_CORRETAGEM
+    #	 @SPLIT	Compra	0	01/01/20	0	3.53	OUTROS_CUSTOS
+    #
+    #  Supondo que foi uma operação com acao e FII sem taxa de corretagem
+    #  A ação vai ter como taxas o valor de 4.90 além da divisão proporcional dos 3.53
     for i, row in df.copy().iterrows():
         if "|" in row['ticker']:
             total = 0
@@ -88,7 +98,7 @@ def check_split_operations(df, operations=None):
                     'data' : row['data'], 
                     'preco' : 0, 
                     'taxas' : (float(parts[1])/total)*row.taxas,
-                    'aquisicao_via' : row['aquisicao_via'] + "#SPLIT", 
+                    'aquisicao_via' : row['aquisicao_via'] + "_SPLIT", 
                     'valor' : (float(parts[1])/total)*row.valor,
                     'qtd_ajustada' : 0 }
                 novos = novos.append(splitRow, ignore_index=True)
@@ -97,16 +107,16 @@ def check_split_operations(df, operations=None):
             dia = operations.copy()
             dia = dia[ dia['data'] == row['data'] ]
             dia = dia[ dia.qtd > 0 ]
-            dia = dia.groupby('ticker', as_index=False, sort=True).agg({ 'valor' : 'sum' })
+            dia = dia.groupby(['ticker','operacao'], as_index=False, sort=True).agg({ 'valor' : 'sum' })
             total = dia['valor'].sum()
             for dI,dRow in dia.iterrows():
                 splitRow = { 'ticker' : dRow['ticker'], 
-                    'operacao' : row['operacao'],
+                    'operacao' : dRow['operacao'],
                     'qtd' : 0, 
                     'data' : row['data'], 
                     'preco' : 0, 
                     'taxas' : (float(dRow['valor'])/total)*row.taxas,
-                    'aquisicao_via' : row['aquisicao_via'] + "#SPLIT", 
+                    'aquisicao_via' : row['aquisicao_via'] + "_SPLIT", 
                     'valor' : (float(dRow['valor'])/total)*row.valor,
                     'qtd_ajustada' : 0 }
                 novos = novos.append(splitRow, ignore_index=True)
