@@ -22,13 +22,23 @@ def __format(float_value):
     return 'R$ ' + '{:.2f}'.format(float_value)
 
 #
-# Calcula totais por tipo de ativo 
+# Calcula totais agrupados dos ativos 
+# Caso tenha somente um valor retorna None, pois não faz sentido apresentar um totalizador com uma unica linha
 #
-def calcula_totais(custodia):
-    totais = custodia.groupby('tipo', as_index=False, sort=False).agg({ 'valor' : [ 'sum', 'count' ], 'valor_original' : 'sum'} )
-    totais.columns = ['tipo', 'valor', 'ativos', 'valor_original']
+def calcula_totais(custodia, agrupador, default_column=None):
+    if not agrupador in custodia.columns:
+        c = custodia.copy()
+        c[agrupador] = c.apply(lambda row: ticker_data(row.ticker, agrupador, default_value=('?' if default_column is None else row[default_column]) ), axis=1)
+        if c[agrupador].equals(c[default_column]):
+            # Nao tem dados adicionais então não agrupa
+            return None
+        custodia = c
+    totais = custodia.groupby(agrupador, as_index=False, sort=False).agg({ 'valor' : [ 'sum', 'count' ], 'valor_original' : 'sum'} )
+    if len(totais) <= 1:
+        return None
+    totais.columns = [agrupador, 'valor', 'ativos', 'valor_original']
     total_na_carteira = totais['valor'].sum()
-    totais = totais.append(pd.DataFrame({ 'tipo' : [ 'TOTAL' ], 
+    totais = totais.append(pd.DataFrame({ agrupador : [ 'TOTAL' ], 
         'valor' : [ total_na_carteira ], 
         'ativos' : [ totais['ativos'].sum() ], 
         'valor_original' : [ totais['valor_original'].sum() ]   }))
@@ -38,7 +48,7 @@ def calcula_totais(custodia):
     totais['valor'] = totais.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
     totais['valor_original'] = totais.apply(lambda row: '{:.2f}'.format(row.valor_original), axis=1)
     totais['ativos'] = totais.apply(lambda row: '{:.0f}'.format(row.ativos), axis=1)
-    totais = totais[['tipo', 'valor', 'pct', 'valor_original', 'saldo', 'valorizacao', 'ativos']]
+    totais = totais[[agrupador, 'valor', 'pct', 'valor_original', 'saldo', 'valorizacao', 'ativos']]
     return totais
 
 #
@@ -68,7 +78,8 @@ def relatorio_txt(custodia, ir, data_ref, dados_irpf):
     custodia = custodia[columns]
     custodia = custodia[custodia.valor > 0]
 
-    totais = calcula_totais(custodia)    
+    totais_tipo = calcula_totais(custodia, 'tipo')    
+    totais_carteira = calcula_totais(custodia, 'carteira', default_column='tipo')    
     
     custodia['valorizacao'] = custodia.apply(lambda row: '{:.2f}'.format(float(row.valorizacao)), axis=1)
     custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
@@ -82,7 +93,11 @@ def relatorio_txt(custodia, ir, data_ref, dados_irpf):
 
     relatorio.append(tabulate(custodia, showindex=False, headers=headers, tablefmt='psql'))
     
-    relatorio.append(tabulate(totais, showindex=False, headers=[ "Tipo", "Valor (R$)", "% da carteira", "Valor Compra (R$)", "Saldo (R$)", "valorização (%)", "ativos" ], tablefmt='psql'))
+    if totais_tipo is not None:
+        relatorio.append(tabulate(totais_tipo, showindex=False, headers=[ "Tipo", "Valor (R$)", "% da carteira", "Valor Compra (R$)", "Saldo (R$)", "valorização (%)", "ativos" ], tablefmt='psql'))
+
+    if totais_carteira is not None:
+        relatorio.append(tabulate(totais_carteira, showindex=False, headers=[ "Carteira", "Valor (R$)", "% da carteira", "Valor Compra (R$)", "Saldo (R$)", "valorização (%)", "ativos" ], tablefmt='psql'))
 
     data_limite = data_ref - relativedelta(months=meses_detalhamento_vendas)
     for data in ir.datas:
@@ -124,7 +139,7 @@ def relatorio_html(custodia, ir, data_ref, dados_irpf):
     custodia = custodia[columns]
     custodia = custodia[custodia.valor > 0]
 
-    totais = calcula_totais(custodia)
+    totais_tipo = calcula_totais(custodia, 'tipo')
 
     custodia['valorizacao'] = custodia.apply(lambda row: '{:.2f}'.format(float(row.valorizacao)), axis=1)
     custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
@@ -137,9 +152,10 @@ def relatorio_html(custodia, ir, data_ref, dados_irpf):
     adiciona_dados_irpf(custodia, dados_irpf)
     relatorio += build_table(custodia, __cor_tabela())
     
-    totais = totais[['tipo', 'valor', 'pct', 'valor_original', 'saldo', 'valorizacao', 'ativos']]
-    totais.columns = ['Tipo', 'Valor (R$)', '% da carteira', 'Valor Compra (R$)', 'Saldo (R$)', 'valorização (%)', 'ativos' ]
-    relatorio += build_table(totais, __cor_tabela())
+    if totais_tipo is not None:
+        totais_tipo = totais_tipo[['tipo', 'valor', 'pct', 'valor_original', 'saldo', 'valorizacao', 'ativos']]
+        totais_tipo.columns = ['Tipo', 'Valor (R$)', '% da carteira', 'Valor Compra (R$)', 'Saldo (R$)', 'valorização (%)', 'ativos' ]
+        relatorio += build_table(totais_tipo, __cor_tabela())
     
     relatorio += __hr()
 
