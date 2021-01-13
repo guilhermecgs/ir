@@ -39,11 +39,11 @@ def ticker_cnpj(ticker):
        return cnpj
     return fii_cnpj(ticker)
 
-def ticker_data(ticker, name):
+def ticker_data(ticker, name, default_value=None):
     data = get_data(ticker)
     if data and name in data:
        return data[name]
-    return None
+    return default_value
     
 def ticker_codigo_irpf(ticker):
     return None
