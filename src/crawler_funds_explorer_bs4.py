@@ -38,16 +38,18 @@ def fii_cnpj(ticker):
     return __pega_parametro(ticker,'cnpj')
 
 
+# No caso das subscrições os códigos vem diferentes e portanto não tem cotação
+# Ajusta para o equivalente de forma a obter cotação valida
+#  ex. VGIP13 VGIP14 -> VGIP11
+def fii_ticker_equivalente(ticker):
+    return re.sub("1[234]$","11", ticker)
+
 def __pega_parametro(ticker, parametro):
 
-    ticker_corrigido = __corrige_ticker(ticker)
+    ticker_corrigido = fii_ticker_equivalente(ticker)
 
     return __recupera_informacoes(ticker_corrigido)[parametro]
 
-
-def __corrige_ticker(ticker):
-    ticker_corrigido = re.sub("1[234]$","11", ticker)
-    return ticker_corrigido
 
 @cachier(stale_after=datetime.timedelta(days=1))
 def __recupera_informacoes(ticker_corrigido):
