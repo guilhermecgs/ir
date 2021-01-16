@@ -36,7 +36,7 @@ class AnyEc:
 
 class CrawlerCei():
 
-    def __init__(self, headless=False, directory=None, debug=False):
+    def __init__(self, headless=False, directory='./temp/', debug=False):
         self.BASE_URL = 'https://ceiapp.b3.com.br/CEI_Responsivo/'
         self.driver = ChromeDriver()
         self.directory = directory
@@ -71,6 +71,7 @@ class CrawlerCei():
                     print(df)
                 raise ex
         except Exception as ex:
+            self.__save_screenshot('erro_busca_trades-' + datetime.now().strftime('%Y-%m-%d-%H-%M'), '.png', force_save=True)
             raise ex
         finally:
             self.driver.quit()
@@ -85,6 +86,7 @@ class CrawlerCei():
             df = self.__abre_consulta_carteira(data)
             return df
         except Exception as ex:
+            self.__save_screenshot('erro_busca_carteira-' + datetime.now().strftime('%Y-%m-%d-%H-%M'), '.png', force_save=True)
             raise ex
         finally:
             self.driver.quit()
@@ -96,8 +98,13 @@ class CrawlerCei():
         except Exception as ex:
             raise ex
 
+    def __save_screenshot(self, name, force_save=False):
+        if self.debug or force_save:
+            self.driver.save_screenshot(self.directory + r'01-inicio.png')
+    
     def __login(self):
-        if self.debug: self.driver.save_screenshot(self.directory + r'01-inicio.png')
+        self.__save_screenshot(r'01-inicio.png')
+        
         txt_login = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_txtLogin')
         txt_login.clear()
         txt_login.send_keys(os.environ['CPF'])
@@ -108,7 +115,7 @@ class CrawlerCei():
         txt_senha.send_keys(os.environ['SENHA_CEI'])
         time.sleep(3.0)
 
-        if self.debug: self.driver.save_screenshot(self.directory + r'02-dados-login.png')
+        self.__save_screenshot(r'02-dados-login.png')
 
         btn_logar = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_btnLogar')
         btn_logar.click()
@@ -116,10 +123,10 @@ class CrawlerCei():
         try:
             WebDriverWait(self.driver, 60).until(EC.visibility_of_element_located((By.ID, 'objGrafPosiInv')))
         except Exception as ex:
-            if self.debug: self.driver.save_screenshot(self.directory + r'03-erro-login.png')
+            self.__save_screenshot(r'03-erro-login.png')
             raise Exception('Nao foi possivel logar no CEI. Possivelmente usuario/senha errada ou indisponibilidade do site') from ex
 
-        if self.debug: self.driver.save_screenshot(self.directory + r'03-pos-login.png')
+        self.__save_screenshot(r'03-pos-login.png')
 
     def consultar_click(self, driver):
         btn_consultar = WebDriverWait(driver, 20).until(
@@ -141,7 +148,7 @@ class CrawlerCei():
         dfs_to_concat = []
 
         self.driver.get(self.BASE_URL + 'negociacao-de-ativos.aspx')
-        if self.debug: self.driver.save_screenshot(self.directory + r'04-negociacao-ativos.png')
+        self.__save_screenshot(r'04-negociacao-ativos.png')
 
         from selenium.webdriver.support.select import Select
         ddlAgentes = Select(self.driver.find_element_by_id(self.id_selecao_corretoras))
@@ -156,15 +163,16 @@ class CrawlerCei():
                 print("\tIgnorando agente no download de operações")
                 return
                 
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_01-' + str(i) + '.png')
+            self.__save_screenshot(r'05_01-' + str(i) + '.png')
             ddlAgentes = Select(self.driver.find_element_by_id(self.id_selecao_corretoras))
             ddlAgentes.select_by_index(i)
             time.sleep(10)
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_02-' + str(i) + '.png')
+            
+            self.__save_screenshot(r'05_02-' + str(i) + '.png')
             WebDriverWait(self.driver, 15).until(self.exists_and_not_disabled(self.id_btn_consultar))
             self.consultar_click(self.driver)
 
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_03-' + str(i) + '.png')
+            self.__save_screenshot(r'05_03-' + str(i) + '.png')
 
             try:
                 WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(
@@ -172,7 +180,7 @@ class CrawlerCei():
             except:
                 pass
 
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_04-' + str(i) + '.png')
+            self.__save_screenshot(r'05_04-' + str(i) + '.png')
 
             # checa se existem trades para essa corretora
             aviso = self.driver.find_element_by_id(self.id_mensagem_de_aviso)
@@ -180,7 +188,7 @@ class CrawlerCei():
                 self.consultar_click(self.driver)
                 try:
                     WebDriverWait(self.driver, 60).until(self.exists_and_not_disabled(self.id_selecao_corretoras))
-                    if self.debug: self.driver.save_screenshot(self.directory + r'05_05-sem-resultados-' + str(i) + '.png')
+                    self.__save_screenshot(r'05_05-sem-resultados-' + str(i) + '.png')
                 except StaleElementReferenceException as ex:
                     # Pode ignorar já que não teve dados
                     pass
@@ -192,7 +200,7 @@ class CrawlerCei():
                 WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located(
                     (By.ID, self.id_tabela_negociacao_ativos)))
 
-                if self.debug: self.driver.save_screenshot(self.directory + r'05_05-' + str(i) + '.png')
+                self.__save_screenshot(r'05_05-' + str(i) + '.png')
                 operacoes = self.__converte_trades_para_dataframe(i, nomeAgente)
                 print("\tOperações encontradas : " + str(len(operacoes)))
                 dfs_to_concat.append(operacoes)
@@ -287,28 +295,30 @@ class CrawlerCei():
         dfs_to_concat = []
 
         self.driver.get(self.BASE_URL + 'ConsultarCarteiraAtivos.aspx')
-        if self.debug: self.driver.save_screenshot(self.directory + r'04-carteira-ativos.png')
+        self.__save_screenshot(r'04-carteira-ativos.png')
 
         from selenium.webdriver.support.select import Select
         ddlAgentes = Select(self.driver.find_element_by_id(self.id_selecao_corretoras))
 
         def __busca_ativos_de_uma_corretora(i, nomeAgente):
             print("Verificando Carteira : " + str(i) + " " + nomeAgente)
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_01-' + str(i) + '.png')
+            
+            self.__save_screenshot(r'05_01-' + str(i) + '.png')
             ddlAgentes = Select(self.driver.find_element_by_id(self.id_selecao_corretoras))
             ddlAgentes.select_by_index(i)
             time.sleep(10)
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_02-' + str(i) + '.png')            
+            
+            self.__save_screenshot(r'05_02-' + str(i) + '.png')            
             inputData = self.driver.find_element_by_id(self.id_selecao_data)
             inputData.clear()
             inputData.send_keys(data.strftime('%d/%m/%Y'))
             time.sleep(10)
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_03-' + str(i) + '.png')            
             
+            self.__save_screenshot(r'05_03-' + str(i) + '.png')            
             WebDriverWait(self.driver, 15).until(self.exists_and_not_disabled(self.id_btn_consultar))
             self.consultar_click(self.driver)
 
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_04-' + str(i) + '.png')
+            self.__save_screenshot(r'05_04-' + str(i) + '.png')
 
             try:
                 WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(
@@ -316,7 +326,7 @@ class CrawlerCei():
             except:
                 pass
 
-            if self.debug: self.driver.save_screenshot(self.directory + r'05_05-' + str(i) + '.png')
+            self.__save_screenshot(r'05_05-' + str(i) + '.png')
 
             # checa se existem trades para essa corretora
             aviso = self.driver.find_element_by_id(self.id_mensagem_de_aviso)
@@ -324,12 +334,12 @@ class CrawlerCei():
                 self.consultar_click(self.driver)
                 try:
                     WebDriverWait(self.driver, 60).until(self.exists_and_not_disabled(self.id_selecao_corretoras))
-                    if self.debug: self.driver.save_screenshot(self.directory + r'05_06-sem-resultados-' + str(i) + '.png')
+                    self.__save_screenshot(r'05_06-sem-resultados-' + str(i) + '.png')
                 except StaleElementReferenceException as ex:
                     # Pode ignorar já que não teve dados
                     pass
             else:
-                if self.debug: self.driver.save_screenshot(self.directory + r'05_06-' + str(i) + '.png')
+                self.__save_screenshot(r'05_06-' + str(i) + '.png')
                 dfs_to_concat.append(self.__converte_custodia_para_dataframe(i, nomeAgente))
                 self.consultar_click(self.driver)
                 WebDriverWait(self.driver, 60).until(self.exists_and_not_disabled(self.id_selecao_corretoras))
