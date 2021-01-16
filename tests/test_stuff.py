@@ -270,3 +270,24 @@ class TestStuff(unittest.TestCase):
         assert split_data['ticker'][1] == 'id2'
         assert split_data['taxas'][0] == 1
         assert split_data['taxas'][1] == 3
+
+    def test_split_operations_com_venda(self):
+        data = [{'ticker': 'id2', 'qtd': 3,  'data': datetime.date(2019, 3, 11), 'preco': 50, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                {'ticker': 'id1', 'qtd': 1,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                {'ticker': 'id2', 'qtd': -3,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                ]
+        notas = [{'ticker': '@SPLIT', 'qtd': 0,  'data': datetime.date(2019, 4, 11), 'preco': 0, 'taxas' : 4.00, 'aquisicao_via' : 'teste'},                
+                ]
+
+        df = create_testing_dataframe(data)
+        dfNotas = create_testing_dataframe(notas)
+
+        split_data = check_split_operations(dfNotas, df)
+        print(split_data)
+        assert len(split_data) == 2
+        assert split_data['ticker'][0] == 'id1'
+        assert split_data['ticker'][1] == 'id2'
+        assert split_data['taxas'][0] == 1
+        assert split_data['taxas'][1] == 3
+        assert split_data['valor'][0] == 0
+        assert split_data['valor'][1] == 0
