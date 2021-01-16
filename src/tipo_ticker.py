@@ -17,6 +17,7 @@ class TipoTicker(Enum):
     FUTURO = 5
     FIP = 6
     FIPIE = 7
+    BDR = 8
 
 @cachier(stale_after=datetime.timedelta(days=30))
 def tipo_ticker(ticker):
@@ -28,6 +29,8 @@ def tipo_ticker(ticker):
             return TipoTicker.FIPIE
         if tp == 'FIP':
             return TipoTicker.FIP
+        if tp == 'BDR':
+            return TipoTicker.BDR
         if tp == 'ETF':
             return TipoTicker.ETF
         if tp == 'ACAO':

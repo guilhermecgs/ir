@@ -82,13 +82,31 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
 # Arquivos de dados adicionais que podem ser criados pelo usuario 
   - **notas-corretagem.txt**
-    - Deve conter os dados das notas de corretagem caso queria verificar os
+    - Deve conter os dados das notas de corretagem caso deseje verificar os
       valores processados, quando os dados estão corretos a diferença para notas de corretagem fica zerada
-    - caso não seja criado vai ser indicado que existe uma diferença entre o processamento eas notas de corretagem
+    - caso não seja criado vai ser indicado que existe uma diferença entre o processamento e as notas de corretagem
+    - A utilização desse arquivo permite detectar erros de digitação, principalmente ao utilizar os custos e taxas
     - formato CSV com as colunas : DATA CORRETORA VALOR
   - **ativos-meus-dados.yaml**
-    - contendo dados adicionais sobre os ativos, chave deve ser o código do ativo e as entradas parametros adicionais como **cnpj**, **nome** do ativo 
-    - também é possivel definir o parametro **carteira** e nesse caso no relatório de execução será apresentada a totalização dos ativos por carteira
+    - contendo dados adicionais sobre os ativos, chave deve ser o código do ativo e as entradas parametros adicionais 
+    - **cnpj**, **nome** do ativo são incluidos no relatório ao executar com data de referencia **31/12/AAAA**
+    - **carteira** permite gerar uma totalização de ativos por carteiras
+    - **tipo** permite definir um tipo para o ativo independente das buscas externas
+        - ex para ETFs que são classificados como ações
+```yaml
+
+# Exemplo ativos-meus-dados.yaml
+
+ACME3:
+   - nome: Empresa Papa Leguas
+   - cnpj: XXX.XXX.XXX/XXXX-XX
+   - carteira: dividendos
+
+TABA11:
+   - nome: Organizações Tabajara
+   - cnpj: XXX.XXX.XXX/XXXX-XX
+   - carteira: longo_prazo
+```
 
 # Arquivos gerados pelo sistema
   - **YYYY-MM-DD.txt**
@@ -127,20 +145,20 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
         - opção de indicar perdas com cor diferente
    
 # techstack
-    - python
-    - selenium
-    - gitlab ci
-    - beautifulsoap
-    - pandas
-    - cachier
+- python
+- selenium
+- gitlab ci
+- beautifulsoap
+- pandas
+- cachier
     
 # Legislação / Informações
-    - **FIP**
-        - http://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/fundos-de-investimento-em-participacoes-fip.htm
-	- https://www.btgpactualdigital.com/blog/coluna-do-assessor/fundos-de-investimento-em-participacoes-fip
-        - **FIP-IE**
-            - Lei nº 11.478/07 - http://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/lei/L11478.htm
-            - https://www.vincienergia.com.br/governanca-corporativa/caracteristicas-de-um-fip-em-infraestrutura/
+- **FIP**
+    - http://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/renda-variavel/fundos-de-investimento-em-participacoes-fip.htm
+    - https://www.btgpactualdigital.com/blog/coluna-do-assessor/fundos-de-investimento-em-participacoes-fip
+    - **FIP-IE**
+        - Lei nº 11.478/07 - http://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/lei/L11478.htm
+        - https://www.vincienergia.com.br/governanca-corporativa/caracteristicas-de-um-fip-em-infraestrutura/
 
     
 # tags

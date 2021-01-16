@@ -6,6 +6,9 @@ from dateutil.relativedelta import relativedelta
 from src.tipo_ticker import TipoTicker
 from src.stuff import tipo_ticker, vendas_no_mes
 
+#
+# TODO: verificar para tratar tambem as taxas/custos das vendas aqui
+# 
 
 class CalculoIr():
     df: pd.DataFrame
@@ -62,7 +65,7 @@ class CalculoIr():
         if lucro > 0:
             if tipo == TipoTicker.ACAO:
                 return lucro * 0.15
-            if tipo == TipoTicker.ETF:
+            if tipo == TipoTicker.ETF or tipo == TipoTicker.BDR:
                 return lucro * 0.15
             if tipo == TipoTicker.FII or tipo == TipoTicker.FIP:
                 return lucro * 0.2
