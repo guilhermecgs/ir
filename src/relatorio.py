@@ -111,6 +111,9 @@ class Relatorio:
     def calcula_totais(self, custodia, agrupador, default_column=None):
         if not agrupador in custodia.columns:
             c = custodia.copy()
+            if default_column:
+               if default_column not in custodia.columns:
+                   c[default_column] = c.apply(lambda row: ticker_data(row.ticker, default_column, '?'), axis=1)
             c[agrupador] = c.apply(lambda row: ticker_data(row.ticker, agrupador, default_value=('?' if default_column is None else row[default_column]) ), axis=1)
             if c[agrupador].equals(c[default_column]):
                 # Nao tem dados adicionais então não agrupa
