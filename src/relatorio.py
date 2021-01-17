@@ -40,17 +40,21 @@ def assunto(ir):
 
     return assunto
 
-
+def adiciona_coluna_adicional(custodia, nome_coluna, atributo):
+    if (len(nome_coluna) > 0) and (len(atributo) > 0) and not (nome_coluna in custodia.columns):
+        custodia[nome_coluna] = custodia.apply(lambda row: ticker_data(row.ticker, atributo), axis=1)
+        # Verifica se tem algum valor, caso não tenha remove para não ocupar espaço sem necessidade
+        if len(custodia[nome_coluna].dropna()) == 0:
+           custodia = custodia.drop([nome_coluna], axis=1)
+    return custodia
+    
 #
 # Adiciona informações para declaração de custódia no IRPF anual
 #
 def adiciona_dados_irpf(custodia, dados_irpf):
     if dados_irpf:
-        custodia['CNPJ'] = custodia.apply(lambda row: ticker_cnpj(row.ticker), axis=1)
-        custodia['Nome'] = custodia.apply(lambda row: ticker_nome(row.ticker), axis=1)
-        custodia['CNPJ Adm'] = custodia.apply(lambda row: ticker_data(row.ticker, 'cnpj_adm'), axis=1)
-        custodia['Nome Adm'] = custodia.apply(lambda row: ticker_data(row.ticker, 'nome_adm'), axis=1)
-        custodia['RI URL'] = custodia.apply(lambda row: ticker_data(row.ticker, 'ri_url'), axis=1)
+        for n in os.getenv('RELATORIO_COLUNAS_IRPF','cnpj-nome-cnpj_adm-nome_adm-ri_url').split('-'):
+            custodia = adiciona_coluna_adicional(custodia, n, n)
 
 
 
@@ -160,9 +164,29 @@ class Relatorio:
         custodia['preco_medio_compra'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_medio_compra), axis=1)
         custodia['ultimo_yield'] = custodia.apply(lambda row: '' if row.ultimo_yield is None else '{:.2f}'.format(row.ultimo_yield), axis=1)
         custodia['p_vp'] = custodia.apply(lambda row: '' if row.p_vp is None else '{:.2f}'.format(row.p_vp), axis=1)
-        custodia.columns = ['ticker', 'qtd', 'valor (R$)', 'valor compra (R$)', 'Preco Atual (R$)', 'Preco Medio Compra (R$)', 'valorizacao (%)', 'Ultimo Yield [%]', 'P/VP', 'tipo', 'Dt.Compra']
-
+        # Coloca colunas com informações adicionais
         adiciona_dados_irpf(custodia, dados_irpf)
+        for n in os.getenv('RELATORIO_COLUNAS_EXTRAS','').split('-'):
+            if ':' in n:
+                arr = n.split(':')
+                custodia = adiciona_coluna_adicional(custodia, arr[1], arr[0])
+            else:
+                custodia = adiciona_coluna_adicional(custodia, n, n)
+        custodia = custodia.rename(columns={ 'valor' : 'valor (R$)', 
+                                            'valor_original' : 'valor compra (R$)', 
+                                            'preco_atual' : 'Preco Atual (R$)', 
+                                            'preco_medio_compra' : 'Preco Medio Compra (R$)', 
+                                            'valorizacao' : 'valorizacao (%)', 
+                                            'ultimo_yeld' : 'Ultimo Yield [%]', 
+                                            'p_vp' : 'P/VP', 
+                                            'data_primeira_compra' : 'Dt.Compra',
+                                            'nome' : 'Nome',
+                                            'cnpj' : 'CNPJ',
+                                            'cnpj_adm' : 'CNPJ Adm',
+                                            'nome_adm' : 'Nome Administrador',
+                                            'ri_url' : 'RI URL'})
+
+
         self.adiciona_tabela(custodia)
         
         self.adiciona_totais(custodia_base)

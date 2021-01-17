@@ -65,13 +65,19 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
  - **WORK_DIR**:./00098765434/
     - Caso seja definido permite armazenar arquivos em um diretório especifico
     - Recomendado para quem for utilizar para mais de uma pessoa, criando um diretório para cada CPF
- - **RELATORIOS_TOTAIS**:tipo-carteira:tipo
+ - **RELATORIOS_TOTAIS**
     - define as totalizações que serão calculadas para os ativos 
     - cada conjunto de totalização separado por hífen **-**
     - cada conjunto de totalização deve ter o nome da coluna a totalizar ou o
     nome da coluna e totalizar e o nome da coluna default caso não tenha
     valor separado por dois pontos **:**
     - ex. **tipo-carteira:tipo**
+ - **RELATORIOS_COLUNAS_EXTRAS**
+    - define colunas adicionais que devem ser incluidas no relatório padrão 
+    - ex. **nome-carteira:Carteira-setor:Setor**
+ - **RELATORIOS_COLUNAS_IRPF**
+    - define colunas adicionais que devem ser incluidas no relatório gerado na data de referência 31/12
+    - ex. **cnpj-nome-cnpj_adm-nome_adm-ri_url**
 
 # Arquivos gerenciados pelo sistema
   - **export_operacoes.txt**
