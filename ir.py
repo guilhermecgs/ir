@@ -142,13 +142,14 @@ def ajusta_datas(df, coluna):
 
 def carrega_notas_corretagem(pref):
     colunasNotasCorretagem = [ 'data', 'corretora', 'valor', 'irrf' ]
+    fn = WORK_DIR + pref + 'notas-corretagem.txt'
     try:
         # DATA(DD/MM/YYYY) CORRETORA VALOR IRRF
         # Valor : Liquido da nota de corretagem
         #	positivo para debito (mais compras do que vendas)
         # 	negativo para credito (mais vendas do que compras)
         # IRRF sempre positivo
-        notas = pd.read_csv(WORK_DIR + pref + 'notas-corretagem.txt', 
+        notas = pd.read_csv(fn, 
                          sep='\t',
                          header=None,
                          parse_dates=[0],
@@ -156,9 +157,10 @@ def carrega_notas_corretagem(pref):
                          comment='#')
         notas = notas[[0,1,2,3]]
         notas.columns = colunasNotasCorretagem
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         notas = pd.DataFrame(columns=colunasNotasCorretagem)
     except Exception as e:
+        print("*** Erro carregando notas de corretagem " + fn)
         print(e)
         notas = pd.DataFrame(columns=colunasNotasCorretagem)
     # Como é carregado como datetime, converte para permitir a comparação correta
@@ -202,19 +204,20 @@ def do_diario(df, first_year, last_year):
         for year in range(first_year,last_year+1):
            n = carrega_notas_corretagem('/' + str(year) + '/')
            notas = notas.append(n, ignore_index=True)
-
-        #TODO fazer de forma mais eficiente        
-        for i, row in diario.iterrows():
-            for iN, rowN in notas.iterrows():
-               if row['data'] == rowN['data']:
-                  diario.loc[i,'notas_corretagem'] = row['notas_corretagem'] + rowN['valor']
-                  notas.loc[iN,'verificado'] = True
-        notas = notas[notas.verificado == False]
-        if notas.size > 0:
-           notas = notas[['data','corretora','valor','irrf']]
-           txtNotas = "*** NOTAS SEM OPERACOES NO DIA : \n" + tabulate(notas, headers=['Data', 'Corretora', 'Valor\n(R$)','IRRF\n(R$)'], showindex=False, tablefmt='psql')
-           print(txtNotas)
-                  
+        if len(notas) > 0:
+            #TODO fazer de forma mais eficiente        
+            for i, row in diario.iterrows():
+                for iN, rowN in notas.iterrows():
+                    if row['data'] == rowN['data']:
+                        diario.loc[i,'notas_corretagem'] = row['notas_corretagem'] + rowN['valor']
+                        notas.loc[iN,'verificado'] = True
+            notas = notas[notas.verificado == False]
+            if len(notas) > 0:
+                notas = notas[['data','corretora','valor','irrf']]
+                txtNotas = "*** NOTAS SEM OPERACOES NO DIA : \n" + tabulate(notas, headers=['Data', 'Corretora', 'Valor\n(R$)','IRRF\n(R$)'], showindex=False, tablefmt='psql')
+                print(txtNotas)
+        else:
+            print('caso queira validar suas operações com as notas de corretagem informe os dados nos arquivos notas-corretagem.txt')
     except Exception as e:
         print("** ERRO CARREGANDO NOTAS DE CORRETAGEM")
         print(e)
@@ -258,10 +261,10 @@ def do_calculo_ir():
     calculo_ir.calcula()
 
     declaracao_anual = data_referencia.strftime('%m%d') == '1231'
+    adicionais = {}
     if declaracao_anual:
-       adicionais = {}
        # final do ano gerar relatorio para facilitar IRPF Anual
-       print("*** GERAR RELATORIO PARA IRPF")
+       print("*** GERANDO RELATORIO PARA IRPF")
        try:
           carteira_cei = pd.read_csv(WORK_DIR + nome_com_referencia('carteira_cei.txt'),
                                     sep='\t',
@@ -287,7 +290,7 @@ def do_calculo_ir():
           print("Erro lendo carteira_cei.txt ")
           print(e)
                      
-       salva_planilha_irpf(WORK_DIR + nome_com_referencia('custodia.xlsx'), custodia, adicionais)
+    salva_planilha_irpf(WORK_DIR + nome_com_referencia('custodia.xlsx'), custodia, adicionais)
        
     txt = relatorio_txt(custodia.copy(), calculo_ir, data_referencia, declaracao_anual)
     save_to_daily_file("txt", txt);
