@@ -94,15 +94,15 @@ class Relatorio:
         pass
        
     def adiciona_totais(self, custodia_base):
-        # Totalização por tipo de ativo
-        totais_tipo = self.calcula_totais(custodia_base, 'tipo')    
-        if totais_tipo is not None:
-            self.adiciona_tabela(totais_tipo)
-
-        # Totalização por carteira (definição do usuário para agrupar os ativos de forma diferente do tipo padrão)
-        totais_carteira = self.calcula_totais(custodia_base, 'carteira', default_column='tipo')    
-        if totais_carteira is not None:
-            self.adiciona_tabela(totais_carteira)
+        totalizacoes = os.getenv('RELATORIO_TOTAIS','tipo-carteira:tipo')
+        for s1 in totalizacoes.split('-'):
+           s = s1.split(':')
+           if len(s) == 2:
+              totais = self.calcula_totais(custodia_base, s[0], default_column=s[1])    
+           else:
+              totais = self.calcula_totais(custodia_base, s[0])    
+           if totais is not None:
+               self.adiciona_tabela(totais)
 
     #
     # Calcula totais agrupados dos ativos 

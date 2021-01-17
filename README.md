@@ -1,27 +1,27 @@
-# ir - Projeto de calculo de Imposto de Renda em operacoes na bovespa automaticamente
+# ir - Projeto de calculo de Imposto de Renda em operações na bovespa automaticamente
 
-## o que se propoe a fazer
- - Automaticamente busca todos as suas operacoes na bolsa no site do canal eletronico do investidor (CEI) (https://cei.b3.com.br/)
- - Funciona com FIIs, ETFs, Acoes e Opcoes
+## o que se propõe a fazer
+ - Automaticamente busca todos as suas operações na bolsa no site do canal eletrônico do investidor (CEI) (https://cei.b3.com.br/)
+ - Funciona com FIIs, ETFs, Acoes e Opções
  - Funciona com qualquer corretora. (Na verdade, nao depende da corretora)
  - Apos buscar os trades no CEI, salva tudo em um arquivo csv no dropbox da sua conta
  - Todo dia 5 de cada mes executa e calcula (**automaticamente**):
     - Preço médio de compra
     - Preço médio de venda
-    - Lucro/Prejuizo no mes
-    - IR a pagar, ja considerando o possivel prejuizo acumulado
+    - Lucro/Prejuízo no mes
+    - IR a pagar, ja considerando o possível prejuízo acumulado
     - Tabela com a custodia atual para conferencia
-    - Envia email com todas as informacoes para voce pagar o imposto
- - A ideia é ser TUDO automatico, mas ainda ter a opcao de voce manualmente ter controle de tudo via um arquivo csv caso algum papel sofra desdobramento ou mude o ticker de negociacao
+    - Envia email com todas as informações para voce pagar o imposto
+ - A ideia é ser TUDO automático, mas ainda ter a opção de voce manualmente ter controle de tudo via um arquivo csv caso algum papel sofra desdobramento ou mude o ticker de negociação
 
 ## o que voce vai precisar
  - Uma conta no CEI (https://cei.b3.com.br/)
  - Uma conta no dropbox com API habilitada (https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account/)
     - opcional
- - Instalar as dependencias necessárias
+ - Instalar as dependências necessárias
     - pip install --user -r requirements.txt
- - Configurar as variaveis de ambiente conforme (https://github.com/guilhermecgs/ir/blob/master/tests/test_environment_variables.py)
- - Caso queira pode incluir operações que não estão disponiveis no CEI em um arquivo outras_operacoes.txt (deve seguir o mesmo padrão do arquivo de dados CEI)
+ - Configurar as variáveis de ambiente conforme (https://github.com/guilhermecgs/ir/blob/master/tests/test_environment_variables.py)
+ - Caso queira pode incluir operações que não estão disponíveis no CEI em um arquivo outras_operacoes.txt (deve seguir o mesmo padrão do arquivo de dados CEI)
     - Essas operações serão combinadas com as operações CEI e salvas em um arquivo combinado.txt
  - Executar os comandos abaixo:
     - ~~python ./ir.py --do check_environment_variables~~
@@ -31,15 +31,15 @@
         - busca a posição da carteira e salva para verificações posteriores
     - python ./ir.py --do salva_carteira --html nome_do_arquivo
         - processar um html salvo com a posição da carteira sem fazer o login no servidor CEI
-        - lembrar que o site CEI é dinamico, então só é possivel salvar corretamente via console de desenvolvimento do browser
+        - lembrar que o site CEI é dinâmico, então só é possível salvar corretamente via console de desenvolvimento do browser
     - python ./ir.py --do calculo_ir
 
    
-## exemplo do relatorio gerado no seu email
+## exemplo do relatório gerado no seu email
 https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
 ## Exemplo de variáveis de ambiente:
- - apesar do teste de variaveis obrigar algumas variaveis, algumas podem ser eliminadas para pular algumas funções.
+ - apesar do teste de variáveis obrigar algumas variáveis, algumas podem ser eliminadas para pular algumas funções.
 
 
  - **DROPBOX_API_KEY**:jOznaw_xxxxxxxxxxxxxxxxxxxxtkw9ox_a9I_8-_aU2xw1xxxxxxxxxxKWek69Z
@@ -59,28 +59,35 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
  - **CPF**:00098765434
  - **SENHA_CEI**:minha_senha_cei
  - **IGNORA_AGENTES_OPERACOES**
-    - Lista com numeros dos agentes/corretoras a ignorar operações, separados por hifen ex: 3-308-4015
+    - Lista com números dos agentes/corretoras a ignorar operações, separados por hífen ex: 3-308-4015
     - Não vai buscar no sistema CEI operações dos agentes/corretoras com os números especificados
     - Util quando tem conta em mais de uma corretora mas opera somente em uma, pois deixa o processo bem mais rápido
  - **WORK_DIR**:./00098765434/
     - Caso seja definido permite armazenar arquivos em um diretório especifico
     - Recomendado para quem for utilizar para mais de uma pessoa, criando um diretório para cada CPF
+ - **RELATORIOS_TOTAIS**:tipo-carteira:tipo
+    - define as totalizações que serão calculadas para os ativos 
+    - cada conjunto de totalização separado por hífen **-**
+    - cada conjunto de totalização deve ter o nome da coluna a totalizar ou o
+    nome da coluna e totalizar e o nome da coluna default caso não tenha
+    valor separado por dois pontos **:**
+    - ex. **tipo-carteira:tipo**
 
 # Arquivos gerenciados pelo sistema
   - **export_operacoes.txt**
     - dados obtidos do sistema CEI das operações efetuadas
 
-# Arquivos de dados de operações adicionais (carregados na sequencia que estão listados)
+# Arquivos de dados de operações adicionais (opcionais e carregados na sequencia que estão listados)
   - **outras_operacoes.txt**
   - **custos.txt**
   - **ofertas_publicas.txt**
   - **subscricoes.txt**
   - devem seguir o mesmo formato do **export_operacoes.txt**
   - os arquivos com nomes diferentes servem para facilitar a organização do usuario
-  - é possivel distribuir custos entre diversas ações automaticamente utilizando **@SPLIT** como código do ativo/ticker
-  - é possivel colocar esses arquivos em diretorios YYYY caso queira separar 
+  - é possível distribuir custos entre diversas ações automaticamente utilizando **@SPLIT** como código do ativo/ticker
+  - é possível colocar esses arquivos em diretórios AAAA (ano) caso queira separar 
 
-# Arquivos de dados adicionais que podem ser criados pelo usuario 
+# Arquivos de dados adicionais que podem ser criados pelo usuário (opcionais)
   - **notas-corretagem.txt**
     - Deve conter os dados das notas de corretagem caso deseje verificar os
       valores processados, quando os dados estão corretos a diferença para notas de corretagem fica zerada
@@ -89,7 +96,7 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
     - formato CSV com as colunas : DATA CORRETORA VALOR
   - **ativos-meus-dados.yaml**
     - contendo dados adicionais sobre os ativos, chave deve ser o código do ativo e as entradas parametros adicionais 
-    - **cnpj**, **nome** do ativo são incluidos no relatório ao executar com data de referencia **31/12/AAAA**
+    - **cnpj**, **nome** do ativo são incluídos no relatório ao executar com data de referencia **31/12/AAAA**
     - **carteira** permite gerar uma totalização de ativos por carteiras
     - **tipo** permite definir um tipo para o ativo independente das buscas externas
         - ex para ETFs que são classificados como ações
@@ -117,7 +124,7 @@ TABA11:
     - planilha gerada ao utilizar referencia no dia 31/12 
     - facilitador para declaração anual 
   - **diario.txt** ou **YYYY-MM-DD.txt** quando processando data especifica
-    - resumo de operações por dia, faz a comparação com as notas de corretagem para identificação de possiveis erros
+    - resumo de operações por dia, faz a comparação com as notas de corretagem para identificação de possíveis erros
   - **combinado.txt** ou **YYYY-MM-DD.txt** quando processando dados especifica
     - dados combinados dos arquivos de operações para facilitar analise em caso de erros
 
@@ -138,7 +145,7 @@ TABA11:
     - Incluir gratuidade de 20k por mes para acoes
     - Incluir desconto de taxas, emolumentos e dedo duro - http://www.b3.com.br/pt_br/produtos-e-servicos/tarifas/listados-a-vista-e-derivativos/renda-variavel/tarifas-de-acoes-e-fundos-de-investimento/a-vista/
     - Utilizar um framework de log para facilitar o acompanhamento da execução
-    - Saidas para facilitar a declaração anual
+    - Saídas para facilitar a declaração anual
     - Separar o tratamento de BDR
     - Ajustar saída html 
         - alinhar números na direita
