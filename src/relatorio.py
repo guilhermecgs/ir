@@ -7,6 +7,7 @@ from src.tipo_ticker import TipoTicker
 from pretty_html_table import build_table
 from src.dados import ticker_nome, ticker_cnpj, ticker_codigo_irpf, ticker_data
 import pandas as pd
+import numpy as np
 
 #
 # Para não ficar mostrando todo o detalhamento de vendas 
@@ -56,6 +57,8 @@ def adiciona_dados_irpf(custodia, dados_irpf):
         for n in os.getenv('RELATORIO_COLUNAS_IRPF','cnpj-nome-cnpj_adm-nome_adm-ri_url').split('-'):
             custodia = adiciona_coluna_adicional(custodia, n, n)
 
+def is_nan(value):
+     return (value is None) or np.isnan(value)
 
 
 class Relatorio:
@@ -162,8 +165,8 @@ class Relatorio:
         custodia['valor_original'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor_original), axis=1)
         custodia['preco_atual'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_atual), axis=1)
         custodia['preco_medio_compra'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_medio_compra), axis=1)
-        custodia['ultimo_yield'] = custodia.apply(lambda row: '' if row.ultimo_yield is None else '{:.2f}'.format(row.ultimo_yield), axis=1)
-        custodia['p_vp'] = custodia.apply(lambda row: '' if row.p_vp is None else '{:.2f}'.format(row.p_vp), axis=1)
+        custodia['ultimo_yield'] = custodia.apply(lambda row: '' if is_nan(row.ultimo_yield) else '{:.2f}'.format(row.ultimo_yield), axis=1)
+        custodia['p_vp'] = custodia.apply(lambda row: '' if is_nan(row.p_vp) else '{:.2f}'.format(row.p_vp), axis=1)
         # Coloca colunas com informações adicionais
         adiciona_dados_irpf(custodia, dados_irpf)
         for n in os.getenv('RELATORIO_COLUNAS_EXTRAS','').split('-'):
@@ -273,6 +276,7 @@ class RelatorioHtml(Relatorio):
 
    def __init__(self):
        self.relatorio = ''
+       self.useTableSorter = os.getenv('RELATORIO_HTML_TABLE_SORTER','0') == '1'
 
    def append(self, text, tab=0):
        self.relatorio += text
@@ -287,16 +291,38 @@ class RelatorioHtml(Relatorio):
 
 
    def _init_html(self):
-       return '<html>' \
-              '    <head>' \
-              '        <meta name="viewport" content="width=device-width" />' \
-              '        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' \
-              '    </head>'  \
-              '    <body class="">'
+       init = '<html>\n' \
+              '    <head>\n' \
+              '        <meta name="viewport" content="width=device-width" />\n' \
+              '        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
+       if self.useTableSorter:
+           for url in [ 'https://code.jquery.com/jquery-3.5.1.min.js',
+                        'https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.default.min.css',
+                        'https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js',
+                        'https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js',
+                        ]:
+               if url.endswith('css'):
+                  init += '        <link href="' + url + '" rel="stylesheet">\n'
+               else:
+                  init += '        <script type="text/javascript" src="' + url + '"></script>\n'
+                    
+       init += '    </head>\n'
+
+       init += '    <body class="">\n'
+       if self.useTableSorter:
+           init += '<script>\n' \
+'$(function() {' \
+' console.log("aqui");\n' \
+'  $(".dataframe").tablesorter({ ' \
+'	widgets: ["zebra", "filter"],' \
+'                             }); ' \
+'});' \
+'</script>\n'
+       return init
 
 
    def _close_html(self):
-       return '    </body></html>'
+       return '    </body></html>\n'
        
    def separator(self):
        self.append('<hr/>')
@@ -311,7 +337,7 @@ class RelatorioHtml(Relatorio):
        if '<p' in text:
            self.append(text.replace('<p', '<p' + style))
        else:
-           self.append('<p' + style + '>' + text + '</p>')
+           self.append('<p' + style + '>' + text + '</p>\n')
 
 
    def _hX(self, level, text, tab=0):

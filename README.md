@@ -78,6 +78,9 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
  - **RELATORIOS_COLUNAS_IRPF**
     - define colunas adicionais que devem ser incluidas no relatório gerado na data de referência 31/12
     - ex. **cnpj-nome-cnpj_adm-nome_adm-ri_url**
+ - **RELATORIO_HTML_TABLE_SORTER**
+    - se for definido com o valor **1** o relatório HTML utilizará também a biblioteca table-sorter que permite filtrar e reordenar as tabelas em HTML
+      
 
 # Arquivos gerenciados pelo sistema
   - **export_operacoes.txt**
