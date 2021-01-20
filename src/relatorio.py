@@ -276,8 +276,7 @@ class RelatorioHtml(Relatorio):
 
    def __init__(self):
        self.relatorio = ''
-       self.useTableSorter = os.getenv('RELATORIO_HTML_TABLE_SORTER','0') == '1'
-
+ 
    def append(self, text, tab=0):
        self.relatorio += text
 
@@ -287,37 +286,31 @@ class RelatorioHtml(Relatorio):
    def adiciona_tabela(self, tabela, tab=0):
         #TODO: Precisa alinhar corretamente pela direita as colunas numéricas e esquerda as restantes
         # Deixando tudo na direita pelo menos fica mais facil de ver os números
-        self.p(build_table(tabela, cor_tabela(), text_align='right'), tab=tab)
 
+       # Para não truncar as colunas
+        with pd.option_context('display.max_colwidth', -1): 
+           self.p(build_table(tabela, cor_tabela(), text_align='right'), tab=tab)
 
+   # Carrega arquivo texto caso exista e retorna o conteudo como string
+   def _load_file(self, fn):
+       if os.path.isfile(fn):
+           try:
+              with open(fn) as f:
+                  return f.read()
+           except Exception as ex:
+              print("** Erro lendo arquivo " + fn)
+              print(ex)
+       return ''
+           
    def _init_html(self):
        init = '<html>\n' \
               '    <head>\n' \
               '        <meta name="viewport" content="width=device-width" />\n' \
               '        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
-       if self.useTableSorter:
-           for url in [ 'https://code.jquery.com/jquery-3.5.1.min.js',
-                        'https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.default.min.css',
-                        'https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js',
-                        'https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js',
-                        ]:
-               if url.endswith('css'):
-                  init += '        <link href="' + url + '" rel="stylesheet">\n'
-               else:
-                  init += '        <script type="text/javascript" src="' + url + '"></script>\n'
-                    
+       init += self._load_file('relatorio_html_head.inc.html')
        init += '    </head>\n'
-
        init += '    <body class="">\n'
-       if self.useTableSorter:
-           init += '<script>\n' \
-'$(function() {' \
-' console.log("aqui");\n' \
-'  $(".dataframe").tablesorter({ ' \
-'	widgets: ["zebra", "filter"],' \
-'                             }); ' \
-'});' \
-'</script>\n'
+       init += self._load_file('relatorio_html_body.inc.html')
        return init
 
 
