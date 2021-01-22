@@ -41,8 +41,10 @@ def fii_cnpj(ticker):
 # No caso das subscrições os códigos vem diferentes e portanto não tem cotação
 # Ajusta para o equivalente de forma a obter cotação valida
 #  ex. VGIP13 VGIP14 -> VGIP11
+# Essa descrição indica que poderiam ser utilizados outros números entre 12 e 30
+#   https://fiis.com.br/artigos/codigos-tickers-fiis/#:~:text=Quando%20negociamos%20uma%20cota%20de,%2C%2013%2C%2014%20e%2015.
 def fii_ticker_equivalente(ticker):
-    return re.sub("1[234]$","11", ticker)
+    return re.sub("(1[2-9]|2[0-9]|30)$","11", ticker)
 
 def __pega_parametro(ticker, parametro):
 
