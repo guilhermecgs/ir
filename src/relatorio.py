@@ -303,19 +303,19 @@ class RelatorioHtml(Relatorio):
        return ''
            
    def _init_html(self):
-       init = '<html>\n' \
-              '    <head>\n' \
-              '        <meta name="viewport" content="width=device-width" />\n' \
-              '        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
-       init += self._load_file('relatorio_html_head.inc.html')
-       init += '    </head>\n'
-       init += '    <body class="">\n'
-       init += self._load_file('relatorio_html_body.inc.html')
-       return init
+       return ( '<html>\n' +
+              '    <head>\n' +
+              '        <meta name="viewport" content="width=device-width" />\n' +
+              '        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n' +
+              self._load_file('relatorio_html_head.inc.html') +
+              '    </head>\n' +
+              '    <body class="">\n' +
+              self._load_file('relatorio_html_body_start.inc.html') )
 
 
    def _close_html(self):
-       return '    </body></html>\n'
+       return  ( self._load_file('relatorio_html_body_end.inc.html') +
+               '    </body></html>\n' )
        
    def separator(self):
        self.append('<hr/>')

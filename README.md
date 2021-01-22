@@ -125,8 +125,10 @@ TABA11:
 # Arquivos auxiliares adicionais/opcionais
   - **relatorio_html_head.inc.html**
     - conteúdo a ser incluido no elemento head do relatório html gerado
-  - **relatorio_html_body.inc.html**
-    - conteúdo a ser incluido no elemento body do relatório html gerado
+  - **relatorio_html_body_start.inc.html**
+    - conteúdo a ser incluido no inicio do elemento body do relatório html gerado
+  - **relatorio_html_body_end.inc.html**
+    - conteúdo a ser incluido no final do elemento body do relatório html gerado
 
 # Arquivos gerados pelo sistema
   - **YYYY-MM-DD.txt**
