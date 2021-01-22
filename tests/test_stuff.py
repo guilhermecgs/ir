@@ -254,8 +254,8 @@ class TestStuff(unittest.TestCase):
 
 
     def test_split_operations(self):
-        data = [{'ticker': 'id1', 'qtd': 1,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
-                {'ticker': 'id2', 'qtd': 3,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+        data = [{'ticker': 'id1', 'qtd': 1, 'operacao' : 'Compra', 'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                {'ticker': 'id2', 'qtd': 3, 'operacao' : 'Compra', 'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
                 ]
         notas = [{'ticker': '@SPLIT', 'qtd': 0,  'data': datetime.date(2019, 4, 11), 'preco': 0, 'taxas' : 4.00, 'aquisicao_via' : 'teste'},                
                 ]
@@ -272,9 +272,9 @@ class TestStuff(unittest.TestCase):
         assert split_data['taxas'][1] == 3
 
     def test_split_operations_com_venda(self):
-        data = [{'ticker': 'id2', 'qtd': 3,  'data': datetime.date(2019, 3, 11), 'preco': 50, 'taxas' : 0, 'aquisicao_via' : 'teste'},
-                {'ticker': 'id1', 'qtd': 1,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
-                {'ticker': 'id2', 'qtd': -3,  'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+        data = [{'ticker': 'id2', 'qtd': 3,  'operacao' : 'Compra', 'data': datetime.date(2019, 3, 11), 'preco': 50, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                {'ticker': 'id1', 'qtd': 1,  'operacao' : 'Compra', 'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
+                {'ticker': 'id2', 'qtd': -3,  'operacao' : 'Venda', 'data': datetime.date(2019, 4, 11), 'preco': 100, 'taxas' : 0, 'aquisicao_via' : 'teste'},
                 ]
         notas = [{'ticker': '@SPLIT', 'qtd': 0,  'data': datetime.date(2019, 4, 11), 'preco': 0, 'taxas' : 4.00, 'aquisicao_via' : 'teste'},                
                 ]
