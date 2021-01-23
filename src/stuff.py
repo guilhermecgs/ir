@@ -1,13 +1,15 @@
 import datetime
 import pandas as pd
 import numpy as np
+import os
 from tqdm import tqdm
 from dateutil.relativedelta import relativedelta
 
 from src.dropbox_files import OPERATIONS_FILEPATH
 from src.preco_atual import busca_preco_atual
 from src.tipo_ticker import tipo_ticker, TipoTicker
-from src.crawler_funds_explorer_bs4 import fii_dividend_yield, fii_p_vp
+from src.crawler_funds_explorer_bs4 import fii_dividend_yield
+from src.dados import ticker_p_vp
 
 
 def todas_as_colunas():
@@ -106,8 +108,11 @@ def check_split_operations(df, operations=None):
         elif row['ticker'] == '@SPLIT':
             dia = operations.copy()
             dia = dia[ dia['data'] == row['data'] ]
+            # Somente operacoes com quantidade
             dia = dia[ dia.qtd > 0 ]
+            # Agrupa compras e vendas para gerar splits separados dos custos e não alterar valor médio
             dia = dia.groupby(['ticker','operacao'], as_index=False, sort=True).agg({ 'valor' : 'sum' })
+
             total = dia['valor'].sum()
             for dI,dRow in dia.iterrows():
                 splitRow = { 'ticker' : dRow['ticker'], 
@@ -122,7 +127,6 @@ def check_split_operations(df, operations=None):
                 novos = novos.append(splitRow, ignore_index=True)
             remove.append(i)
                 
-            
     if len(remove):
         for i in remove:
             df = df.drop(index=i)
@@ -134,7 +138,7 @@ def get_operations(filepath=None,operations=None):
     df = get_operations_raw(filepath)
     return check_split_operations(df,operations)
 
-def calcula_custodia(df, data=None, orderBy='valor'):
+def calcula_custodia(df, data=None, orderBy=['valor','ticker']):
 
     custodia = []
 
@@ -143,9 +147,10 @@ def calcula_custodia(df, data=None, orderBy='valor'):
 
     precos_medios_de_compra = calcula_precos_medio_de_compra(df, data)
 
+    incluiZerado = (os.getenv('CUSTODIA_INCLUI_ZERO','0') == '1')
     for ticker in tqdm(df['ticker'].unique()):
         qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
-        if qtd_em_custodia > 0:
+        if incluiZerado or (qtd_em_custodia > 0):
             try:
                 preco_atual = float('nan')
                 try:
@@ -170,14 +175,14 @@ def calcula_custodia(df, data=None, orderBy='valor'):
                                  'preco_atual': np.round(preco_atual, decimals=2),
                                  'valorizacao': valorizacao,
                                  'ultimo_yield': fii_dividend_yield(ticker),
-                                 'p_vp': fii_p_vp(ticker) if tipo_ticker(ticker) == TipoTicker.FII else None,
+                                 'p_vp': ticker_p_vp(ticker),
                                  'data_primeira_compra': data_primeira_compra,
                                  'valor_original' : np.round(preco_medio_de_compra * qtd_em_custodia, decimals=2) })
             except Exception as ex:
                 raise Exception('Erro ao calcular custodia do ticker {}'.format(ticker), ex)
 
     df_custodia = pd.DataFrame(custodia)
-    df_custodia = df_custodia.sort_values(by=[orderBy], ascending=False)
+    df_custodia = df_custodia.sort_values(by=orderBy, ascending=False)
 
     return df_custodia
 

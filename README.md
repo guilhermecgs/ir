@@ -78,7 +78,8 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
  - **RELATORIOS_COLUNAS_IRPF**
     - define colunas adicionais que devem ser incluidas no relatório gerado na data de referência 31/12
     - ex. **cnpj-nome-cnpj_adm-nome_adm-ri_url**
-      
+ - **CUSTODIA_INCLUI_ZERO**
+    - **1** - define que deve apresentar os valores já zerados por venda também na lista de custódia      
 
 # Arquivos gerenciados pelo sistema
   - **export_operacoes.txt**

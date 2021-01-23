@@ -13,10 +13,9 @@ def busca_preco_atual(ticker):
         pass
 
     try:
-        from src.crawler_advfn import CrawlerAdvfn
-        crawlerAdvfn = CrawlerAdvfn()
+        from src.crawler_advfn import advfn_preco_atual
 
-        preco_atual = crawlerAdvfn.busca_preco_atual(ticker)
+        preco_atual = advfn_preco_atual(ticker)
 
         if preco_atual is not None:
             return preco_atual

@@ -154,8 +154,7 @@ class Relatorio:
         self.p('')
         self.h2('Custódia ' + os.environ['CPF'] + " " + str(data_ref))
         columns = ['ticker', 'qtd', 'valor', 'valor_original', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'ultimo_yield', 'p_vp', 'tipo', 'data_primeira_compra']
-        custodia = custodia[columns]
-        custodia = custodia[custodia.valor > 0]
+        custodia = custodia[columns].copy()
 
         # Salva copia antes de formatar para gerar totais
         custodia_base = custodia.copy()

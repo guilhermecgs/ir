@@ -1,5 +1,5 @@
 import datetime
-from src.crawler_funds_explorer_bs4 import fii_nome, fii_razao_social, fii_cnpj, fii_ticker_equivalente
+from src.crawler_funds_explorer_bs4 import fii_nome, fii_razao_social, fii_cnpj, fii_ticker_equivalente, fii_p_vp
 from cachier import cachier
 import pandas as pd
 import json
@@ -42,6 +42,21 @@ def ticker_cnpj(ticker):
        return cnpj
     return fii_cnpj(ticker)
 
+def ticker_p_vp(ticker):
+    p_vp = ticker_data(ticker, 'p_vp')
+    if p_vp:
+       return p_vp
+       
+    if ticker_tipo(ticker) == 'FII':
+       return fii_p_vp(ticker)
+       
+    if ticker_tipo(ticker) == 'ACAO':
+       from src.crawler_advfn import advfn_p_vp
+           
+       return advfn_p_vp(ticker)
+       
+    return None
+    
 def ticker_data(ticker, name, default_value=None):
     data = get_data(ticker)
     if data and name in data:

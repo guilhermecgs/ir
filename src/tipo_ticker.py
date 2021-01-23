@@ -22,19 +22,8 @@ class TipoTicker(Enum):
 @cachier(stale_after=datetime.timedelta(days=30))
 def tipo_ticker(ticker):
     tp = ticker_tipo(ticker)
-    if tp:
-        if tp == 'FII':
-            return TipoTicker.FII
-        if tp == 'FIPIE':
-            return TipoTicker.FIPIE
-        if tp == 'FIP':
-            return TipoTicker.FIP
-        if tp == 'BDR':
-            return TipoTicker.BDR
-        if tp == 'ETF':
-            return TipoTicker.ETF
-        if tp == 'ACAO':
-            return TipoTicker.ACAO
+    if tp in TipoTicker.__dict__:
+            return TipoTicker[tp]
             
     if eh_tipo_fii(ticker):
         return TipoTicker.FII
@@ -48,16 +37,6 @@ def tipo_ticker(ticker):
     except:
         pass
 
-    from src.crawler_advfn import CrawlerAdvfn
-    crawler_advfn = CrawlerAdvfn()
+    from src.crawler_advfn import advfn_tipo_ticker
 
-    if crawler_advfn.busca_tipo_ticker(ticker) == TipoTicker.ACAO:
-        return TipoTicker.ACAO
-
-    if crawler_advfn.busca_tipo_ticker(ticker) == TipoTicker.OPCAO:
-        return TipoTicker.OPCAO
-
-    if crawler_advfn.busca_tipo_ticker(ticker) == TipoTicker.FUTURO:
-        return TipoTicker.FUTURO
-
-    return None
+    return advfn_tipo_ticker(ticker)
