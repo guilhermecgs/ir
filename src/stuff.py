@@ -8,8 +8,7 @@ from dateutil.relativedelta import relativedelta
 from src.dropbox_files import OPERATIONS_FILEPATH
 from src.preco_atual import busca_preco_atual
 from src.tipo_ticker import tipo_ticker, TipoTicker
-from src.crawler_funds_explorer_bs4 import fii_dividend_yield
-from src.dados import ticker_p_vp
+from src.dados import ticker_p_vp, ticker_dividend_yield
 
 
 def todas_as_colunas():
@@ -174,7 +173,7 @@ def calcula_custodia(df, data=None, orderBy=['valor','ticker']):
                                  'valor': np.round(valor, decimals=2),
                                  'preco_atual': np.round(preco_atual, decimals=2),
                                  'valorizacao': valorizacao,
-                                 'ultimo_yield': fii_dividend_yield(ticker),
+                                 'ultimo_yield': ticker_dividend_yield(ticker),
                                  'p_vp': ticker_p_vp(ticker),
                                  'data_primeira_compra': data_primeira_compra,
                                  'valor_original' : np.round(preco_medio_de_compra * qtd_em_custodia, decimals=2) })

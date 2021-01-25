@@ -1,5 +1,5 @@
 import datetime
-from src.crawler_funds_explorer_bs4 import fii_nome, fii_razao_social, fii_cnpj, fii_ticker_equivalente, fii_p_vp
+from src.crawler_funds_explorer_bs4 import fii_nome, fii_razao_social, fii_cnpj, fii_ticker_equivalente, fii_p_vp, fii_dividend_yield
 from cachier import cachier
 import pandas as pd
 import json
@@ -57,6 +57,16 @@ def ticker_p_vp(ticker):
        
     return None
     
+def ticker_dividend_yield(ticker):
+    dividend_yield = ticker_data(ticker, 'dividend_yield')
+    if dividend_yield:
+       return dividend_yield
+       
+    if ticker_tipo(ticker) == 'FII':
+       return fii_dividend_yield(ticker)
+       
+    return None
+    
 def ticker_data(ticker, name, default_value=None):
     data = get_data(ticker)
     if data and name in data:
@@ -105,7 +115,8 @@ def __get_data(ticker):
 # Faz atualização de dicionario, gerando aviso nas mudanças
 # Facilita para identificar erros no cadastro local ou remoto
 def __update(dict, key, value, context, message_on_change=True):
-    if key in dict and dict[key] != value and message_on_change:
+    # Ignora mudancas quando forem somente espacos
+    if key in dict and ( "".join(dict[key].split()) != "".join(value.split()) ) and message_on_change:
         print("Alterando valor da chave " + key + " de " + dict[key] + " para " + value + " em " + context)
     dict[key] = value
         
@@ -191,11 +202,16 @@ def __load_instruments(name, data):
           # Aparentemente mesmo os que são negociados em lote de 100 vem como 1
           __update(data[row.ticker], 'lote', row['lote'], row.ticker)
           cat = str(row['categoria'])
-          data[row.ticker]['categoria'] = cat
+          __update(data[row.ticker], 'categoria', cat, row.ticker)
+          __update(data[row.ticker], 'ticker', row.ticker, row.ticker)
           if cat.startswith('ETF'):
              __update(data[row.ticker], 'tipo', 'ETF', row.ticker)
           elif cat.startswith('BDR'):
              __update(data[row.ticker], 'tipo', 'BDR', row.ticker)
+          elif row['nome'].startswith('TAXA'):
+             __update(data[row.ticker], 'tipo', 'TAXA', row.ticker)
+          elif cat == 'SHARES' or cat == 'UNIT':
+             __update(data[row.ticker], 'tipo', 'ACAO', row.ticker)
           #TODO tentar identificar os outros...
              
     except Exception as ex:
