@@ -101,7 +101,11 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
       valores processados, quando os dados estão corretos a diferença para notas de corretagem fica zerada
     - caso não seja criado vai ser indicado que existe uma diferença entre o processamento e as notas de corretagem
     - A utilização desse arquivo permite detectar erros de digitação, principalmente ao utilizar os custos e taxas
-    - formato CSV com as colunas : DATA CORRETORA VALOR
+    - formato "CSV" (separado por TAB) com as colunas : DATA CORRETORA VALOR
+  - **conversoes.txt**
+    - deve conter dados sobre as conversões de código do ativo que ocorreram
+    - formato "CSV" (separado por TAB) com as colunas : TICKER_COMPRA DATA_COMPRA TICKER_NOVO DATA_CONVERSAO
+    - ex. VGIP13 10/12/2020 VGIP11 20/01/2021
   - **ativos-meus-dados.yaml**
     - contendo dados adicionais sobre os ativos, chave deve ser o código do ativo e as entradas parametros adicionais 
     - **cnpj**, **nome** do ativo são incluídos no relatório ao executar com data de referencia **31/12/AAAA**

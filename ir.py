@@ -171,6 +171,51 @@ def carrega_notas_corretagem(pref):
         notas.drop(notas[notas['data'] > data_referencia].index, inplace=True)
     return notas
 
+def carrega_conversoes(pref):
+    colunasConversoes = [ 'ticker', 'data_compra', 'ticker_novo', 'data_conversao' ]
+    fn = WORK_DIR + pref + 'conversoes.txt'
+    try:
+        # ORIGINAL DATA_COMPRA NOVO DATA_CONVERSAO
+        conversoes = pd.read_csv(fn, 
+                         sep='\t',
+                         header=None,
+                         parse_dates=[1,3],
+                         dayfirst=True,
+                         comment='#')
+        conversoes = conversoes[[0,1,2,3]]
+        conversoes.columns = colunasConversoes
+    except FileNotFoundError as e:
+        conversoes = pd.DataFrame(columns=colunasConversoes)
+    except Exception as e:
+        print("*** Erro carregando conversoes " + fn)
+        print(e)
+        conversoes = pd.DataFrame(columns=colunasConversoes)
+    # Como é carregado como datetime, converte para permitir a comparação correta
+    if len(conversoes) > 0:
+        conversoes = ajusta_datas(conversoes, 'data_compra')
+        conversoes = ajusta_datas(conversoes, 'data_conversao')
+        conversoes['data_compra'] = conversoes.apply(lambda row: row['data_compra'].date(), axis=1)
+        conversoes['data_conversao'] = conversoes.apply(lambda row: row['data_conversao'].date(), axis=1)
+        conversoes.drop(conversoes[conversoes['data_conversao'] > data_referencia].index, inplace=True)
+    return conversoes
+
+
+def verifica_conversoes(operacoes, first_year, last_year):
+    try:
+        conversoes = carrega_conversoes('')
+        for year in range(first_year,last_year+1):
+           n = carrega_conversoes('/' + str(year) + '/')
+           conversoes = conversoes.append(n, ignore_index=True)
+        if len(conversoes) > 0:
+            conversoes = conversoes.sort_values(by=['data_compra','ticker'], ascending=True)
+            for i, row in conversoes.iterrows():
+               operacoes.loc[(operacoes['ticker'] == row.ticker) & (operacoes['data'] == row.data_compra), 'ticker'] = row.ticker_novo
+    except Exception as e:
+        print("** ERRO PROCESSANDO CONVERSOES")
+        print(e)
+        
+    return operacoes
+
 def ajusta_tickers(t):
    s = set(np.unique(t))
    s.discard('')
@@ -247,10 +292,14 @@ def do_calculo_ir():
     df = ajusta_datas(df, 'data')
     df.drop(df[df['data'] > data_referencia].index, inplace=True)
 
+    df = verifica_conversoes(df, first_year, last_year)
+
     if len(df) == 0:
         raise Exception("Não existem dados para processar até a data : " + str(data_referencia))
         
     df_to_csv(df, WORK_DIR + nome_com_referencia('combinado.txt'))
+
+
     do_diario(df.copy(), first_year, last_year)
     
     from src.stuff import calcula_custodia
