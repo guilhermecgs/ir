@@ -71,7 +71,7 @@ class CrawlerCei():
                     print(df)
                 raise ex
         except Exception as ex:
-            self.__save_screenshot('erro_busca_trades-' + datetime.now().strftime('%Y-%m-%d-%H-%M'), '.png', force_save=True)
+            self.__save_screenshot('erro_busca_trades-' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M') + '.png', force_save=True)
             raise ex
         finally:
             self.driver.quit()
@@ -86,7 +86,7 @@ class CrawlerCei():
             df = self.__abre_consulta_carteira(data)
             return df
         except Exception as ex:
-            self.__save_screenshot('erro_busca_carteira-' + datetime.now().strftime('%Y-%m-%d-%H-%M'), '.png', force_save=True)
+            self.__save_screenshot('erro_busca_carteira-' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M') + '.png', force_save=True)
             raise ex
         finally:
             self.driver.quit()
@@ -100,7 +100,7 @@ class CrawlerCei():
 
     def __save_screenshot(self, name, force_save=False):
         if self.debug or force_save:
-            self.driver.save_screenshot(self.directory + r'01-inicio.png')
+            self.driver.save_screenshot(self.directory + name)
     
     def __login(self):
         self.__save_screenshot(r'01-inicio.png')
@@ -409,8 +409,8 @@ class CrawlerCei():
                         file.write(tabulate(df, headers=df.columns, showindex=True, tablefmt='psql'))
                 dfs_to_concat.append(df)
         df = pd.concat(dfs_to_concat, ignore_index=True)
-        df = df.dropna()
         # As linhas de total vem com Nan            
+        df = df.dropna()
         df = df.rename(columns={'Empresa': 'empresa',
                                 'Tipo': 'tipo',
                                 'Cód. de Negociação': 'ticker',
