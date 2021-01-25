@@ -113,9 +113,9 @@ class TestStuff(unittest.TestCase):
         df_original = get_operations(OPERACOES_DE_TESTE)
         assert len(df_original) > 0
 
-        df_to_csv(df_original, 'df_to_csv_testing.txt')
+        df_to_csv(df_original, 'temp/df_to_csv_testing.txt')
 
-        df_lido = get_operations('df_to_csv_testing.txt')
+        df_lido = get_operations('temp/df_to_csv_testing.txt')
         assert df_lido.equals(df_original)
 
     def test_calcula_custodia(self):
