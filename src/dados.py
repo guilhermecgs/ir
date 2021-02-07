@@ -116,7 +116,7 @@ def __get_data(ticker):
 # Facilita para identificar erros no cadastro local ou remoto
 def __update(dict, key, value, context, message_on_change=True):
     # Ignora mudancas quando forem somente espacos
-    if key in dict and ( "".join(dict[key].split()) != "".join(value.split()) ) and message_on_change:
+    if key in dict and ( "".join(str(dict[key]).split()) != "".join(str(value).split()) ) and message_on_change:
         print("Alterando valor da chave " + key + " de " + dict[key] + " para " + value + " em " + context)
     dict[key] = value
         
@@ -140,6 +140,8 @@ def __load_local(name, data):
        print(ex)
        raise ex
     return data
+
+reFII = re.compile(".*((FDO|FUNDO).*INV.*IMOB|FII).*")
 
 def __load_instruments(name, data):
     # http://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/consultas/boletim-diario/arquivos-para-download/
@@ -204,6 +206,7 @@ def __load_instruments(name, data):
           cat = str(row['categoria'])
           __update(data[row.ticker], 'categoria', cat, row.ticker)
           __update(data[row.ticker], 'ticker', row.ticker, row.ticker)
+
           if cat.startswith('ETF'):
              __update(data[row.ticker], 'tipo', 'ETF', row.ticker)
           elif cat.startswith('BDR'):
@@ -212,7 +215,11 @@ def __load_instruments(name, data):
              __update(data[row.ticker], 'tipo', 'TAXA', row.ticker)
           elif cat == 'SHARES' or cat == 'UNIT':
              __update(data[row.ticker], 'tipo', 'ACAO', row.ticker)
-          #TODO tentar identificar os outros...
+          elif cat == 'FUNDS':
+              if reFII.match(row.nome):
+                 __update(data[row.ticker], 'tipo', 'FII', row.ticker)
+              else:
+                 print("TIPO DESCONHECIDO : " + row.ticker + "|" + row.nome + "|" + cat + "|" + row['tipo_acao'])
              
     except Exception as ex:
        print("*** Erro carregando instrumentos B3")
@@ -249,6 +256,7 @@ def __get_combined_data():
         except Exception as ex:
            print("*** Erro salvando lista combinada de ativos")
            print(ex)
+
     return __combined_data
 
 @cachier(stale_after=datetime.timedelta(days=30))
