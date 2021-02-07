@@ -190,6 +190,22 @@ class TestStuff(unittest.TestCase):
         df = create_testing_dataframe(data)
         precos_medio_de_compra = calcula_precos_medio_de_compra(df)
         assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(3.0, 0.001)
+        assert precos_medio_de_compra['gcgs']['valor_be'] == pytest.approx(-1.0, 0.001)
+
+
+        data.append({'ticker': 'gcgs', 'qtd': 3, 'data': datetime.date(2019, 4, 17), 'preco': 6})
+        df = create_testing_dataframe(data)
+        precos_medio_de_compra = calcula_precos_medio_de_compra(df)
+        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(5.25, 0.001)
+        assert precos_medio_de_compra['gcgs']['valor_be'] == pytest.approx(4.25, 0.001)
+        
+        data.append({'ticker': 'gcgs', 'qtd': -4, 'data': datetime.date(2019, 4, 18), 'preco': 6})
+        data.append({'ticker': 'gcgs', 'qtd': 1, 'data': datetime.date(2019, 4, 19), 'preco': 2})
+        df = create_testing_dataframe(data)
+        precos_medio_de_compra = calcula_precos_medio_de_compra(df)
+        assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(2.00, 0.001)
+        assert precos_medio_de_compra['gcgs']['valor_be'] == pytest.approx(2.0, 0.001)
+        
 
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100},
                 {'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2019, 4, 12), 'preco': 200},
@@ -206,6 +222,7 @@ class TestStuff(unittest.TestCase):
 
         assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(2.6, 0.001)
         assert precos_medio_de_compra['gcgs']['data_primeira_compra'] == datetime.date(2019, 4, 16)
+        assert precos_medio_de_compra['gcgs']['valor_be'] == pytest.approx(3.40, 0.001)
 
     def test_calcula_precos_medios_quando_operacoes_no_mesmo_dia_estao_fora_de_ordem(self):
         # dentro de um mesmo dia, nao existe a informacao de horas.

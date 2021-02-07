@@ -169,7 +169,8 @@ def calcula_custodia(df, data=None, orderBy=['valor','ticker']):
                 custodia.append({'ticker': ticker,
                                  'tipo': tipo_ticker(ticker).name,
                                  'qtd': int(qtd_em_custodia),
-                                 'preco_medio_compra': np.round(preco_medio_de_compra,decimals=2),
+                                 'preco_medio_compra': np.round(preco_medio_de_compra, decimals=2),
+                                 'preco_medio_be': np.round(precos_medios_de_compra[ticker]['valor_be'], decimals=2),
                                  'valor': np.round(valor, decimals=2),
                                  'preco_atual': np.round(preco_atual, decimals=2),
                                  'valorizacao': valorizacao,
@@ -186,6 +187,12 @@ def calcula_custodia(df, data=None, orderBy=['valor','ticker']):
     return df_custodia
 
 
+#
+# Calcula valor médio de compra para apuração de lucro de IR
+# Ao mesmo tempo calcula valor médio em custódia em relação ao lucro/prejuizo já apurado
+# Dessa forma é possivel determinar o valor que ainda é possivel vender sem prejuizo no conjunto 
+# caso já tenha existido algum lucro
+#
 def calcula_precos_medio_de_compra(df, data=None):
 
     precos_medios_de_compra = {}
@@ -212,25 +219,38 @@ def calcula_precos_medio_de_compra(df, data=None):
         data_primeira_compra = df_ticker_ultimo_ciclo['data'].min()
 
         df_ticker['cum_qtd_anterior'] = df_ticker['cum_qtd'].shift(1, fill_value=0)
-        df_ticker['preco_medio'] = np.nan
+        df_ticker['preco_medio'] = np.nan   # Preco medio de compra
+        df_ticker['valor_acumulado'] = np.nan # Para calculo de Preco medio do restante da carteira para break-even
         for i, row in df_ticker.iterrows():
+            valor_atual = row['valor']
+            valor_acumulado = df_ticker['valor_acumulado'][i-1] if i > 0 else 0
             if row['qtd_ajustada'] >= 0:
                 preco_medio_atual = df_ticker['preco_medio'].shift(1, fill_value=df_ticker['preco'].iloc[0])[i]
                 cum_qtd_anterior = df_ticker['cum_qtd_anterior'][i]
-                valor_da_compra_atual = row['valor']
                 # Se for fazer uma divisao por zero tem algum erro
                 if df_ticker['cum_qtd'][i] == 0:
                     print("*** ERRO em " + ticker + " sequencia de dados invalida ou incompleta")
                     print(df_ticker)
-                preco_medio = (valor_da_compra_atual + preco_medio_atual * cum_qtd_anterior) / df_ticker['cum_qtd'][i]
+                preco_medio = (valor_atual + preco_medio_atual * cum_qtd_anterior) / df_ticker['cum_qtd'][i]
                 df_ticker.iloc[i, df_ticker.columns == 'preco_medio'] = preco_medio
+
+                df_ticker.iloc[i, df_ticker.columns == 'valor_acumulado'] = valor_acumulado + valor_atual
             else:
+                # Quando não possui mais ativos na carteira reinicia o valor_acumulado
+                df_ticker.iloc[i, df_ticker.columns == 'valor_acumulado'] = 0 if row['cum_qtd'] == 0 else (valor_acumulado - valor_atual)
+
+                # Preco medio de compra não é alterado na venda
                 try:
                     df_ticker.iloc[i, df_ticker.columns == 'preco_medio'] = df_ticker['preco_medio'][i - 1]
                 except:
                     pass
 
-        precos_medios_de_compra[ticker] = {'valor': df_ticker['preco_medio'].iloc[-1], 'data_primeira_compra': data_primeira_compra}
+        # Poderia calcular somente para ultima linha, mas assim em caso de debug permite ver todos os valores
+        df_ticker['valor_be'] = df_ticker.apply(lambda row: (row['valor_acumulado'] / row['cum_qtd']) if row['cum_qtd'] > 0 else 0, axis=1)
+
+        precos_medios_de_compra[ticker] = {'valor': df_ticker['preco_medio'].iloc[-1], 
+                'valor_be' : df_ticker['valor_be'].iloc[-1],
+                'data_primeira_compra': data_primeira_compra }
 
     return precos_medios_de_compra
 

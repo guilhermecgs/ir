@@ -159,19 +159,12 @@ class Relatorio:
         self.h1('RELATORIO')
         self.p('')
         self.h2('Custódia ' + os.environ['CPF'] + " " + str(data_ref))
-        columns = ['ticker', 'qtd', 'valor', 'valor_original', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'ultimo_yield', 'p_vp', 'tipo', 'data_primeira_compra']
+        columns = ['ticker', 'qtd', 'valor', 'valor_original', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'ultimo_yield', 'p_vp', 'tipo', 'data_primeira_compra', 'preco_medio_be' ]
         custodia = custodia[columns].copy()
 
         # Salva copia antes de formatar para gerar totais
         custodia_base = custodia.copy()
 
-        custodia['valorizacao'] = custodia.apply(lambda row: '{:.2f}'.format(float(row.valorizacao)), axis=1)
-        custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
-        custodia['valor_original'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor_original), axis=1)
-        custodia['preco_atual'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_atual), axis=1)
-        custodia['preco_medio_compra'] = custodia.apply(lambda row: '{:.2f}'.format(row.preco_medio_compra), axis=1)
-        custodia['ultimo_yield'] = custodia.apply(lambda row: '' if is_nan(row.ultimo_yield) else '{:.2f}'.format(row.ultimo_yield), axis=1)
-        custodia['p_vp'] = custodia.apply(lambda row: '' if is_nan(row.p_vp) else '{:.2f}'.format(row.p_vp), axis=1)
         # Coloca colunas com informações adicionais
         adiciona_dados_irpf(custodia, dados_irpf)
         for n in os.getenv('RELATORIO_COLUNAS_EXTRAS','').split('-'):
@@ -180,6 +173,10 @@ class Relatorio:
                 custodia = adiciona_coluna_adicional(custodia, arr[1], arr[0])
             else:
                 custodia = adiciona_coluna_adicional(custodia, n, n)
+        colunasNumericas = [ 'valorizacao', 'valor', 'valor_original', 'preco_atual', 'preco_medio_compra', 'preco_medio_be', 'ultimo_yield', 'p_vp' ]
+        for coluna in colunasNumericas:
+            if coluna in custodia.columns:
+                custodia[coluna] = custodia.apply(lambda row: '' if is_nan(float(row[coluna])) else '{:.2f}'.format(row[coluna]), axis=1)
         custodia = custodia.rename(columns={ 'valor' : 'valor (R$)', 
                                             'valor_original' : 'valor compra (R$)', 
                                             'preco_atual' : 'Preco Atual (R$)', 
