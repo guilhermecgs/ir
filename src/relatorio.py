@@ -86,6 +86,12 @@ class Relatorio:
     def h3(self, text, tab=0):
        self.append(text, tab=tab)
 
+    def block_start(self, id):
+       pass
+       
+    def block_end(self, id):
+       pass
+       
     def separator(self):
        self.append('')
        self.append('')
@@ -196,9 +202,11 @@ class Relatorio:
         self.separator()
 
         data_limite = data_ref - relativedelta(months=meses_detalhamento_vendas)
+        self.block_start('ir_mensal')
         for data in ir.datas:
             if ir.possui_vendas_no_mes(data) and data >= data_limite:
 
+                self.block_start('ir-mes-' + data.strftime('%Y-%m'))
                 self.p('')
                 self.h3('MES : ' + str(data.month) + '/' + str(data.year), tab=1)
                 self.p('Vendas:', tab=1)
@@ -224,7 +232,11 @@ class Relatorio:
                 self.p('Dedo-Duro TOTAL no mês: ' + self._format(ir.calcula_dedo_duro_no_mes(data)), tab=2)
                 #TODO: talvez melhorar essa msg, pois o que FALTA pagar tem que descontar o dedo duro, o total que tem que pagar no mês é esse
                 self.p('IR a pagar TOTAL no mês: ' + self._format(ir.calcula_ir_a_pagar_no_mes(data)), tab=2)
+                self.block_end('ir-mes-' + data.strftime('%Y-%m'))
+                
                 self.separator()
+                
+        self.block_end('ir_mensal')
 
         self.finish()
         return self.to_string()
@@ -349,6 +361,13 @@ class RelatorioHtml(Relatorio):
    def h3(self, text, tab=0):
        self._hX(3, text, tab=tab)
 
+   def block_start(self, id):
+       self.append('<div id="' + id + '">')
+       
+   def block_end(self, id):
+       self.append('<!-- ' + id + '--></div>')
+       pass
+       
 
    def init(self):
       self.append(self._init_html())
