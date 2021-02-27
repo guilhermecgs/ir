@@ -1,6 +1,6 @@
 import unittest
 
-from src.crawler_cei import CrawlerCei
+from src.crawler_cei import busca_trades
 import pandas as pd
 
 
@@ -12,7 +12,6 @@ class TestCrawlerCei(unittest.TestCase):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        crawler_cei = CrawlerCei(headless=True, directory=directory, debug=True)
-        trades = crawler_cei.busca_trades()
+        trades = busca_trades(os.environ['CPF'], os.environ['SENHA_CEI'])
         assert type(trades) is pd.DataFrame
         assert len(trades)

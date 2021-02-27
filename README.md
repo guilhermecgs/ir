@@ -40,7 +40,7 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
- - Nao funciona com daytrade
+ - Nao funciona com daytrade e aluguel de acoes/fii
  - Desconsidera custos e emolumentos para simplificação do calculo
 
 

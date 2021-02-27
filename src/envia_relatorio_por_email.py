@@ -8,8 +8,6 @@ def envia_relatorio_txt_por_email(assunto, relatorio):
     gmail_password = os.environ['GMAIL_PASSWORD']
     to = os.environ['SEND_TO'].split(sep=';')
 
-    print('enviando email para : ' + str(to))
-
     try:
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.ehlo()
@@ -23,7 +21,7 @@ def envia_relatorio_txt_por_email(assunto, relatorio):
     except Exception as ex:
         print('Erro ao enviar email')
         print(ex)
-        return False
+        raise ex
 
 
 def envia_relatorio_html_por_email(assunto, relatorio_html):
@@ -47,4 +45,4 @@ def envia_relatorio_html_por_email(assunto, relatorio_html):
     except Exception as ex:
         print('Erro ao enviar email')
         print(ex)
-        return False
+        raise ex

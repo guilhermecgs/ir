@@ -1,39 +1,26 @@
-import sys
 import ssl
+from cachier import cachier
+import datetime
 from urllib.request import Request, urlopen
 
 from bs4 import BeautifulSoup, Tag
 
 # For ignoring SSL certificate errors
+from src.utils import CACHE_DIR
+
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
 
-this = sys.modules[__name__]
-this.__cache__ = {}
-
-
 def eh_tipo_fii(ticker):
-
     ticker_corrigido = __corrige_ticker(ticker)
-
-    if ticker_corrigido in this.__cache__:
-        return this.__cache__[ticker_corrigido]['eh_tipo_fii']
-    else:
-        this.__cache__[ticker_corrigido] = __recupera_informacoes(ticker_corrigido)
-        return this.__cache__[ticker_corrigido]['eh_tipo_fii']
+    return __recupera_informacoes(ticker_corrigido)['eh_tipo_fii']
 
 
 def fii_dividend_yield(ticker):
-
     ticker_corrigido = __corrige_ticker(ticker)
-
-    if ticker_corrigido in this.__cache__:
-        return this.__cache__[ticker_corrigido]['dividend_yield']
-    else:
-        this.__cache__[ticker_corrigido] = __recupera_informacoes(ticker_corrigido)
-        return this.__cache__[ticker_corrigido]['dividend_yield']
+    return __recupera_informacoes(ticker_corrigido)['dividend_yield']
 
 
 def __corrige_ticker(ticker):
@@ -43,16 +30,14 @@ def __corrige_ticker(ticker):
     return ticker_corrigido
 
 
+@cachier(stale_after=datetime.timedelta(days=3), cache_dir=CACHE_DIR)
 def __recupera_informacoes(ticker_corrigido):
     try:
         url = "https://www.fundsexplorer.com.br/funds/%s" % (ticker_corrigido)
-
-        # Making the website believe that you are accessing it using a Mozilla browser
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         webpage = urlopen(req).read()
 
         soup = BeautifulSoup(webpage, 'html.parser')
-        # html = soup.prettify('utf-8')
 
         return {'eh_tipo_fii': __obtem_tipo(soup), 'dividend_yield': __obtem_dividend_yield(soup)}
     except:

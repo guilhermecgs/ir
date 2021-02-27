@@ -5,6 +5,7 @@ import warnings
 warnings.filterwarnings(action="ignore", message="unclosed",
                          category=ResourceWarning)
 
+
 class TestCrawlerYahoo(unittest.TestCase):
 
     def test_get_ticker_price(self):
