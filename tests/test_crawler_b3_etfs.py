@@ -1,9 +1,8 @@
-import unittest
 from src import crawler_b3_etfs
 from src.crawler_b3_etfs import e_tipo_etf
 
 
-class TestCrawlerEtfsB3(unittest.TestCase):
+class TestCrawlerEtfsB3():
 
     def __reset_etfs(self):
         crawler_b3_etfs.etfs = None

@@ -1,10 +1,10 @@
-import unittest
+import os
 
 
-class TestUtils(unittest.TestCase):
+class TestUtils():
 
     def test_must_return_cache_dir_inside_project_root_folder(self):
-        import os
+
         from src.utils import CACHE_DIR, pasta_raiz_do_projeto
 
         self.assertTrue(os.path.isdir(pasta_raiz_do_projeto()))

@@ -1,10 +1,8 @@
-from unittest import TestCase
-
 from src.crawler_advfn import advfn_tipo_ticker, advfn_preco_atual
 from src.tipo_ticker import TipoTicker
 
 
-class TestCrawlerAdvfn(TestCase):
+class TestCrawlerAdvfn():
 
     def test_busca_preco_atual(self):
         assert advfn_preco_atual('INVALID_ticker') is None

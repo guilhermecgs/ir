@@ -1,4 +1,3 @@
-import unittest
 import pytest
 import pandas as pd
 import datetime
@@ -9,7 +8,7 @@ from tests.utils import create_testing_dataframe
 from tests.utils import get_random_opcoes_tickers
 
 
-class TestStuff(unittest.TestCase):
+class TestStuff():
 
     def test_deve_criar_dataframe_vazio_se_arquivo_vazio(self):
         df = get_operations('arquivo_invalido.txt')

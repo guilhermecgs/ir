@@ -1,8 +1,7 @@
-import unittest
 from src.crawler_funds_explorer_bs4 import eh_tipo_fii, fii_dividend_yield
 
 
-class TestCrawlerFundsExplorer(unittest.TestCase):
+class TestCrawlerFundsExplorer():
 
     def test_eh_tipo_fii(self):
         assert eh_tipo_fii('HGLG11')

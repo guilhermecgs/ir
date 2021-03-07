@@ -1,4 +1,3 @@
-import unittest
 from src.crawler_yahoo import busca_preco_atual
 
 import warnings
@@ -6,7 +5,7 @@ warnings.filterwarnings(action="ignore", message="unclosed",
                          category=ResourceWarning)
 
 
-class TestCrawlerYahoo(unittest.TestCase):
+class TestCrawlerYahoo():
 
     def test_get_ticker_price(self):
 

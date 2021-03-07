@@ -1,11 +1,10 @@
 import datetime
 import os
-import unittest
 
 from src.dropbox_files import OPERATIONS_FILEPATH, upload_dropbox_file, download_dropbox_file
 
 
-class TestDropbox(unittest.TestCase):
+class TestDropbox():
 
     def test_download_dropbox_file(self):
         if os.path.exists(OPERATIONS_FILEPATH):

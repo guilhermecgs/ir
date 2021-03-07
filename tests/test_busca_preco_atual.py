@@ -1,8 +1,7 @@
-from unittest import TestCase
 from src.preco_atual import busca_preco_atual
 
 
-class TestBuscaPrecoAtual(TestCase):
+class TestBuscaPrecoAtual():
 
     def test_busca_preco_atual(self):
         assert busca_preco_atual('INVALID') is None
