@@ -1,5 +1,4 @@
 import datetime
-from unittest import TestCase
 
 from src.calculo_ir import CalculoIr
 from src.relatorio import relatorio_html, relatorio_txt
@@ -7,7 +6,7 @@ from src.stuff import get_operations, calcula_custodia
 from tests.utils import create_testing_dataframe
 
 
-class TestRelatorio(TestCase):
+class TestRelatorio():
 
     def test_relatorio_html(self):
         data = [{'ticker': 'MAXR11', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100,

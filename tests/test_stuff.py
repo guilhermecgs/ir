@@ -1,4 +1,3 @@
-import unittest
 import pytest
 import pandas as pd
 import datetime
@@ -9,11 +8,11 @@ from tests.utils import create_testing_dataframe
 from tests.utils import get_random_opcoes_tickers
 
 
-class TestStuff(unittest.TestCase):
+class TestStuff():
 
     def test_deve_criar_dataframe_vazio_se_arquivo_vazio(self):
         df = get_operations('arquivo_invalido.txt')
-        self.assertListEqual(list(df.columns), todas_as_colunas())
+        assert list(df.columns) == todas_as_colunas()
 
     def test_descobre_vendas_no_mes(self):
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100},

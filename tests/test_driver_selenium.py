@@ -1,9 +1,7 @@
-import unittest
-
 from src.driver_selenium import ChromeDriver
 
 
-class TestDriverSelenium(unittest.TestCase):
+class TestDriverSelenium():
 
     def test_basic(self):
         driver = ChromeDriver()

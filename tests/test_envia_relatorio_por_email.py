@@ -1,4 +1,3 @@
-from unittest import TestCase
 import datetime
 
 from src.calculo_ir import CalculoIr
@@ -8,12 +7,17 @@ from src.envia_relatorio_por_email import envia_relatorio_txt_por_email, envia_r
 from tests.utils import create_testing_dataframe
 
 
-class TestEnvia_relatorio_por_email(TestCase):
+class TestEnviaRelatorioPorEmail():
 
     def test_envia_relatorio_txt_por_email(self):
+        import os
+        os.environ['SEND_TO'] = 'test@gmail.com'
         assert envia_relatorio_txt_por_email('assunto - teste unitário', 'relatório')
 
     def test_envia_relatorio_html_por_email(self):
+        import os
+        os.environ['SEND_TO'] = 'test@gmail.com'
+
         data = [{'ticker': 'MAXR11', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100,
                  'aquisicao_via': 'HomeBroker'},
                 {'ticker': 'PETR4', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100,

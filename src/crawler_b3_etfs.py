@@ -6,9 +6,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from src.driver_selenium import ChromeDriver
+from cachier import cachier
+import datetime
 
-this = sys.modules[__name__]
-this.etfs = None
+from src.utils import CACHE_DIR
 
 
 def __converte_etfs_para_dataframe(driver):
@@ -33,32 +34,29 @@ def __busca_etfs_na_b3():
         return set()
 
 
+@cachier(stale_after=datetime.timedelta(days=15), cache_dir=CACHE_DIR)
 def __etfs():
-    if this.etfs is None:
-        this.etfs = __busca_etfs_na_b3()
+    etfs_hardcoded = set()  # b3 site não tem uma disponibilidade boa
+    etfs_hardcoded.add('BBSD')
+    etfs_hardcoded.add('XBOV')
+    etfs_hardcoded.add('BOVB')
+    etfs_hardcoded.add('IVVB')
+    etfs_hardcoded.add('BOVA')
+    etfs_hardcoded.add('BRAX')
+    etfs_hardcoded.add('ECOO')
+    etfs_hardcoded.add('SMAL')
+    etfs_hardcoded.add('BOVV')
+    etfs_hardcoded.add('DIVO')
+    etfs_hardcoded.add('FIND')
+    etfs_hardcoded.add('GOVE')
+    etfs_hardcoded.add('MATB')
+    etfs_hardcoded.add('ISUS')
+    etfs_hardcoded.add('PIBB')
+    etfs_hardcoded.add('SMAC')
+    etfs_hardcoded.add('SPXI')
 
-        etfs_hardcoded = set()  # b3 site não tem uma disponibilidade boa
-        etfs_hardcoded.add('BBSD')
-        etfs_hardcoded.add('XBOV')
-        etfs_hardcoded.add('BOVB')
-        etfs_hardcoded.add('IVVB')
-        etfs_hardcoded.add('BOVA')
-        etfs_hardcoded.add('BRAX')
-        etfs_hardcoded.add('ECOO')
-        etfs_hardcoded.add('SMAL')
-        etfs_hardcoded.add('BOVV')
-        etfs_hardcoded.add('DIVO')
-        etfs_hardcoded.add('FIND')
-        etfs_hardcoded.add('GOVE')
-        etfs_hardcoded.add('MATB')
-        etfs_hardcoded.add('ISUS')
-        etfs_hardcoded.add('PIBB')
-        etfs_hardcoded.add('SMAC')
-        etfs_hardcoded.add('SPXI')
+    return __busca_etfs_na_b3().union(etfs_hardcoded)
 
-        this.etfs = this.etfs.union(etfs_hardcoded)
-
-    return this.etfs
 
 def e_tipo_etf(ticker: str):
     return ticker.replace('11', '').upper() in __etfs()

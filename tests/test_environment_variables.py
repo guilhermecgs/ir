@@ -1,8 +1,7 @@
 import os
-import unittest
 
 
-class TestEnvironmentVariables(unittest.TestCase):
+class TestEnvironmentVariables():
 
     def test_environment_variables(self):
         if 'CI_PIPELINE_SOURCE' in os.environ:

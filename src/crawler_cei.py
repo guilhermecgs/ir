@@ -2,16 +2,20 @@ import os
 import time
 import pandas as pd
 from bs4 import BeautifulSoup
+import sys
 
 from selenium import webdriver
 import chromedriver_binary  # do not remove
 from selenium.common.exceptions import NoSuchElementException
+from cachier import cachier
+import datetime
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from src.driver_selenium import ChromeDriver
+from src.utils import CACHE_DIR
 
 
 class AnyEc:
@@ -29,10 +33,24 @@ class AnyEc:
             except:
                 pass
 
+this = sys.modules[__name__]
+
+this.crawler_cei = None
+
+
+@cachier(stale_after=datetime.timedelta(days=1), cache_dir=CACHE_DIR)
+def busca_trades(cpf, senha_cei):
+    try:
+        if this.crawler_cei is None:
+            this.crawler_cei = CrawlerCei()
+        return this.crawler_cei.busca_trades(cpf, senha_cei)
+    except Exception:
+        return None
+
 
 class CrawlerCei():
 
-    def __init__(self, headless=False, directory=None, debug=False):
+    def __init__(self, directory=None, debug=False):
         self.BASE_URL = 'https://ceiapp.b3.com.br/CEI_Responsivo/'
         self.driver = ChromeDriver()
         self.directory = directory
@@ -44,27 +62,25 @@ class CrawlerCei():
         self.id_selecao_corretoras = 'ctl00_ContentPlaceHolder1_ddlAgentes'
         self.id_btn_consultar = 'ctl00_ContentPlaceHolder1_btnConsultar'
 
-    def busca_trades(self):
+    def busca_trades(self, cpf, senha_cei):
         try:
             self.driver.get(self.BASE_URL)
-            self.__login()
+            self.__login(cpf, senha_cei)
             df = self.__abre_consulta_trades()
             return self.__converte_dataframe_para_formato_padrao(df)
-        except Exception as ex:
-            raise ex
         finally:
             self.driver.quit()
 
-    def __login(self):
+    def __login(self, cpf, senha_cei):
         if self.debug: self.driver.save_screenshot(self.directory + r'01.png')
         txt_login = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_txtLogin')
         txt_login.clear()
-        txt_login.send_keys(os.environ['CPF'])
+        txt_login.send_keys(cpf)
 
         time.sleep(3.0)
         txt_senha = self.driver.find_element_by_id('ctl00_ContentPlaceHolder1_txtSenha')
         txt_senha.clear()
-        txt_senha.send_keys(os.environ['SENHA_CEI'])
+        txt_senha.send_keys(senha_cei)
         time.sleep(3.0)
 
         if self.debug: self.driver.save_screenshot(self.directory + r'02.png')
@@ -74,7 +90,7 @@ class CrawlerCei():
 
         try:
             WebDriverWait(self.driver, 60).until(EC.visibility_of_element_located((By.ID, 'objGrafPosiInv')))
-        except Exception as ex:
+        except Exception:
             raise Exception('Nao foi possivel logar no CEI. Possivelmente usuario/senha errada ou indisponibilidade do site')
 
         if self.debug: self.driver.save_screenshot(self.directory + r'03.png')
@@ -162,7 +178,6 @@ class CrawlerCei():
 
         df = df.dropna(subset=['Mercado'])
         return df
-
 
     def __converte_dataframe_para_formato_padrao(self, df):
         df = df.rename(columns={'Código Negociação': 'ticker',
