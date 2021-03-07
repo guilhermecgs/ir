@@ -5,7 +5,10 @@ from src.driver_selenium import ChromeDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from cachier import cachier
+import datetime
 
+from src.utils import CACHE_DIR
 from src.stuff import colunas_obrigatorias, calcula_valor
 
 
@@ -26,24 +29,19 @@ def create_testing_dataframe(data):
     return df
 
 
-this = sys.modules[__name__]
-this.__cache__ = []
-
-
+@cachier(stale_after=datetime.timedelta(hours=48), cache_dir=CACHE_DIR)
 def get_random_opcoes_tickers():
-    if not len(this.__cache__):
-        driver = None
-        driver = ChromeDriver()
-        driver.get('https://opcoes.net.br/opcoes/bovespa/PETR4')
+    driver = None
+    driver = ChromeDriver()
+    driver.get('https://opcoes.net.br/opcoes/bovespa/PETR4')
 
-        WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, 'tblListaOpc')))
+    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, 'tblListaOpc')))
 
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        table = soup.find('table', {'id': 'tblListaOpc'})
+    table = soup.find('table', {'id': 'tblListaOpc'})
 
-        df = pd.read_html(str(table), decimal=',', thousands='.')[0]
+    df = pd.read_html(str(table), decimal=',', thousands='.')[0]
 
-        this.__cache__ = df['Ticker']['Ticker'].tolist()
+    return df['Ticker']['Ticker'].tolist()
 
-    return this.__cache__

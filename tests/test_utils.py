@@ -7,6 +7,6 @@ class TestUtils():
 
         from src.utils import CACHE_DIR, pasta_raiz_do_projeto
 
-        self.assertTrue(os.path.isdir(pasta_raiz_do_projeto()))
-        self.assertTrue(os.path.isdir(os.path.join(pasta_raiz_do_projeto(), 'src')))
-        self.assertTrue(CACHE_DIR.endswith('__cache__'))
+        assert os.path.isdir(pasta_raiz_do_projeto())
+        assert os.path.isdir(os.path.join(pasta_raiz_do_projeto(), 'src'))
+        assert CACHE_DIR.endswith('__cache__')
