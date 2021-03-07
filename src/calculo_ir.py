@@ -42,7 +42,6 @@ class CalculoIr():
                 prejuizo_acumulado = self.calcula_prejuizo_acumulado(data, tipo)
                 self.__seta_prejuizo_acumulado(data, tipo, prejuizo_acumulado)
 
-
     def calcula_prejuizo_acumulado(self, data, tipo):
         prejuizo_acumulado = self.calcula_prejuizo_por_tipo(data, tipo)
 
@@ -55,26 +54,14 @@ class CalculoIr():
         ir_a_pagar = 0.0
         for tipo in TipoTicker:
             prejuizo_acumulado = self.calcula_prejuizo_acumulado(data, tipo)
-            ir_a_pagar += self.calcula_ir_a_pagar(prejuizo_acumulado, tipo)
+            ir_a_pagar += calcula_ir_a_pagar(prejuizo_acumulado, tipo,
+                                                  self.get_vendas_no_mes_por_tipo(data)[TipoTicker.ACAO])
         return ir_a_pagar
-
-    def calcula_ir_a_pagar(self, lucro, tipo):
-        if lucro > 0:
-            if tipo == TipoTicker.ACAO:
-                return lucro * 0.15
-            if tipo == TipoTicker.ETF:
-                return lucro * 0.15
-            if tipo == TipoTicker.FII:
-                return lucro * 0.2
-        return 0.0
 
     def calcula_dedo_duro_no_mes(self, data):
         porcentagem_dedo_duro = 0.005 / 100.0
         return sum(operacao_de_venda['preco_medio_venda'] * operacao_de_venda['qtd_vendida']
                    for operacao_de_venda in vendas_no_mes(self.df, data.year, data.month)) * porcentagem_dedo_duro
-
-    def calcula_vendas_totais_no_mes(self, data):
-        return vendas_no_mes(self.df, data.year, data.month)
 
     def calcula_prejuizo_por_tipo(self, data, tipo):
         return sum([venda['resultado_apurado'] for venda in self.vendas[self.__get_date_key__(data)][tipo]])
@@ -118,3 +105,24 @@ class CalculoIr():
                 return True
 
         return False
+
+
+def calcula_ir_a_pagar(lucro, tipo, vendas_acoes_no_mes=None):
+    if lucro > 0:
+        if tipo == TipoTicker.ACAO:
+            if vendas_acoes_no_mes > 20000.0:
+                return lucro * 0.15
+            else:
+                return 0.0
+        if tipo == TipoTicker.BDR \
+                or tipo == TipoTicker.ETF \
+                or tipo == TipoTicker.FUTURO \
+                or tipo == TipoTicker.OPCAO:
+            return lucro * 0.15
+        if tipo == TipoTicker.FII or tipo == TipoTicker.FIP:
+            return lucro * 0.2
+        if tipo == TipoTicker.FIPIE:
+            return 0.0
+    return 0.0
+
+

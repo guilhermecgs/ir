@@ -2,8 +2,6 @@
 
 ## o que se propoe a fazer
  - Automaticamente busca todos as suas operacoes na bolsa no site do canal eletronico do investidor (CEI) (https://cei.b3.com.br/)
- - Funciona com FIIs, ETFs, Acoes e Opcoes
- - Funciona com qualquer corretora. (Na verdade, nao depende da corretora)
  - Apos buscar os trades no CEI, salva tudo em um arquivo csv no dropbox da sua conta
  - Todo dia 5 de cada mes executa e calcula (**automaticamente**):
     - Preco medio de compra
@@ -13,6 +11,8 @@
     - Tabela com a custodia atual para conferencia
     - Envia email com todas as informacoes para voce pagar o imposto
  - A ideia é ser TUDO automatico, mas ainda ter a opcao de voce manualmente ter controle de tudo via um arquivo csv caso algum papel sofra desdobramento ou mude o ticker de negociacao
+ - Funciona com FIIs, ETFs, Acoes e Opcoes. Em desenvolvimento (FIP, FIPIE, Futuros)
+ - Funciona com qualquer corretora. (Na verdade, nao depende da corretora)
 
 ## o que voce vai precisar
  - Uma conta no CEI (https://cei.b3.com.br/)
@@ -45,8 +45,8 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 
 
 # To do list
-    - Incluir gratuidade de 20k por mes para acoes
     - Incluir desconto de taxas, emolumentos e dedo duro - http://www.b3.com.br/pt_br/produtos-e-servicos/tarifas/listados-a-vista-e-derivativos/renda-variavel/tarifas-de-acoes-e-fundos-de-investimento/a-vista/
+    - Incluir opcao completa ou so ultimos x meses
    
 # techstack
     - python
@@ -59,3 +59,8 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 # tags
 canal eletronico do investidor, CEI, selenium, bovespa, IRPF, IR, imposto de renda, finance, yahoo finance, acao, fii, 
 etf, python, crawler, webscraping, calculadora ir
+
+
+# (algumas) fontes para consulta utilizadas 
+- https://br.advfn.com/investimentos/futuros/imposto-de-renda
+- https://www.arenadopavini.com.br/acoes-na-arena/receita-permite-compensar-perdas-de-etf-com-ganhos-de-acoes
