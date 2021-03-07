@@ -55,7 +55,7 @@ class CalculoIr():
         for tipo in TipoTicker:
             prejuizo_acumulado = self.calcula_prejuizo_acumulado(data, tipo)
             ir_a_pagar += calcula_ir_a_pagar(prejuizo_acumulado, tipo,
-                                                  self.get_vendas_no_mes_por_tipo(data)[TipoTicker.ACAO])
+                                             self.total_vendido_no_mes_por_tipo(data)[TipoTicker.ACAO])
         return ir_a_pagar
 
     def calcula_dedo_duro_no_mes(self, data):
@@ -96,7 +96,15 @@ class CalculoIr():
             ticker = venda['ticker']
             self.vendas[self.__get_date_key__(data)][tipo_ticker(ticker)].append(venda)
 
-    def get_vendas_no_mes_por_tipo(self, data):
+    def total_vendido_no_mes_por_tipo(self, data):
+        total_vendido_no_mes = {}
+
+        for tipo in self.vendas[self.__get_date_key__(data)]:
+            total_vendido_no_mes[tipo] = sum([venda['qtd_vendida'] * venda['preco_medio_venda']
+                                        for venda in self.vendas[self.__get_date_key__(data)][tipo]])
+        return total_vendido_no_mes
+
+    def vendas_no_mes_por_tipo(self, data):
         return self.vendas[self.__get_date_key__(data)]
 
     def possui_vendas_no_mes(self, data):

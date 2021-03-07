@@ -41,7 +41,7 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
  - Nao funciona com daytrade e aluguel de acoes/fii
- - Desconsidera custos e emolumentos para simplificação do calculo
+ - Desconsidera custos e emolumentos para simplificação do calculo!
 
 
 # To do list
@@ -55,6 +55,17 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
     - beautifulsoap
     - pandas
     
+# Exemplos de Ajustes manuais
+Na maioria das vezes, nenhuma intervenção manual é necessária. 
+Apenas algumas situaçoes (listadas abaixo) será preciso alterar alguma coisa no csv de dados de forma pontual.
+Geralmente só acrescentando uma linha a mais com a compra/venda já resolve. 
+- Subscricao de titulos (nao existe essa informacao no cei; é necessário acrescentar uma linha com dos dados da compra)
+- Venda de direitos subscricao
+- IPOs
+- Mudança no ticker de negociacao
+- Desdobramento do ticker 
+- Na primeira execução, é intessante bater a custódia calculada com o que aparece na sua corretora
+   
     
 # tags
 canal eletronico do investidor, CEI, selenium, bovespa, IRPF, IR, imposto de renda, finance, yahoo finance, acao, fii, 
