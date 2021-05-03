@@ -151,6 +151,9 @@ def calcula_precos_medio_de_compra(df, data=None):
 
 
 def merge_operacoes(df, other_df):
+    assert df is not None
+    assert other_df is not None
+
     if not len(df) and not len(other_df):
         return pd.DataFrame(columns=colunas_obrigatorias())
 

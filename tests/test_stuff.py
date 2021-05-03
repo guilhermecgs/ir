@@ -51,6 +51,26 @@ class TestStuff():
 
         assert len(result) == (len(df) + len(other_df))
 
+    def test_merge_operacoes_other_df_eh_none(self):
+        data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                {'ticker': 'gcgs', 'qtd': -100, 'data': datetime.date(2019, 4, 12), 'preco': 200, 'aquisicao_via': 'HomeBroker'}]
+
+        df = create_testing_dataframe(data)
+
+        with pytest.raises(AssertionError):
+            merge_operacoes(df, None)
+
+
+    def test_merge_operacoes_df_eh_none(self):
+        other_data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
+                      {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 10, 12), 'preco': 100, 'aquisicao_via': 'HomeBroker'}]
+
+        other_df = create_testing_dataframe(other_data)
+
+        with pytest.raises(AssertionError):
+            merge_operacoes(None, other_df)
+
     def test_merge_operacoes_other_df_vazio(self):
         data = [{'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 3, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},
                 {'ticker': 'gcgs', 'qtd': 100, 'data': datetime.date(2019, 4, 11), 'preco': 100, 'aquisicao_via': 'HomeBroker'},

@@ -17,7 +17,7 @@ idna==2.8
 importlib-metadata==0.23
 iniconfig==1.1.1
 jdcal==1.4.1
-lxml==4.6.2
+lxml==4.6.3
 more-itertools==5.0.0
 numpy==1.16.5
 openpyxl==3.0.5
@@ -37,7 +37,7 @@ pytest-cov==2.8.1
 pytest-mock==3.5.1
 python-dateutil==2.8.0
 pytz==2019.3
-PyYAML==5.3.1
+PyYAML==5.4
 requests==2.22.0
 requests-futures==1.0.0
 scandir==1.10.0
@@ -48,7 +48,7 @@ soupsieve==1.9.5
 tabulate==0.8.6
 toml==0.10.2
 tqdm==4.54.1
-urllib3==1.25.6
+urllib3==1.25.8
 watchdog==1.0.2
 wcwidth==0.1.7
 webencodings==0.5.1
