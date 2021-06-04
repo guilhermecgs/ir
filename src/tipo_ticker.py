@@ -2,7 +2,8 @@ from enum import Enum
 
 from src.crawler_yahoo import busca_preco_atual
 from src.crawler_b3_etfs import e_tipo_etf
-from src.crawler_funds_explorer_bs4 import eh_tipo_fii
+import src.crawler_funds_explorer_bs4 as funds_explorer
+import src.crawler_fiis as fiis
 
 from cachier import cachier
 import datetime
@@ -24,7 +25,7 @@ class TipoTicker(Enum):
 @cachier(stale_after=datetime.timedelta(days=30), cache_dir=CACHE_DIR)
 def tipo_ticker(ticker):
 
-    if eh_tipo_fii(ticker):
+    if funds_explorer.eh_tipo_fii(ticker) or fiis.eh_tipo_fii(ticker):
         return TipoTicker.FII
 
     if e_tipo_etf(ticker):
