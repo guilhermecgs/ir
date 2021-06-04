@@ -27,7 +27,7 @@ def __corrige_ticker(ticker):
     ticker_corrigido = ticker
     if ticker.endswith('12'):
         ticker_corrigido = ticker.replace('12', '11')
-    return ticker_corrigido
+    return ticker_corrigido.upper()
 
 
 @cachier(stale_after=datetime.timedelta(days=3), cache_dir=CACHE_DIR)
