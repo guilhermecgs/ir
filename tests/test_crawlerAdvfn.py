@@ -10,7 +10,6 @@ class TestCrawlerAdvfn():
         assert type(advfn_preco_atual('ITSA4')) is float
         assert type(advfn_preco_atual('BOVA11')) is float
         assert type(advfn_preco_atual('BABA34')) is float
-        assert advfn_preco_atual('SDIL11') == advfn_preco_atual('sdil11')
 
     def test_busca_tipo_ticker(self):
         assert advfn_tipo_ticker('ISPU20') == TipoTicker.FUTURO
