@@ -1,11 +1,11 @@
 import pytest
 import pandas as pd
 import datetime
-from src.tipo_ticker import TipoTicker
+
 from src.stuff import get_operations, calcula_precos_medio_de_compra, \
     calcula_custodia, tipo_ticker, merge_operacoes, df_to_csv, vendas_no_mes, todas_as_colunas
 from tests.utils import create_testing_dataframe
-from tests.utils import get_random_opcoes_tickers
+
 
 
 class TestStuff():
@@ -243,15 +243,3 @@ class TestStuff():
         assert precos_medio_de_compra['gcgs']['valor'] == pytest.approx(2.96, 0.001)
         assert precos_medio_de_compra['gcgs']['data_primeira_compra'] == datetime.date(2019, 4, 15)
 
-    def test_tipo_ticker(self):
-        assert tipo_ticker('GRLV11') is TipoTicker.FII
-        assert tipo_ticker('VRTA11') is TipoTicker.FII
-        assert tipo_ticker('ITSA4') is TipoTicker.ACAO
-        assert tipo_ticker('PETR4') is TipoTicker.ACAO
-        assert tipo_ticker('BOVA11') is TipoTicker.ETF
-        assert tipo_ticker('SPXI11') is TipoTicker.ETF
-        assert tipo_ticker('ISPU20') is TipoTicker.FUTURO
-        assert tipo_ticker(get_random_opcoes_tickers()[0]) is TipoTicker.OPCAO
-        assert tipo_ticker(get_random_opcoes_tickers()[1]) is TipoTicker.OPCAO
-        assert tipo_ticker('IRDM11') is TipoTicker.FII
-        assert tipo_ticker('invalid') is None

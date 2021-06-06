@@ -21,6 +21,7 @@ class TestCrawlerFiis():
         assert not eh_tipo_fii('invalid')
 
     def test_fii_dividend_yield(self):
+        assert isinstance(fii_dividend_yield('ALZR11'), float)
         assert isinstance(fii_dividend_yield('SDIL12'), float)
         assert isinstance(fii_dividend_yield('SDIL11'), float)
         assert isinstance(fii_dividend_yield('sdil11'), float)

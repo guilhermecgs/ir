@@ -38,8 +38,8 @@ def __recupera_informacoes(ticker_corrigido):
         webpage = urlopen(req).read()
 
         soup = BeautifulSoup(webpage, 'html.parser')
-
-        return {'eh_tipo_fii': __obtem_tipo(soup), 'dividend_yield': __obtem_dividend_yield(soup)}
+        infos = {'eh_tipo_fii': __obtem_tipo(soup), 'dividend_yield': __obtem_dividend_yield(soup)}
+        return infos
     except:
         return {'eh_tipo_fii': False, 'dividend_yield': None}
 
@@ -67,8 +67,9 @@ def __obtem_dividend_yield(soup):
                         and 'class' in element.attrs \
                         and 'value' in element.attrs['class']:
                     yield_string = element.text
-                    return float(yield_string.replace(' ', '').replace('%', '')
+                    yield_value = float(yield_string.replace(' ', '').replace('%', '')
                                  .replace('\n', '').replace('.', '').replace(',', '.'))
+                    return yield_value
         return None
     except Exception as ex:
         return None
