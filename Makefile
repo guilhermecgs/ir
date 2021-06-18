@@ -14,3 +14,6 @@ reqs:
 
 coverage:
 	python coverage_test.py
+
+test:
+	pytest

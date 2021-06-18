@@ -16,6 +16,7 @@ from src.stuff import get_operations, \
 def main(raw_args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--do', required=False)
+    parser.add_argument('--numero_de_meses', required=False, type=int, default=None)
     args = parser.parse_args(raw_args)
 
     pd.set_option('display.max_columns', None)
@@ -30,11 +31,11 @@ def main(raw_args):
         return
 
     if args.do == 'calculo_ir':
-        do_calculo_ir()
+        do_calculo_ir(args.numero_de_meses)
         return
 
     do_busca_trades_e_faz_merge_operacoes()
-    do_calculo_ir()
+    do_calculo_ir(args.numero_de_meses)
 
 
 def do_busca_trades_e_faz_merge_operacoes():
@@ -56,7 +57,7 @@ def do_check_environment_variables():
     TestEnvironmentVariables().test_environment_variables()
 
 
-def do_calculo_ir():
+def do_calculo_ir(numero_de_meses):
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
     df = get_operations()
@@ -70,7 +71,7 @@ def do_calculo_ir():
     print(relatorio_txt(calculo_ir))
 
     envia_relatorio_html_por_email(assunto(calculo_ir),
-                                   relatorio_html(calculo_ir))
+                                   relatorio_html(calculo_ir, numero_de_meses))
 
 
 if __name__ == "__main__":
