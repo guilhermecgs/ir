@@ -37,7 +37,7 @@ class TestRelatorio():
 
         html = relatorio_html(calculo_ir)
         assert HTMLValidator().validate_fragment(html)
-        assert 'MES : 5/2019' in html
+        assert 'MES : 05/2019' in html
         assert 'MES : 11/2019' in html
 
     def test_deve_retornar_relatorio_html_apenas_com_os_ultimos_x_meses(self):
@@ -72,7 +72,7 @@ class TestRelatorio():
 
         html = relatorio_html(calculo_ir, numero_de_meses=2)
         assert HTMLValidator().validate_fragment(html)
-        assert 'MES : 5/2019' not in html
+        assert 'MES : 05/2019' not in html
         assert 'MES : 11/2019' in html
         assert 'MES : 02/2020' in html
 
