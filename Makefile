@@ -17,3 +17,7 @@ coverage:
 
 test:
 	pytest
+
+run:
+	- python ./ir.py --do busca_trades_e_faz_merge_operacoes
+	- python ./ir.py --do calculo_ir --numero_de_meses 99
