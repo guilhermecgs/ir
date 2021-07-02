@@ -44,7 +44,7 @@ def busca_trades(cpf, senha_cei):
         if this.crawler_cei is None:
             this.crawler_cei = CrawlerCei()
         return this.crawler_cei.busca_trades(cpf, senha_cei)
-    except Exception:
+    except Exception as ex:
         return None
 
 
@@ -124,7 +124,7 @@ class CrawlerCei():
             if self.debug: self.driver.save_screenshot(self.directory + r'04_01.png')
             ddlAgentes = Select(self.driver.find_element_by_id(self.id_selecao_corretoras))
             ddlAgentes.select_by_index(i)
-            time.sleep(10)
+            time.sleep(5)
             if self.debug: self.driver.save_screenshot(self.directory + r'04_02.png')
             WebDriverWait(self.driver, 15).until(exists_and_not_disabled(self.id_btn_consultar))
             consultar_click(self.driver)
@@ -132,7 +132,7 @@ class CrawlerCei():
             if self.debug: self.driver.save_screenshot(self.directory + r'05.png')
 
             try:
-                WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(
+                WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(
                     (By.ID, self.id_mensagem_de_aviso)))
             except:
                 pass
@@ -153,7 +153,10 @@ class CrawlerCei():
 
                 dfs_to_concat.append(self.__converte_trades_para_dataframe())
                 consultar_click(self.driver)
-                WebDriverWait(self.driver, 60).until(exists_and_not_disabled(self.id_selecao_corretoras))
+                try:
+                    WebDriverWait(self.driver, 20).until(exists_and_not_disabled(self.id_selecao_corretoras))
+                except:
+                    self.driver.get(self.BASE_URL + 'negociacao-de-ativos.aspx')
 
         if len(ddlAgentes.options) == 1:
             __busca_trades_de_uma_corretora(0)
