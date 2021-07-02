@@ -2,8 +2,9 @@ import datetime
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from dateutil.relativedelta import relativedelta
+from cachier import cachier
 
+from src.dataframe_hash import _hash_params
 from src.dropbox_files import OPERATIONS_FILEPATH
 from src.preco_atual import busca_preco_atual
 from src.tipo_ticker import tipo_ticker
@@ -65,10 +66,10 @@ def calcula_custodia(df, data=None):
 
     custodia = []
 
-    if data:
-        df = df.loc[df['data'] <= data, :]
+    if not data:
+        data = datetime.date.today()
 
-    precos_medios_de_compra = calcula_precos_medio_de_compra(df, data)
+    df = df.loc[df['data'] <= data, :]
 
     for ticker in tqdm(df['ticker'].unique()):
         qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
@@ -80,19 +81,20 @@ def calcula_custodia(df, data=None):
                 except:
                     pass
                 valor = preco_atual * qtd_em_custodia
-                preco_medio_de_compra = precos_medios_de_compra[ticker]['valor']
-                data_primeira_compra = precos_medios_de_compra[ticker]['data_primeira_compra']
+                preco_medio_de_compra = calcula_preco_medio_de_compra(df, ticker, data)
+                valor_preco_medio_de_compra = preco_medio_de_compra['valor']
+                data_primeira_compra = preco_medio_de_compra['data_primeira_compra']
 
-                if preco_medio_de_compra <= 0.0001:
+                if valor_preco_medio_de_compra <= 0.0001:
                     valorizacao = 'NA'  # ex: direitos de compra com custo zero
                 else:
-                    valorizacao = preco_atual / preco_medio_de_compra * 100.0 - 100.0
+                    valorizacao = preco_atual / valor_preco_medio_de_compra * 100.0 - 100.0
                     valorizacao = "{0:.2f}".format(valorizacao)
 
                 custodia.append({'ticker': ticker,
                                  'tipo': tipo_ticker(ticker).name,
                                  'qtd': int(qtd_em_custodia),
-                                 'preco_medio_compra': preco_medio_de_compra,
+                                 'preco_medio_compra': valor_preco_medio_de_compra,
                                  'valor': valor,
                                  'preco_atual': preco_atual,
                                  'valorizacao': valorizacao,
@@ -107,47 +109,43 @@ def calcula_custodia(df, data=None):
     return df_custodia
 
 
-def calcula_precos_medio_de_compra(df, data=None):
-
-    precos_medios_de_compra = {}
-
-    if data:
-        df = df.loc[df['data'] <= data, :]
-
+@cachier(stale_after=datetime.timedelta(hours=1), hash_params=_hash_params)
+def calcula_precos_medios_de_compra(df, ticker):
     df = df.sort_values(by=['data'])
 
     df['is_compra'] = df['qtd_ajustada'] >= 0
     df = df.sort_values(by=['data', 'is_compra'], ascending=[True, False])
     df = df.drop(['is_compra'], axis=1)
 
-    for ticker in df['ticker'].unique():
-        df_ticker = df.loc[df['ticker'] == ticker].copy()
-        df_ticker = df_ticker.reset_index(drop=True)
-        df_ticker['cum_qtd'] = df_ticker['qtd_ajustada'].cumsum()
-        df_ticker['ciclo'] = df_ticker.cum_qtd.eq(0).shift().cumsum().fillna(0)
+    df_ticker = df.loc[df['ticker'] == ticker].copy()
+    df_ticker = df_ticker.reset_index(drop=True)
+    df_ticker['cum_qtd'] = df_ticker['qtd_ajustada'].cumsum()
+    df_ticker['ciclo'] = df_ticker.cum_qtd.eq(0).shift().cumsum().fillna(0)
 
-        ultimo_ciclo = df_ticker.ciclo.max()
-        df_ticker_ultimo_ciclo = df_ticker.loc[df_ticker.ciclo == ultimo_ciclo]
-        data_primeira_compra = df_ticker_ultimo_ciclo['data'].min()
+    df_ticker['cum_qtd_anterior'] = df_ticker['cum_qtd'].shift(1, fill_value=0)
+    df_ticker['preco_medio_compra'] = np.nan
+    for i, row in df_ticker.iterrows():
+        if row['qtd_ajustada'] > 0:
+            preco_medio_compra_atual = df_ticker['preco_medio_compra'].shift(1, fill_value=df_ticker['preco'].iloc[0])[i]
+            cum_qtd_anterior = df_ticker['cum_qtd_anterior'][i]
+            valor_da_compra_atual = row['valor']
+            preco_medio_compra = (valor_da_compra_atual + preco_medio_compra_atual * cum_qtd_anterior) / df_ticker['cum_qtd'][i]
+            df_ticker.iloc[i, df_ticker.columns == 'preco_medio_compra'] = preco_medio_compra
+        else:
+            try:
+                df_ticker.iloc[i, df_ticker.columns == 'preco_medio_compra'] = df_ticker['preco_medio_compra'][i - 1]
+            except:
+                pass
 
-        df_ticker['cum_qtd_anterior'] = df_ticker['cum_qtd'].shift(1, fill_value=0)
-        df_ticker['preco_medio'] = np.nan
-        for i, row in df_ticker.iterrows():
-            if row['qtd_ajustada'] > 0:
-                preco_medio_atual = df_ticker['preco_medio'].shift(1, fill_value=df_ticker['preco'].iloc[0])[i]
-                cum_qtd_anterior = df_ticker['cum_qtd_anterior'][i]
-                valor_da_compra_atual = row['valor']
-                preco_medio = (valor_da_compra_atual + preco_medio_atual * cum_qtd_anterior) / df_ticker['cum_qtd'][i]
-                df_ticker.iloc[i, df_ticker.columns == 'preco_medio'] = preco_medio
-            else:
-                try:
-                    df_ticker.iloc[i, df_ticker.columns == 'preco_medio'] = df_ticker['preco_medio'][i - 1]
-                except:
-                    pass
+    return df_ticker
 
-        precos_medios_de_compra[ticker] = {'valor': df_ticker['preco_medio'].iloc[-1], 'data_primeira_compra': data_primeira_compra}
 
-    return precos_medios_de_compra
+def calcula_preco_medio_de_compra(df, ticker, data):
+    df_ticker = calcula_precos_medios_de_compra(df, ticker)
+    compra_anterior_a_data = df_ticker.loc[df_ticker['data'] <= data, :].iloc[-1]
+    ciclo = compra_anterior_a_data['ciclo']
+    data_primeira_compra_do_ciclo = df_ticker.loc[df_ticker['ciclo'] == ciclo]['data'].min()
+    return {'valor': compra_anterior_a_data['preco_medio_compra'], 'data_primeira_compra': data_primeira_compra_do_ciclo}
 
 
 def merge_operacoes(df, other_df):
@@ -210,28 +208,24 @@ def vendas_no_mes(df, ano, mes):
 
     vendas_no_mes = []
 
-    df = df.copy()
-    primeiro_dia_proximo_mes = (datetime.datetime(ano, mes, 1, 1, 0, 0) + relativedelta(months=1)).date()
+    def date_mask_fn(data):
+        return str(data.year) + '_' + str(data.month) == str(ano) + '_' + str(mes)
 
-    precos_medios_de_compra = calcula_precos_medio_de_compra(df, primeiro_dia_proximo_mes)
+    tickers_vendidos_no_mes = df[df['data'].map(date_mask_fn)].loc[df.qtd_ajustada < 0, :]['ticker'].unique()
+    for ticker in tickers_vendidos_no_mes:
+        df_ticker = calcula_precos_medios_de_compra(df, ticker)
+        df_ticker = df_ticker[df_ticker['data'].map(date_mask_fn)]
+        df_ticker = df_ticker.loc[df_ticker.qtd_ajustada < 0, :]
 
-    date_mask = df['data'].map(lambda x: str(x.year) + '_' + str(x.month)) == str(ano) + '_' + str(mes)
-    df = df[date_mask]
+        for preco_medio_compra, df_ticker_vendas in df_ticker.groupby(by=['preco_medio_compra']):
+            qtd_vendida = df_ticker_vendas['qtd'].sum()
+            preco_medio_venda = df_ticker_vendas['valor'].sum() / qtd_vendida
+            resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
 
-    df = df.loc[df.qtd_ajustada < 0, :]
-
-    for ticker in df['ticker'].unique():
-        df_vendas_ticker = df.loc[df['ticker'] == ticker, :]
-
-        qtd_vendida = df_vendas_ticker['qtd'].sum()
-        preco_medio_venda = df_vendas_ticker['valor'].sum() / qtd_vendida
-        preco_medio_compra = precos_medios_de_compra[ticker]['valor']
-        resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
-
-        vendas_no_mes.append({'ticker': ticker,
-                              'qtd_vendida': qtd_vendida,
-                              'preco_medio_venda': preco_medio_venda,
-                              'preco_medio_compra': preco_medio_compra,
-                              'resultado_apurado': resultado_apurado})
+            vendas_no_mes.append({'ticker': ticker,
+                                  'qtd_vendida': qtd_vendida,
+                                  'preco_medio_venda': preco_medio_venda,
+                                  'preco_medio_compra': preco_medio_compra,
+                                  'resultado_apurado': resultado_apurado})
 
     return vendas_no_mes

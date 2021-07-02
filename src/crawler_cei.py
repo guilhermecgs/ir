@@ -38,7 +38,7 @@ this = sys.modules[__name__]
 this.crawler_cei = None
 
 
-@cachier(stale_after=datetime.timedelta(days=1), cache_dir=CACHE_DIR)
+@cachier(stale_after=datetime.timedelta(hours=3), cache_dir=CACHE_DIR)
 def busca_trades(cpf, senha_cei):
     try:
         if this.crawler_cei is None:
