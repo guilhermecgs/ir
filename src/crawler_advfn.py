@@ -20,7 +20,7 @@ this.advfn = None
 
 
 @cachier(stale_after=datetime.timedelta(hours=3), cache_dir=CACHE_DIR)
-def __busca_parametros(ticker):
+def busca_parametros(ticker):
     ticker = ticker.lower()
 
     try:
@@ -33,7 +33,7 @@ def __busca_parametros(ticker):
 
 
 def __busca(ticker, parametro):
-    dados = __busca_parametros(ticker)
+    dados = busca_parametros(ticker)
     if (dados is not None) and (parametro in dados):
         return dados[parametro]
     return None
@@ -67,8 +67,8 @@ class CrawlerAdvfn():
 
     def __recupera_preco_atual(self):
         try:
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece10')))
-            preco_atual = float(self.driver.find_element_by_id('quoteElementPiece10').text
+            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece1')))
+            preco_atual = float(self.driver.find_element_by_id('quoteElementPiece1').text
                                 .replace('.', '').replace(',', '.'))
             return preco_atual
         except Exception:
@@ -78,7 +78,6 @@ class CrawlerAdvfn():
         try:
             WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece5')))
             tipo = self.driver.find_element_by_id('quoteElementPiece5').text.lower()
-            isin = self.driver.find_element_by_id('quoteElementPiece6').text.lower()
 
             if tipo == 'futuro':
                 return TipoTicker.FUTURO
@@ -96,7 +95,7 @@ class CrawlerAdvfn():
                 if self.__fundo_eh_etf():
                     return TipoTicker.ETF
 
-            if (tipo == 'recibo de depósito') and ('bdr' in isin):
+            if tipo == 'recibo de depósito':
                 return TipoTicker.BDR
 
         except Exception:
@@ -106,6 +105,11 @@ class CrawlerAdvfn():
     def __fundo_eh_etf(self):
         if 'Exchange Traded Fund' in self.driver.page_source:
             return True
+
+        nome = self.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
+        if 'ishares' in nome:
+            return True
+
         return False
 
     def __fundo_eh_fii(self):

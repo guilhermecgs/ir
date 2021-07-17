@@ -9,6 +9,7 @@ warnings.filterwarnings(action="ignore", message="unclosed",
 class TestCrawlerYahoo():
 
     def test_get_ticker_price(self):
+        busca_preco_atual.clear_cache()
 
         with pytest.raises(Exception):
             busca_preco_atual('invalid')
