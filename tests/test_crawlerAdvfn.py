@@ -1,17 +1,20 @@
-from src.crawler_advfn import advfn_tipo_ticker, advfn_preco_atual
+from src.crawler_advfn import advfn_tipo_ticker, advfn_preco_atual, busca_parametros
 from src.tipo_ticker import TipoTicker
 
 
 class TestCrawlerAdvfn():
 
     def test_busca_preco_atual(self):
-        assert advfn_preco_atual('INVALID_ticker') is None
+        busca_parametros.clear_cache()
         assert type(advfn_preco_atual('SDIL11')) is float
+        assert advfn_preco_atual('INVALID_ticker') is None
         assert type(advfn_preco_atual('ITSA4')) is float
         assert type(advfn_preco_atual('BOVA11')) is float
         assert type(advfn_preco_atual('BABA34')) is float
+        assert type(advfn_preco_atual('MELI34')) is float
 
     def test_busca_tipo_ticker(self):
+        busca_parametros.clear_cache()
         assert advfn_tipo_ticker('ISPU20') == TipoTicker.FUTURO
         assert advfn_tipo_ticker('PETRA253') == TipoTicker.OPCAO
         assert advfn_tipo_ticker('INVALID') is None
@@ -21,3 +24,4 @@ class TestCrawlerAdvfn():
         assert advfn_tipo_ticker('ITSA4') == advfn_tipo_ticker('itsa4')
         assert advfn_tipo_ticker('AAPL34') == TipoTicker.BDR
         assert advfn_tipo_ticker('BABA34') == TipoTicker.BDR
+        assert advfn_tipo_ticker('MELI34') == TipoTicker.BDR
