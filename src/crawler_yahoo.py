@@ -20,7 +20,9 @@ def __third_party_lib(ticker):
 
     try:
         from yahooquery import Ticker
-        preco = Ticker(ticker_sa, session=session).price[ticker_sa]['regularMarketPrice']
+        ticker = Ticker(ticker_sa, validate=True, status_forcelist=[404], backoff_factor=5,
+                       retry=10, progress=True, session=session)
+        preco = ticker.price[ticker_sa]['regularMarketPrice']
     finally:
         session.close()
     return preco
