@@ -1,9 +1,10 @@
-from src.crawler_fiis import eh_tipo_fii, fii_dividend_yield
+from src.crawler_fiis import eh_tipo_fii, fii_dividend_yield, recupera_informacoes
 
 
 class TestCrawlerFiis():
 
     def test_eh_tipo_fii(self):
+        recupera_informacoes.clear_cache()
         assert eh_tipo_fii('HGLG11')
         assert eh_tipo_fii('HGLG12')
         assert eh_tipo_fii('SDIL12')
@@ -21,6 +22,7 @@ class TestCrawlerFiis():
         assert not eh_tipo_fii('invalid')
 
     def test_fii_dividend_yield(self):
+        recupera_informacoes.clear_cache()
         assert isinstance(fii_dividend_yield('ALZR11'), float)
         assert isinstance(fii_dividend_yield('SDIL12'), float)
         assert isinstance(fii_dividend_yield('SDIL11'), float)

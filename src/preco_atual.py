@@ -1,7 +1,7 @@
 from cachier import cachier
 import datetime
 
-from src.crawler_yahoo import busca_preco_atual as preco_atual_yahoo
+from src.crawler_yahoo import busca_preco_atual_yahoo as preco_atual_yahoo
 from src.utils import CACHE_DIR
 from src.crawler_advfn import advfn_preco_atual
 
@@ -9,7 +9,10 @@ from src.crawler_advfn import advfn_preco_atual
 def busca_preco_atual(ticker):
 
     try:
-        return preco_atual_yahoo(ticker)
+        preco_atual = preco_atual_yahoo(ticker)
+
+        if preco_atual is not None:
+            return preco_atual
     except:
         pass
 

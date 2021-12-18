@@ -10,6 +10,7 @@ class TestBuscaPrecoAtual():
         assert type(busca_preco_atual('ITSA4')) is float
         assert type(busca_preco_atual('VRTA11')) is float
         assert type(busca_preco_atual('BOVA11')) is float
+        assert type(busca_preco_atual('MAXR11')) is float
         assert type(busca_preco_atual('MELI34')) is float
 
 

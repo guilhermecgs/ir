@@ -15,12 +15,12 @@ ctx.verify_mode = ssl.CERT_NONE
 
 def eh_tipo_fii(ticker):
     ticker_corrigido = __corrige_ticker(ticker)
-    return __recupera_informacoes(ticker_corrigido)['eh_tipo_fii']
+    return recupera_informacoes(ticker_corrigido)['eh_tipo_fii']
 
 
 def fii_dividend_yield(ticker):
     ticker_corrigido = __corrige_ticker(ticker)
-    return __recupera_informacoes(ticker_corrigido)['dividend_yield']
+    return recupera_informacoes(ticker_corrigido)['dividend_yield']
 
 
 def __corrige_ticker(ticker):
@@ -31,7 +31,7 @@ def __corrige_ticker(ticker):
 
 
 @cachier(stale_after=datetime.timedelta(days=3), cache_dir=CACHE_DIR)
-def __recupera_informacoes(ticker_corrigido):
+def recupera_informacoes(ticker_corrigido):
     try:
         url = "https://fiis.com.br/%s" % (ticker_corrigido)
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -57,12 +57,12 @@ def __obtem_tipo(soup):
 
 def __obtem_dividend_yield(soup):
     try:
-        span = soup.findAll('span', string='Dividend Yield')
+        h3 = soup.findAll('h3', string='Dividend Yield')
 
-        if len(span):
-            span = span[0]
+        if len(h3):
+            h3 = h3[0]
 
-            for element in span.parent.descendants:
+            for element in h3.parent.descendants:
                 if isinstance(element, Tag) \
                         and 'class' in element.attrs \
                         and 'value' in element.attrs['class']:
