@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.crawler_yahoo import busca_preco_atual
+from src.crawler_yahoo import busca_preco_atual_yahoo
 from src.crawler_b3_etfs import e_tipo_etf
 import src.crawler_funds_explorer_bs4 as funds_explorer
 import src.crawler_fiis as fiis
@@ -31,11 +31,8 @@ def tipo_ticker(ticker):
     if e_tipo_etf(ticker):
         return TipoTicker.ETF
 
-    try:
-        busca_preco_atual(ticker)
+    if busca_preco_atual_yahoo(ticker):
         return TipoTicker.ACAO
-    except:
-        pass
 
     from src.crawler_advfn import advfn_tipo_ticker
     return advfn_tipo_ticker(ticker)

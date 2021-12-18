@@ -19,6 +19,7 @@ iniconfig==1.1.1
 jdcal==1.4.1
 lxml==4.6.3
 more-itertools==5.0.0
+multitasking==0.0.10
 numpy==1.16.5
 openpyxl==3.0.5
 oyaml==1.0
@@ -54,4 +55,5 @@ watchdog==1.0.2
 wcwidth==0.1.7
 webencodings==0.5.1
 yahooquery==2.2.14
+yfinance==0.1.67
 zipp==0.6.0

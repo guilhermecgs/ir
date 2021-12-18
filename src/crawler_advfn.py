@@ -6,13 +6,11 @@ from selenium import webdriver
 import chromedriver_binary  # do not remove
 
 from src.tipo_ticker import TipoTicker
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from cachier import cachier
 import datetime
 
 from src.utils import CACHE_DIR
+
 
 this = sys.modules[__name__]
 
@@ -49,17 +47,22 @@ def advfn_tipo_ticker(ticker):
 
 class CrawlerAdvfn():
 
+    ULTIMO_PRECO = 'Último Preço'
+    TIPO_ATIVO = 'Tipo de Ativo'
+
     def __init__(self):
         from src.driver_selenium import ChromeDriver
         self.driver = ChromeDriver()
+        self.infos = {}
 
     def __get_url(self, ticker):
         return 'https://br.advfn.com/bolsa-de-valores/bmf/{ticker}/cotacao'.format(ticker=ticker)
 
     def recupera_informacoes(self, ticker):
         self.driver.get(self.__get_url(ticker))
+        self.infos = self.__parse_de_informacoes_das_tabelas_html()
 
-        tipo_ticker = self.__recupera_tipo_ticker(ticker)
+        tipo_ticker = self.__recupera_tipo_ticker()
 
         preco_atual = self.__recupera_preco_atual()
 
@@ -67,55 +70,57 @@ class CrawlerAdvfn():
 
     def __recupera_preco_atual(self):
         try:
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece1')))
-            preco_atual = float(self.driver.find_element_by_id('quoteElementPiece1').text
-                                .replace('.', '').replace(',', '.'))
-            return preco_atual
+            return self.infos[self.ULTIMO_PRECO]
         except Exception:
             return None
 
-    def __recupera_tipo_ticker(self, ticker):
+    def __recupera_tipo_ticker(self):
         try:
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'quoteElementPiece5')))
-            tipo = self.driver.find_element_by_id('quoteElementPiece5').text.lower()
-
-            if tipo == 'futuro':
+            if self.__ticker_eh_futuro():
                 return TipoTicker.FUTURO
 
-            if tipo == 'opção':
-                return TipoTicker.OPCAO
-
-            if tipo == 'preferencial' or tipo == 'ordinária':
+            if self.__ticker_eh_acao():
                 return TipoTicker.ACAO
 
-            if tipo == 'fundo':
-                if self.__fundo_eh_fii():
-                    return TipoTicker.FII
+            if self.__ticker_eh_opcao():
+                return TipoTicker.OPCAO
 
-                if self.__fundo_eh_etf():
-                    return TipoTicker.ETF
+            if self.__ticker_eh_fii():
+                return TipoTicker.FII
 
-            if tipo == 'recibo de depósito':
+            if self.__ticker_eh_etf():
+                return TipoTicker.ETF
+
+            if self.__ticker_eh_bdr():
                 return TipoTicker.BDR
-
         except Exception:
             pass
         return None
 
-    def __fundo_eh_etf(self):
-        if 'Exchange Traded Fund' in self.driver.page_source:
-            return True
+    def __ticker_eh_futuro(self):
+        return 'Nome do Futuro' in self.infos
 
+    def __ticker_eh_opcao(self):
+        return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['opção']
+
+    def __ticker_eh_acao(self):
+        return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['ordinária', 'preferencial']
+
+    def __ticker_eh_bdr(self):
+        return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['recibo de depósito']
+
+    def __ticker_eh_etf(self):
         nome = self.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
-        if 'ishares' in nome:
+        if self.TIPO_ATIVO in self.infos and \
+                self.infos[self.TIPO_ATIVO].lower() in ['fundo'] and 'ishares' in nome:
             return True
 
         return False
 
-    def __fundo_eh_fii(self):
+    def __ticker_eh_fii(self):
         try:
             nome = self.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
-            dividendos = self.__converte_tabela_dividendos_para_df();
+            dividendos = self.__converte_tabela_dividendos_para_df()
 
             if 'FII' in nome.upper() and len(dividendos):
                 return True
@@ -123,6 +128,20 @@ class CrawlerAdvfn():
                 return False
         except:
             return False
+
+    def __parse_de_informacoes_das_tabelas_html(self):
+        infos = {}
+
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+
+        for div in soup.findAll('div', {'class': 'TableElement'}):
+            try:
+                df = pd.read_html(str(div), decimal=',', thousands='.')[0]
+                infos.update(df.to_dict('records')[0])
+            except:
+                pass
+
+        return infos
 
     def __converte_tabela_dividendos_para_df(self):
         try:
