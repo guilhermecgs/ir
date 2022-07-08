@@ -119,10 +119,12 @@ class CrawlerAdvfn():
 
     def __ticker_eh_fii(self):
         try:
-            nome = self.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
             dividendos = self.__converte_tabela_dividendos_para_df()
 
-            if 'FII' in nome.upper() and len(dividendos):
+            if ('imobiliario' in self.infos['Nome da Ação'].lower()
+                or 'fii' in self.infos['Nome da Ação'].lower() 
+                or 'fundos imobiliários' in self.infos['Setor da Empresa'].lower()) \
+                    and self.infos[self.TIPO_ATIVO].lower() in ['fundo'] and len(dividendos):
                 return True
             else:
                 return False

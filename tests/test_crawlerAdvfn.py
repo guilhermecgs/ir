@@ -15,12 +15,11 @@ class TestCrawlerAdvfn():
 
     def test_busca_tipo_ticker(self):
         busca_parametros.clear_cache()
+        assert advfn_tipo_ticker('SDIL11') == TipoTicker.FII
         assert advfn_tipo_ticker('BOVA11') == TipoTicker.ETF
-        assert advfn_tipo_ticker('PETRA253') == TipoTicker.OPCAO
         assert advfn_tipo_ticker('MAXR11') == TipoTicker.FII
         assert advfn_tipo_ticker('ISPU' + ano_corrente()) == TipoTicker.FUTURO
         assert advfn_tipo_ticker('INVALID') is None
-        assert advfn_tipo_ticker('SDIL11') == TipoTicker.FII
         assert advfn_tipo_ticker('ITSA4') == TipoTicker.ACAO
         assert advfn_tipo_ticker('ITSA4') == advfn_tipo_ticker('itsa4')
         assert advfn_tipo_ticker('AAPL34') == TipoTicker.BDR
