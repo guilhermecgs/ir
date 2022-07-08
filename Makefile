@@ -1,8 +1,10 @@
 export DROPBOX_FILE_LOCATION=/Finance/GCGS/export_operacoes_gcgs.txt
 export DROPBOX_API_KEY=jOznaw_xxxxxxxxxxxxxxxxxxxxtkw9ox_a9I_8-_aU2xw1xxxxxxxxxxKWek69Z
-export GMAIL_FROM=emailremetente@gmail.com
-export GMAIL_PASSWORD=minha_senha_gmail
-export SEND_TO=emaildestinatario@gmail.com
+export SMTP_USER=smtp_user@abc.com
+export SMTP_PASSWORD=smtp_pass
+export SEND_TO=emaildestinatario@abc.com
+export SMTP_SERVER=smtp.elasticemail.com
+export SMTP_PORT=2525
 export CPF=00098765434
 export SENHA_CEI=minha_senha_cei
 
