@@ -71,9 +71,13 @@ def calcula_custodia(df, data=None):
 
     df = df.loc[df['data'] <= data, :]
 
-    for ticker in tqdm(df['ticker'].unique()):
+    for ticker in (pbar := tqdm(df['ticker'].unique(), desc='Processamento de tickers ')):
+        pbar.set_description("Processing ticker: %s" % ticker)
+        pbar.refresh()
+        
         qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
         if qtd_em_custodia > 0:
+            pbar.set_description("Processing ticker: %s , fetching data..." % ticker)
             try:
                 preco_atual = float('nan')
                 try:
@@ -102,6 +106,7 @@ def calcula_custodia(df, data=None):
                                  'data_primeira_compra': data_primeira_compra})
             except Exception as ex:
                 raise Exception('Erro ao calcular custodia do ticker {}'.format(ticker), ex)
+        pbar.set_description("Processed ticker: %s" % ticker)
 
     df_custodia = pd.DataFrame(custodia)
     df_custodia = df_custodia.sort_values(by=['valor'], ascending=False)
