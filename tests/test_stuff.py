@@ -239,7 +239,7 @@ class TestStuff():
         download_dropbox_file()
 
         df = get_operations()
-        df = df.tail(80)
+        df = df.tail(400)
 
         data = date.today()
         custodia = calcula_custodia(df, data)
