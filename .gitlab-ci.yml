@@ -46,6 +46,6 @@ relatorio:
     stage: relatorio
     script:
         - python ./ir.py --do check_environment_variables
-        - python ./ir.py --do busca_trades_e_faz_merge_operacoes
+        # - python ./ir.py --do busca_trades_e_faz_merge_operacoes
         - python ./ir.py --do calculo_ir --numero_de_meses 24
     retry: 2
