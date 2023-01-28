@@ -1,13 +1,13 @@
-import os
 import smtplib
 from email.mime.text import MIMEText
+import config
 
 
 def __smtp_server_config_and_login():
-    SMTP_USER = os.environ['SMTP_USER']
-    SMTP_PASSWORD = os.environ['SMTP_PASSWORD']
-    SMTP_PORT = int(os.environ['SMTP_PORT'])
-    SMTP_SERVER = os.environ['SMTP_SERVER']
+    SMTP_USER = config.SMTP_USER
+    SMTP_PASSWORD = config.SMTP_PASSWORD
+    SMTP_PORT = config.SMTP_PORT
+    SMTP_SERVER = config.SMTP_SERVER
 
     server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
     server.ehlo()
@@ -16,13 +16,17 @@ def __smtp_server_config_and_login():
 
 
 def envia_relatorio_txt_por_email(assunto, relatorio):
-    to = os.environ['SEND_TO'].split(sep=';')
+    if not config.SMTP_SERVER:
+        print("Configuração de e-mail não informada.")
+        return
+    
+    to = config.SEND_TO.split(sep=';')
 
     try:
         server = __smtp_server_config_and_login()
         for to_addrs in to:
             message = 'Subject: {}\n\n{}'.format(assunto, relatorio)
-            server.sendmail(os.environ['SMTP_USER'], to_addrs, message.encode("utf8"))
+            server.sendmail(config.SMTP_USER, to_addrs, message.encode("utf8"))
         print('Email enviado com sucesso')
         return True
     except Exception as ex:
@@ -31,12 +35,12 @@ def envia_relatorio_txt_por_email(assunto, relatorio):
         raise ex
 
 def envia_relatorio_html_por_email(assunto, relatorio_html):
-    SMTP_USER = os.environ['SMTP_USER']
+    SMTP_USER = config.SMTP_USER
 
     msg = MIMEText(relatorio_html, 'html')
     msg['Subject'] = assunto
     msg['From'] = SMTP_USER
-    to = os.environ['SEND_TO'].split(sep=';')
+    to = config.SEND_TO.split(sep=';')
 
     try:
         server = __smtp_server_config_and_login()
