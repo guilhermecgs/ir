@@ -1,5 +1,6 @@
 
 venv/
+.venv/
 
 .idea/
 
@@ -28,3 +29,5 @@ temp_test_file.txt
 relatorio.txt
 
 __cache__/
+
+.env

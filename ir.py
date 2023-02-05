@@ -4,6 +4,7 @@ import sys
 
 import pandas as pd
 
+import config
 from src.calculo_ir import CalculoIr
 from src.dropbox_files import upload_dropbox_file, OPERATIONS_FILEPATH
 from src.envia_relatorio_por_email import envia_relatorio_html_por_email
@@ -11,6 +12,7 @@ from src.relatorio import relatorio_txt, relatorio_html, assunto
 from src.stuff import get_operations, \
     merge_operacoes, \
     df_to_csv
+from src.utils import pasta_raiz_do_projeto
 
 
 def main(raw_args):
@@ -34,13 +36,17 @@ def main(raw_args):
         do_calculo_ir(args.numero_de_meses)
         return
 
+    if args.do == 'importar_negociacoes':
+        importar_negociacoes()
+        return
+
     do_busca_trades_e_faz_merge_operacoes()
     do_calculo_ir(args.numero_de_meses)
 
 
 def do_busca_trades_e_faz_merge_operacoes():
     from src.crawler_cei import busca_trades
-    df_cei = busca_trades(os.environ['CPF'], os.environ['SENHA_CEI'])
+    df_cei = busca_trades(config.CPF, config.SENHA_CEI)
 
     from src.dropbox_files import download_dropbox_file
     download_dropbox_file()
@@ -49,7 +55,7 @@ def do_busca_trades_e_faz_merge_operacoes():
     df = merge_operacoes(df, df_cei)
     df_to_csv(df, OPERATIONS_FILEPATH)
 
-    upload_dropbox_file(OPERATIONS_FILEPATH, os.environ['DROPBOX_FILE_LOCATION'])
+    upload_dropbox_file(OPERATIONS_FILEPATH, config.DROPBOX_FILE_LOCATION)
 
 
 def do_check_environment_variables():
@@ -72,6 +78,18 @@ def do_calculo_ir(numero_de_meses):
 
     envia_relatorio_html_por_email(assunto(calculo_ir),
                                    relatorio_html(calculo_ir, numero_de_meses))
+
+def importar_negociacoes():
+    from src.importador_negociacao_b3 import ImportadorNegociacaoB3
+    importador = ImportadorNegociacaoB3()
+
+    df_importadas = importador.busca_trades(os.path.join(pasta_raiz_do_projeto(), 'importar'))
+
+    df = get_operations()
+    df = merge_operacoes(df, df_importadas)
+    df_to_csv(df, OPERATIONS_FILEPATH)
+
+    upload_dropbox_file(OPERATIONS_FILEPATH, config.DROPBOX_FILE_LOCATION)
 
 
 if __name__ == "__main__":

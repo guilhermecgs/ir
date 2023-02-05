@@ -13,6 +13,7 @@
  - A ideia é ser TUDO automatico, mas ainda ter a opcao de voce manualmente ter controle de tudo via um arquivo csv caso algum papel sofra desdobramento ou mude o ticker de negociacao
  - Funciona com FIIs, ETFs, Acoes e Opcoes. Em desenvolvimento (FIP, FIPIE, Futuros)
  - Funciona com qualquer corretora. (Na verdade, nao depende da corretora)
+ - Como alternativa a busca automática no CEI, é possível exportar as negociações manualmente para Excel (XSLX) e importar na aplicação
 
 ## o que voce vai precisar
  - Uma conta no CEI (https://cei.b3.com.br/)
@@ -23,6 +24,7 @@
     - python ./ir.py --do check_environment_variables
     - python ./ir.py --do busca_trades_e_faz_merge_operacoes
     - python ./ir.py --do calculo_ir
+    - python ./ir.py --do importar_negociacoes
 
    
 ## exemplo do relatorio gerado no seu email
@@ -39,7 +41,23 @@ https://github.com/guilhermecgs/ir/blob/master/exemplo_relatorio_automatico.pdf
  - SMTP_PASSWORD=passkkk
  - SMTP_SERVER=smtp.elasticemail.com
  - SMTP_PORT=2525
- 
+
+Além da definição das configurações do sistema via variáveis de ambiente, também é possível utilizar um arquivo de configuração `.env`:
+```
+DROPBOX_FILE_LOCATION=/Finance/GCGS/export_operacoes_gcgs.txt
+DROPBOX_API_KEY=jOznaw_xxxxxxxxxxxxxxxxxxxxtkw9ox_a9I_8-_aU2xw1xxxxxxxxxxKWek69Z
+```
+Variáveis não definidas assumem os valores padrões definidos no arquivo `config.py`. Sendo que as únicas variáveis obrigatórias são: `DROPBOX_FILE_LOCATION` e `DROPBOX_API_KEY`.
+
+## Exemplo de importação manual de negociações
+
+1. Exporte as negociações do site da bovespa acessando https://www.investidor.b3.com.br/extrato/negociacao
+![Extrato Negociações](imagens/extrato-negociacao.png)
+![Exportar Negociações](imagens/exportar-negociacao.png)
+
+2. Copie o arquivo exportado para pasta `importar`
+3. Execute o comando para importar os arquivos: `python ./ir.py --do importar_negociacoes`
+4. Remova os arquivos da pasta `importar`
 
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
