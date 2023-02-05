@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 
 import pandas as pd
@@ -11,6 +12,7 @@ from src.relatorio import relatorio_txt, relatorio_html, assunto
 from src.stuff import get_operations, \
     merge_operacoes, \
     df_to_csv
+from src.utils import pasta_raiz_do_projeto
 
 
 def main(raw_args):
@@ -81,7 +83,7 @@ def importar_negociacoes():
     from src.importador_negociacao_b3 import ImportadorNegociacaoB3
     importador = ImportadorNegociacaoB3()
 
-    df_importadas = importador.busca_trades('importar')
+    df_importadas = importador.busca_trades(os.path.join(pasta_raiz_do_projeto(), 'importar'))
 
     df = get_operations()
     df = merge_operacoes(df, df_importadas)
