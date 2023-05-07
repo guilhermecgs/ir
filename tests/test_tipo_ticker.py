@@ -11,6 +11,7 @@ class TestTipoTicker(TestCase):
         tipo_ticker.clear_cache()
 
     def test_tipo_ticker(self):
+        assert tipo_ticker('MSFT34') is TipoTicker.BDR
         assert tipo_ticker('ISPU' + ano_corrente()) is TipoTicker.FUTURO
         assert tipo_ticker('CMIN3') is TipoTicker.ACAO
         assert tipo_ticker('GRLV11') is TipoTicker.FII

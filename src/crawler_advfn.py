@@ -110,12 +110,15 @@ class CrawlerAdvfn():
         return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['recibo de depósito']
 
     def __ticker_eh_etf(self):
-        nome = self.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
-        if self.TIPO_ATIVO in self.infos and \
-                self.infos[self.TIPO_ATIVO].lower() in ['fundo'] and 'ishares' in nome:
-            return True
+        try:
+            nome = self.driver.find_elements_by_class_name("page-name-h1")[0].text.lower()
+            if self.TIPO_ATIVO in self.infos and \
+                    self.infos[self.TIPO_ATIVO].lower() in ['fundo'] and 'ishares' in nome:
+                return True
 
-        return False
+            return False
+        except Exception as ex:
+            return False
 
     def __ticker_eh_fii(self):
         try:
