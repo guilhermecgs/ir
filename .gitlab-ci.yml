@@ -1,3 +1,6 @@
+workflow:
+  name: 'CPF: $CPF'
+
 image: joyzoursky/python-chromedriver:3.8-selenium
 
 # Change pip's cache directory to be inside the project directory since we can
