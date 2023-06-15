@@ -114,6 +114,17 @@ def calcula_custodia(df, data=None):
     return df_custodia
 
 
+def check_tipo_ticker(df):
+    for ticker in (pbar := tqdm(df['ticker'].unique(), desc='Verificando tipo de cada ticker ')):
+        pbar.set_description("Processing ticker: %s" % ticker)
+        pbar.refresh()
+
+        if not tipo_ticker(ticker):
+            raise Exception(f'Não foi possível descobrir o tipo do ticker: {ticker}')
+
+        pbar.set_description("Processed ticker: %s" % ticker)
+
+
 @cachier(stale_after=datetime.timedelta(hours=1), hash_params=_hash_params)
 def calcula_precos_medios_de_compra(df, ticker):
     df = df.sort_values(by=['data'])

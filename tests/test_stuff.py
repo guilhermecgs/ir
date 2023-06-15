@@ -6,7 +6,7 @@ from datetime import date
 
 
 from src.stuff import get_operations, calcula_precos_medios_de_compra, calcula_preco_medio_de_compra, \
-    calcula_custodia, merge_operacoes, df_to_csv, vendas_no_mes, todas_as_colunas
+    calcula_custodia, merge_operacoes, df_to_csv, vendas_no_mes, todas_as_colunas, check_tipo_ticker
 
 from tests.utils import create_testing_dataframe
 
@@ -66,7 +66,6 @@ class TestStuff():
                                           'preco_medio_compra': 125.0, 'resultado_apurado': 15000.0}
         assert vendas_no_mes_abril[1] == {'ticker': ticker, 'qtd_vendida': 300, 'preco_medio_venda': 500.0,
                                           'preco_medio_compra': 350.0, 'resultado_apurado': 45000.0}
-
 
     def test_descobre_vendas_no_mes_quando_mais_de_um_ciclo_no_mesmo_mes(self):
         ticker = random_ticker()
@@ -375,3 +374,17 @@ class TestStuff():
         assert calcula_preco_medio_de_compra(df, ticker, date(2019, 4, 17))['valor'] == pytest.approx(2.96, 0.001)
         assert calcula_preco_medio_de_compra(df, ticker, date(2019, 4, 17))['data_primeira_compra'] == date(2019, 4, 15)
 
+    def test_deve_verificar_se_todos_os_tickers_possuem_tipo_com_sucesso(self):
+        data = [{'ticker': 'CMIN3', 'qtd': -1, 'data': date(2019, 4, 12), 'preco': 6},
+                {'ticker': 'GRLV11', 'qtd': 2, 'data': date(2019, 4, 13), 'preco': 3}]
+
+        df = create_testing_dataframe(data)
+        check_tipo_ticker(df)
+
+    def test_deve_lancar_excecao_se_algum_ticker_nao_possui_tipo(self):
+        data = [{'ticker': 'error', 'qtd': -1, 'data': date(2019, 4, 12), 'preco': 6},
+                {'ticker': 'GRLV11', 'qtd': 2, 'data': date(2019, 4, 13), 'preco': 3}]
+
+        df = create_testing_dataframe(data)
+        with pytest.raises(Exception):
+            check_tipo_ticker(df)

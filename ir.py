@@ -11,7 +11,7 @@ from src.envia_relatorio_por_email import envia_relatorio_html_por_email
 from src.relatorio import relatorio_txt, relatorio_html, assunto
 from src.stuff import get_operations, \
     merge_operacoes, \
-    df_to_csv
+    df_to_csv, check_tipo_ticker
 from src.utils import pasta_raiz_do_projeto
 
 
@@ -70,6 +70,7 @@ def do_calculo_ir(numero_de_meses):
 
     from src.stuff import calcula_custodia
 
+    check_tipo_ticker(df)
     calcula_custodia(df)
     calculo_ir = CalculoIr(df=df)
     calculo_ir.calcula()
