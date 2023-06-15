@@ -120,7 +120,7 @@ def check_tipo_ticker(df):
         pbar.refresh()
 
         if not tipo_ticker(ticker):
-            raise Exception(f'Não foi possível descobrir o tipo do ticker: {ticker}')
+            raise Exception("Não foi possível descobrir o tipo do ticker: %s" % ticker)
 
         pbar.set_description("Processed ticker: %s" % ticker)
 
