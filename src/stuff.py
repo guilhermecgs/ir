@@ -116,7 +116,7 @@ def calcula_custodia(df, data=None):
 
 def check_tipo_ticker(df):
     for ticker in (pbar := tqdm(df['ticker'].unique(), desc='Verificando tipo de cada ticker ')):
-        pbar.set_description("Processing ticker: %s" % ticker)
+        pbar.set_description("Verificando tipo do ticker: %s" % ticker)
         pbar.refresh()
 
         if not tipo_ticker(ticker):
