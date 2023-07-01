@@ -1,0 +1,9 @@
+DROPBOX_API_KEY=jOznaw_xxxxxxxxxxxxxxxxxxxxtkw9ox_a9I_8
+DROPBOX_FILE_LOCATION=/Finance/operacoes/export_operacoes.txt
+CPF=12345678908
+SEND_TO=emaildestinatario@gmail.com
+SMTP_USER=smtp_user@gmail.com
+SMTP_PASSWORD=smtp_pass
+SMTP_SERVER=smtp.elasticemail.com
+SMTP_PORT=2525
+SENHA_CEI=minha_senha_cei
