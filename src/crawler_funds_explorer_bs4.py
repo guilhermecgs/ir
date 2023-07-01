@@ -46,7 +46,7 @@ def __recupera_informacoes(ticker_corrigido):
 
 def __obtem_tipo(soup):
     try:
-        titles = soup.findAll('h1', attrs={'class': 'section-title'})
+        titles = soup.findAll('h1', attrs={'class': 'headerTicker__content__title'})
         if len(titles):
             return True
         else:
@@ -57,18 +57,15 @@ def __obtem_tipo(soup):
 
 def __obtem_dividend_yield(soup):
     try:
-        span = soup.findAll('span', string='Dividend Yield')
+        divs = soup.find_all('div', class_='indicators__box')
 
-        if len(span):
-            span = span[0]
+        for div in divs:
+            p = div.find('p', text='DY Últ. Dividendo')
+            if p:
+                yield_string = div.find_next('b').text
+                return float(yield_string.replace(' ', '').replace('%', '')
+                                .replace('\n', '').replace('.', '').replace(',', '.'))
 
-            for element in span.parent.descendants:
-                if isinstance(element, Tag) \
-                        and 'class' in element.attrs \
-                        and 'indicator-value' in element.attrs['class']:
-                    yield_string = element.text
-                    return float(yield_string.replace(' ', '').replace('%', '')
-                                 .replace('\n', '').replace('.', '').replace(',', '.'))
         return None
     except Exception as ex:
         return None

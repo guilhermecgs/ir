@@ -12,6 +12,8 @@ class TestTipoTicker(TestCase):
 
     def test_tipo_ticker(self):
         assert tipo_ticker('whgr11') is TipoTicker.FII
+        assert tipo_ticker('RZAG11') is TipoTicker.FII
+        assert tipo_ticker('AAZQ11') is TipoTicker.FII
         assert tipo_ticker('MSFT34') is TipoTicker.BDR
         assert tipo_ticker('ISPU' + ano_corrente()) is TipoTicker.FUTURO
         assert tipo_ticker('CMIN3') is TipoTicker.ACAO
