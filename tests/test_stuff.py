@@ -375,7 +375,7 @@ class TestStuff():
         assert calcula_preco_medio_de_compra(df, ticker, date(2019, 4, 17))['data_primeira_compra'] == date(2019, 4, 15)
 
     def test_deve_verificar_se_todos_os_tickers_possuem_tipo_com_sucesso(self):
-        data = [{'ticker': 'CMIN3', 'qtd': -1, 'data': date(2019, 4, 12), 'preco': 6},
+        data = [{'ticker': 'AAZQ11', 'qtd': -1, 'data': date(2019, 4, 12), 'preco': 6},
                 {'ticker': 'GRLV11', 'qtd': 2, 'data': date(2019, 4, 13), 'preco': 3}]
 
         df = create_testing_dataframe(data)
