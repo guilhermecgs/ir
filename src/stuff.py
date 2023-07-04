@@ -73,11 +73,9 @@ def calcula_custodia(df, data=None):
 
     for ticker in (pbar := tqdm(df['ticker'].unique(), desc='Processamento de tickers ')):
         pbar.set_description("Processing ticker: %s" % ticker)
-        pbar.refresh()
         
         qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
         if qtd_em_custodia > 0:
-            pbar.set_description("Processing ticker: %s , fetching data..." % ticker)
             try:
                 preco_atual = float('nan')
                 try:
@@ -106,7 +104,6 @@ def calcula_custodia(df, data=None):
                                  'data_primeira_compra': data_primeira_compra})
             except Exception as ex:
                 raise Exception('Erro ao calcular custodia do ticker {}'.format(ticker), ex)
-        pbar.set_description("Processed ticker: %s" % ticker)
 
     df_custodia = pd.DataFrame(custodia)
     df_custodia = df_custodia.sort_values(by=['valor'], ascending=False)
@@ -117,12 +114,9 @@ def calcula_custodia(df, data=None):
 def check_tipo_ticker(df):
     for ticker in (pbar := tqdm(df['ticker'].unique(), desc='Verificando tipo de cada ticker ')):
         pbar.set_description("Verificando tipo do ticker: %s" % ticker)
-        pbar.refresh()
 
         if not tipo_ticker(ticker):
             raise Exception("Não foi possível descobrir o tipo do ticker: %s" % ticker)
-
-        pbar.set_description("Processed ticker: %s" % ticker)
 
 
 @cachier(stale_after=datetime.timedelta(hours=1), hash_params=_hash_params)
