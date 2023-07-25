@@ -3,7 +3,7 @@ attrs==19.3.0
 beautifulsoup4==4.9.1
 bios==0.1.2
 cachier==1.5.4
-certifi==2022.12.7
+certifi==2023.7.22
 chardet==3.0.4
 charset-normalizer==2.1.0
 chromedriver-binary==72.0.3626.69.0
