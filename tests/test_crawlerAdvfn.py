@@ -15,6 +15,7 @@ class TestCrawlerAdvfn():
 
     def test_busca_tipo_ticker(self):
         busca_parametros.clear_cache()
+        assert advfn_tipo_ticker('ALUP11') == TipoTicker.ACAO
         assert advfn_tipo_ticker('SDIL11') == TipoTicker.FII
         assert advfn_tipo_ticker('BOVA11') == TipoTicker.ETF
         assert advfn_tipo_ticker('MAXR11') == TipoTicker.FII

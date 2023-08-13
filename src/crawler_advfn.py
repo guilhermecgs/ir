@@ -104,7 +104,7 @@ class CrawlerAdvfn():
         return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['opção']
 
     def __ticker_eh_acao(self):
-        return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['ordinária', 'preferencial']
+        return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['ordinária', 'preferencial', 'unit']
 
     def __ticker_eh_bdr(self):
         return self.TIPO_ATIVO in self.infos and self.infos[self.TIPO_ATIVO].lower() in ['recibo de depósito']
