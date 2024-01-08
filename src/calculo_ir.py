@@ -55,7 +55,7 @@ class CalculoIr():
         for tipo in TipoTicker:
             prejuizo_acumulado = self.calcula_prejuizo_acumulado(data, tipo)
             ir_a_pagar += calcula_ir_a_pagar(prejuizo_acumulado, tipo,
-                                             self.total_vendido_no_mes_por_tipo(data)[TipoTicker.ACAO])
+                                             self.total_vendido_no_mes_por_tipo(data)[TipoTicker.ACAO_OU_ETF])
         return ir_a_pagar
 
     def calcula_dedo_duro_no_mes(self, data):
@@ -117,13 +117,12 @@ class CalculoIr():
 
 def calcula_ir_a_pagar(lucro, tipo, vendas_acoes_no_mes=None):
     if lucro > 0:
-        if tipo == TipoTicker.ACAO:
+        if tipo == TipoTicker.ACAO_OU_ETF:
             if vendas_acoes_no_mes > 20000.0:
                 return lucro * 0.15
             else:
                 return 0.0
         if tipo == TipoTicker.BDR \
-                or tipo == TipoTicker.ETF \
                 or tipo == TipoTicker.FUTURO \
                 or tipo == TipoTicker.OPCAO:
             return lucro * 0.15

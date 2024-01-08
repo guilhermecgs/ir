@@ -12,14 +12,14 @@ from src.calculo_ir import calcula_ir_a_pagar
 class TestCalculoIr():
 
     def test_acoes_deve_ter_percentual_de_15_perc(self):
-        assert calcula_ir_a_pagar(25000, TipoTicker.ACAO, 100000) == 3750.0
+        assert calcula_ir_a_pagar(25000, TipoTicker.ACAO_OU_ETF, 100000) == 3750.0
 
     def test_acoes_isencao_ate_20_mil_de_vendas_no_mes(self):
-        assert calcula_ir_a_pagar(15000, TipoTicker.ACAO, 15000) == 0.0
-        assert calcula_ir_a_pagar(15000, TipoTicker.ACAO, 30000) == 2250.0
+        assert calcula_ir_a_pagar(15000, TipoTicker.ACAO_OU_ETF, 15000) == 0.0
+        assert calcula_ir_a_pagar(15000, TipoTicker.ACAO_OU_ETF, 30000) == 2250.0
 
     @pytest.mark.parametrize("tipo_ticker",
-                             filter(lambda tipo: tipo not in (TipoTicker.ACAO, TipoTicker.FIPIE),
+                             filter(lambda tipo: tipo not in (TipoTicker.ACAO_OU_ETF, TipoTicker.FIPIE),
                                                    [tipo for tipo in TipoTicker if tipo]))
     def test_apenas_acoes_possuem_isencao_de_vendas_ate_20_mil(self, tipo_ticker):
         assert calcula_ir_a_pagar(10000, tipo_ticker, 15000) > 0.0
@@ -38,7 +38,7 @@ class TestCalculoIr():
         assert calcula_ir_a_pagar(0, tipo_ticker) == 0.0
 
     def test_etf_deve_ter_percentual_de_15_perc(self):
-        assert calcula_ir_a_pagar(25000, TipoTicker.ETF) == 3750.0
+        assert calcula_ir_a_pagar(25000, TipoTicker.ACAO_OU_ETF) == 3750.0
 
     def test_futuro_deve_ter_percentual_de_15_perc(self):
         assert calcula_ir_a_pagar(25000, TipoTicker.FUTURO) == 3750.0
@@ -56,3 +56,6 @@ class TestCalculoIr():
     # deve calcular prejuizo_por_tipo para um mes e tipo.
     # deve considerar meses desde a primeira compra ate o dia atual
     # deve testar todos os metodos publicos
+
+
+    # deve printar o calculo final em ordem decrescente, para sempre mostrar o mes mais atual em cima

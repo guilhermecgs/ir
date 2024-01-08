@@ -12,9 +12,8 @@ from src.utils import CACHE_DIR
 
 
 class TipoTicker(Enum):
-    ETF = 1
     FII = 2
-    ACAO = 3
+    ACAO_OU_ETF = 3
     OPCAO = 4
     FUTURO = 5
     FIP = 6
@@ -29,10 +28,10 @@ def tipo_ticker(ticker):
         return TipoTicker.FII
 
     if e_tipo_etf(ticker):
-        return TipoTicker.ETF
+        return TipoTicker.ACAO_OU_ETF
 
     if busca_preco_atual_yahoo(ticker):
-        return TipoTicker.ACAO
+        return TipoTicker.ACAO_OU_ETF
 
     from src.crawler_advfn import advfn_tipo_ticker
     return advfn_tipo_ticker(ticker)

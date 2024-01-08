@@ -80,7 +80,7 @@ class CrawlerAdvfn():
                 return TipoTicker.FUTURO
 
             if self.__ticker_eh_acao():
-                return TipoTicker.ACAO
+                return TipoTicker.ACAO_OU_ETF
 
             if self.__ticker_eh_opcao():
                 return TipoTicker.OPCAO
@@ -89,7 +89,7 @@ class CrawlerAdvfn():
                 return TipoTicker.FII
 
             if self.__ticker_eh_etf():
-                return TipoTicker.ETF
+                return TipoTicker.ACAO_OU_ETF
 
             if self.__ticker_eh_bdr():
                 return TipoTicker.BDR

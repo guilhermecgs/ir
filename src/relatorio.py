@@ -59,7 +59,7 @@ def relatorio_txt(ir):
                     relatorio.append(__tab(3) + 'Lucro/Prejuizo acumulado: ' + __format(ir.calcula_prejuizo_acumulado(data, tipo)))
                     relatorio.append(__tab(3) + 'IR no mês para ' + tipo.name + ': ' + __format(calcula_ir_a_pagar(ir.calcula_prejuizo_acumulado(data, tipo),
                                                                                                                       tipo,
-                                                                                                                      ir.total_vendido_no_mes_por_tipo(data)[TipoTicker.ACAO])))
+                                                                                                                      ir.total_vendido_no_mes_por_tipo(data)[TipoTicker.ACAO_OU_ETF])))
 
             relatorio.append(__tab(2) + 'Dedo-Duro TOTAL no mês: ' + __format(ir.calcula_dedo_duro_no_mes(data)))
             relatorio.append(__tab(2) + 'IR a pagar TOTAL no mês: ' + __format(ir.calcula_ir_a_pagar_no_mes(data)))
@@ -114,7 +114,7 @@ def relatorio_html(ir, numero_de_meses=None):
                     relatorio_mes += __p('Lucro/Prejuizo acumulado: ' + __format(ir.calcula_prejuizo_acumulado(data, tipo)), tab=3)
                     relatorio_mes += __p('IR no mês para ' + tipo.name + ': ' + __format(calcula_ir_a_pagar(ir.calcula_prejuizo_acumulado(data, tipo),
                                                                                                            tipo,
-                                                                                                           ir.total_vendido_no_mes_por_tipo(data)[TipoTicker.ACAO])), tab=3)
+                                                                                                           ir.total_vendido_no_mes_por_tipo(data)[TipoTicker.ACAO_OU_ETF])), tab=3)
 
             relatorio_mes += __p('Dedo-Duro TOTAL no mês: ' + __format(ir.calcula_dedo_duro_no_mes(data)), tab=2)
             relatorio_mes += __p('IR a pagar TOTAL no mês: ' + __format(ir.calcula_ir_a_pagar_no_mes(data)), tab=2)
@@ -160,12 +160,10 @@ def __close_html():
 def __cor_tabela(tipo=None):
     if tipo is None:
         return 'blue_light'
-    elif tipo == TipoTicker.ACAO:
+    elif tipo == TipoTicker.ACAO_OU_ETF:
         return 'grey_light'
     elif tipo == TipoTicker.FII:
         return 'yellow_light'
-    elif tipo == TipoTicker.ETF:
-        return 'orange_light'
     return 'blue_light'
 
 
