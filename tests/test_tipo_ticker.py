@@ -11,6 +11,8 @@ class TestTipoTicker(TestCase):
         tipo_ticker.clear_cache()
 
     def test_tipo_ticker(self):
+        assert tipo_ticker('TRPL4') is TipoTicker.ACAO_OU_ETF
+        assert tipo_ticker('VGIA11') is TipoTicker.FII
         assert tipo_ticker('ALUP11') is TipoTicker.ACAO_OU_ETF
         assert tipo_ticker('whgr11') is TipoTicker.FII
         assert tipo_ticker('RZAG11') is TipoTicker.FII

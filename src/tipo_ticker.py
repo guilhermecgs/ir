@@ -21,8 +21,15 @@ class TipoTicker(Enum):
     BDR = 8
 
 
+ticker_map = {
+    "BGRT39": TipoTicker.ACAO_OU_ETF,
+}
+
 @cachier(stale_after=datetime.timedelta(days=30), cache_dir=CACHE_DIR)
 def tipo_ticker(ticker):
+
+    if ticker in ticker_map:
+        return ticker_map[ticker]
 
     if funds_explorer.eh_tipo_fii(ticker) or fiis.eh_tipo_fii(ticker):
         return TipoTicker.FII

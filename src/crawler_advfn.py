@@ -21,6 +21,8 @@ this.advfn = None
 
 @cachier(stale_after=datetime.timedelta(hours=3), cache_dir=CACHE_DIR)
 def busca_parametros(ticker):
+    # not working right now. Fix later
+    return None
     ticker = ticker.lower()
 
     try:
@@ -35,7 +37,7 @@ def busca_parametros(ticker):
 
 def __busca(ticker, parametro):
     dados = busca_parametros(ticker)
-    if (dados is not None) and (parametro in dados):
+    if (dados is not None) and (parametro in dados) and (dados[parametro] is not None):
         return dados[parametro]
     return None
 

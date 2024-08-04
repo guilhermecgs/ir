@@ -77,11 +77,14 @@ def calcula_custodia(df, data=None):
         qtd_em_custodia = df.loc[df['ticker'] == ticker]['qtd_ajustada'].sum()
         if qtd_em_custodia > 0:
             try:
-                preco_atual = float('nan')
                 try:
                     preco_atual = busca_preco_atual(ticker)
                 except:
                     pass
+
+                if not preco_atual:
+                    preco_atual = float('nan')
+
                 valor = preco_atual * qtd_em_custodia
                 preco_medio_de_compra = calcula_preco_medio_de_compra(df, ticker, data)
                 valor_preco_medio_de_compra = preco_medio_de_compra['valor']
@@ -228,6 +231,7 @@ def vendas_no_mes(df, ano, mes):
         df_ticker = df_ticker.loc[df_ticker.qtd_ajustada < 0, :]
 
         for preco_medio_compra, df_ticker_vendas in df_ticker.groupby(by=['preco_medio_compra']):
+            preco_medio_compra = preco_medio_compra[0] if isinstance(preco_medio_compra, tuple) else preco_medio_compra
             qtd_vendida = df_ticker_vendas['qtd'].sum()
             preco_medio_venda = df_ticker_vendas['valor'].sum() / qtd_vendida
             resultado_apurado = (preco_medio_venda - preco_medio_compra) * qtd_vendida
