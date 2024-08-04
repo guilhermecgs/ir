@@ -1,4 +1,5 @@
 import sys
+import logging
 from bs4 import BeautifulSoup
 
 import pandas as pd
@@ -11,6 +12,7 @@ import datetime
 
 from src.utils import CACHE_DIR
 
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s:%(message)s')
 
 this = sys.modules[__name__]
 
@@ -26,7 +28,8 @@ def busca_parametros(ticker):
             this.advfn = CrawlerAdvfn()
         return this.advfn.recupera_informacoes(ticker)
 
-    except Exception:
+    except Exception as ex:
+        logging.error("Error in busca_parametros: %s", ex, exc_info=True)
         return None
 
 
