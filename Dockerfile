@@ -17,5 +17,8 @@ ENV DISPLAY=:99
 # upgrade pip
 RUN pip3 install --upgrade pip
 
+WORKDIR /code
+COPY ./requirements.txt /code/requirements.txt
+
 # install selenium
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir --upgrade -r /code/requirements.txt
