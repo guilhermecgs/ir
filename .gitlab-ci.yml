@@ -1,29 +1,32 @@
 workflow:
   name: 'CPF: $CPF'
 
-image: selenium/standalone-chromium:126.0
-
-# Change pip's cache directory to be inside the project directory since we can
-# only cache local items.
 variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
-# Pip's cache doesn't store the python packages
-# https://pip.pypa.io/en/stable/reference/pip_install/#caching
-#
-# If you want to also cache the installed packages, you have to install
-# them in a virtualenv and cache it as well.
 cache:
   paths:
     - .cache/pip
+    - .cache/pip3
     - venv/
 
 stages:
+    - build
     - coverage_report
     - relatorio
 
+# Stage to build the Docker image
+build:
+    stage: build
+    script:
+        - docker build -t chrome-with-selenium:latest .
+    artifacts:
+        paths:
+            - chrome-with-selenium.tar
+    when: always
+
 before_script:
-  - python -V
+  - python3 -V
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
@@ -33,8 +36,9 @@ before_script:
 
 coverage_html:
     stage: coverage_report
+    image: chrome-with-selenium:latest
     script:
-        - python coverage_test.py
+        - python3 coverage_test.py
         - mkdir -p public/coverage_report
         - mv coverage_report public/coverage_report
     artifacts:
@@ -47,8 +51,9 @@ coverage_html:
 
 relatorio:
     stage: relatorio
+    image: chrome-with-selenium:latest
     script:
-        - python ./ir.py --do check_environment_variables
-        # - python ./ir.py --do busca_trades_e_faz_merge_operacoes
-        - python ./ir.py --do calculo_ir --numero_de_meses 999
+        - python3 ./ir.py --do check_environment_variables
+        # - python3 ./ir.py --do busca_trades_e_faz_merge_operacoes
+        - python3 ./ir.py --do calculo_ir --numero_de_meses 999
     retry: 2

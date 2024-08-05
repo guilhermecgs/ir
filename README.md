@@ -21,10 +21,10 @@
  - Configurar as variaveis de ambiente conforme (https://github.com/guilhermecgs/ir/blob/master/tests/test_environment_variables.py)
  - Voce pode executar tudo localmente e ver os resultados. Se quiser envio por email (SMTP), recomendo usar o https://elasticemail.com/ gratuitamente
  - Executar os comandos abaixo:
-    - python ./ir.py --do check_environment_variables
-    - python ./ir.py --do busca_trades_e_faz_merge_operacoes
-    - python ./ir.py --do calculo_ir
-    - python ./ir.py --do importar_negociacoes
+    - python3 ./ir.py --do check_environment_variables
+    - python3 ./ir.py --do busca_trades_e_faz_merge_operacoes
+    - python3 ./ir.py --do calculo_ir
+    - python3 ./ir.py --do importar_negociacoes
 
    
 ## exemplo do relatorio gerado no seu email
@@ -56,7 +56,7 @@ Variáveis não definidas assumem os valores padrões definidos no arquivo `conf
 ![Exportar Negociações](imagens/exportar-negociacao.png)
 
 2. Copie o arquivo exportado para pasta `importar`
-3. Execute o comando para importar os arquivos: `python ./ir.py --do importar_negociacoes`
+3. Execute o comando para importar os arquivos: `python3 ./ir.py --do importar_negociacoes`
 4. Remova os arquivos da pasta `importar`
 
 ## disclaimer

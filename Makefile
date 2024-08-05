@@ -15,11 +15,11 @@ reqs:
 	pip freeze > requirements.txt
 
 coverage:
-	python coverage_test.py
+	python3 coverage_test.py
 
 test:
 	pytest
 
 run:
-	- python ./ir.py --do importar_negociacoes
-	- python ./ir.py --do calculo_ir --numero_de_meses 99
+	- python3 ./ir.py --do importar_negociacoes
+	- python3 ./ir.py --do calculo_ir --numero_de_meses 99
