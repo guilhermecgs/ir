@@ -26,11 +26,6 @@ build:
     when: always
 
 before_script:
-  - python3 -V
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - pip install -r requirements.txt
   - echo $CI_PIPELINE_SOURCE
   - echo $CPF
 
