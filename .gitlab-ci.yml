@@ -13,6 +13,10 @@ stages:
     - coverage_report
     - relatorio
 
+before_script:
+  - echo $CI_PIPELINE_SOURCE
+  - echo $CPF
+
 # Stage to build the Docker image and push it to the registry
 build:
     stage: build
@@ -21,11 +25,9 @@ build:
         - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
         - docker build -t registry.gitlab.com/guilhermecgs/ir:latest .
         - docker push registry.gitlab.com/guilhermecgs/ir:latest
-    when: always
-
-before_script:
-  - echo $CI_PIPELINE_SOURCE
-  - echo $CPF
+    rules:
+      - if: '$CI_PIPELINE_SOURCE == "push"'
+        when: always
 
 coverage_html:
     stage: coverage_report
