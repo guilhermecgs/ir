@@ -1,5 +1,10 @@
 FROM python:3.10
 
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y wget unzip && \
+    apt-get clean
+
 # install google chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
@@ -17,8 +22,12 @@ ENV DISPLAY=:99
 # upgrade pip
 RUN pip3 install --upgrade pip
 
+# Set working directory
 WORKDIR /code
-COPY ./requirements.txt /code/requirements.txt
 
-# install selenium
+# Copy requirements and install
+COPY ./requirements.txt /code/requirements.txt
 RUN pip3 install --no-cache-dir --upgrade -r /code/requirements.txt
+
+# Copy the rest of the application code
+COPY . /code

@@ -3,26 +3,24 @@ workflow:
 
 variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    DOCKER_TLS_CERTDIR: "/certs"
 
-cache:
-  paths:
-    - .cache/pip
-    - .cache/pip3
-    - venv/
+services:
+  - docker:dind
 
 stages:
     - build
     - coverage_report
     - relatorio
 
-# Stage to build the Docker image
+# Stage to build the Docker image and push it to the registry
 build:
     stage: build
+    image: docker:stable
     script:
-        - docker build -t chrome-with-selenium:latest .
-    artifacts:
-        paths:
-            - chrome-with-selenium.tar
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+        - docker build -t registry.gitlab.com/guilhermecgs/ir:latest .
+        - docker push registry.gitlab.com/guilhermecgs/ir:latest
     when: always
 
 before_script:
@@ -31,7 +29,7 @@ before_script:
 
 coverage_html:
     stage: coverage_report
-    image: chrome-with-selenium:latest
+    image: registry.gitlab.com/guilhermecgs/ir:latest
     script:
         - python3 coverage_test.py
         - mkdir -p public/coverage_report
@@ -46,7 +44,7 @@ coverage_html:
 
 relatorio:
     stage: relatorio
-    image: chrome-with-selenium:latest
+    image: registry.gitlab.com/guilhermecgs/ir:latest
     script:
         - python3 ./ir.py --do check_environment_variables
         # - python3 ./ir.py --do busca_trades_e_faz_merge_operacoes
