@@ -56,6 +56,7 @@ def get_operations(filepath=None):
         df['data'] = df['data'].dt.date
         df['valor'] = df.apply(lambda row: calcula_valor(float(row.qtd), float(row.preco)), axis=1)
         df['qtd_ajustada'] = df.apply(lambda row: calculate_add(row), axis=1)
+        df = df[df['aquisicao_via'] != 'Desconsiderar']
     else:
         return pd.DataFrame(columns=todas_as_colunas())
 
