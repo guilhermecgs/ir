@@ -159,6 +159,8 @@ ticker_map = {
     "ORVR3": TipoTicker.ACAO_OU_ETF,
     "TTEN3": TipoTicker.ACAO_OU_ETF,
     "KEPL3": TipoTicker.ACAO_OU_ETF,
+    "RECV3": TipoTicker.ACAO_OU_ETF,
+    
 }
 
 @cachier(stale_after=datetime.timedelta(days=30), cache_dir=CACHE_DIR)
