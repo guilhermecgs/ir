@@ -130,6 +130,7 @@ ticker_map = {
     "VLOL11": TipoTicker.FII,
     "BBFI11B": TipoTicker.FII,
     "BGRT39": TipoTicker.ACAO_OU_ETF,
+    "MSFT34": TipoTicker.ACAO_OU_ETF,
 }
 
 @cachier(stale_after=datetime.timedelta(days=30), cache_dir=CACHE_DIR)
