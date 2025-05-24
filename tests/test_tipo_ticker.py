@@ -32,4 +32,20 @@ class TestTipoTicker(TestCase):
         assert tipo_ticker('ISPU' + ano_corrente()) is TipoTicker.FUTURO
         assert tipo_ticker(get_random_opcoes_tickers()[0]) is TipoTicker.OPCAO
         assert tipo_ticker(get_random_opcoes_tickers()[1]) is TipoTicker.OPCAO
+
+    def test_ibovespa_tickers_and_preservation(self):
+        # Imports are usually at the top of the file,
+        # but tipo_ticker and TipoTicker are already imported in the file scope of test_tipo_ticker.py
+        # So, no need for local imports here if they are accessible.
+
+        # Assertions for Ibovespa tickers
+        assert tipo_ticker('PETR4') is TipoTicker.ACAO_OU_ETF
+        assert tipo_ticker('VALE3') is TipoTicker.ACAO_OU_ETF
+        assert tipo_ticker('ITUB4') is TipoTicker.ACAO_OU_ETF
+        assert tipo_ticker('ABEV3') is TipoTicker.ACAO_OU_ETF
+
+        # Assertions for preservation of other types
+        assert tipo_ticker('XPIN11') is TipoTicker.FII  # Existing FII
+        assert tipo_ticker('BBASP280W2') is TipoTicker.OPCAO  # Existing Option
+        assert tipo_ticker('IVVB11') is TipoTicker.ACAO_OU_ETF  # Existing ETF
         
