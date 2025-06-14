@@ -25,7 +25,7 @@ def relatorio_txt(ir):
     columns = ['ticker', 'qtd', 'valor', 'preco_atual', 'preco_medio_compra', 'valorizacao', 'ultimo_yield', 'tipo', 'data_primeira_compra']
     headers = ['ticker', 'qtd', 'valor (R$)', 'Preco Atual (R$)', 'Preco Medio Compra (R$)', 'valorizacao (%)', 'Ultimo Yield [%]', 'tipo', 'Dt.Compra']
     custodia = custodia[columns]
-    custodia = custodia[custodia.valor > 0]
+    custodia = custodia[custodia.qtd > 0]
     total_na_carteira = custodia['valor'].sum()
     custodia['valorizacao'] = custodia.apply(lambda row: '{:.2f}'.format(float(row.valorizacao)), axis=1)
     custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
@@ -73,7 +73,7 @@ def relatorio_html(ir, numero_de_meses=None):
     relatorio += __p('')
     relatorio += __h2('Custódia')
     custodia = calcula_custodia(ir.df, datetime.datetime.now().date())
-    custodia = custodia[custodia.valor > 0]
+    custodia = custodia[custodia.qtd > 0]
     total_na_carteira = custodia['valor'].sum()
     custodia['valorizacao'] = custodia.apply(lambda row: '{:.2f}'.format(float(row.valorizacao)), axis=1)
     custodia['valor'] = custodia.apply(lambda row: '{:.2f}'.format(row.valor), axis=1)
