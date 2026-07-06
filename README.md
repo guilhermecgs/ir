@@ -59,6 +59,25 @@ Variáveis não definidas assumem os valores padrões definidos no arquivo `conf
 3. Execute o comando para importar os arquivos: `python3 ./ir.py --do importar_negociacoes`
 4. Remova os arquivos da pasta `importar`
 
+## Extração de movimentações via printscreen (skill)
+
+Alternativa ao CEI/import manual de XLSX: uma skill do Claude Code
+(`.claude/skills/extrai-movimentacoes-print/`) lê printscreens do extrato de
+movimentações de qualquer site (investidor10, portal da B3, corretora, etc.),
+valida o formato, detecta duplicidade contra o arquivo de operações atual, e
+apresenta linhas prontas para colar manualmente em `export_operacoes.txt`.
+
+1. Tire printscreen(s) da tela de extrato/movimentações
+2. Peça para o Claude Code usar a skill `extrai-movimentacoes-print` passando
+   os paths das imagens
+3. Copie as linhas do bloco "PRONTO PARA COPIAR" para `export_operacoes.txt`
+4. Revise o bloco "OBSERVAÇÕES" — tipos de movimentação fora de compra/venda
+   (desdobramento, conversão, subscrição, bonificação) precisam de
+   codificação manual, seguindo os exemplos na seção "Exemplos de Ajustes
+   manuais" abaixo
+
+A skill nunca escreve no arquivo sozinha — a inserção final é sempre manual.
+
 ## disclaimer
  - Aceito PRs :-)   Eu fiz o software pensando em automatizar exatamente como eu fazia as coisas manualmente
  - Nao funciona com daytrade e aluguel de acoes/fii
