@@ -68,3 +68,53 @@ def parse_arquivo_operacoes(caminho):
             ticker, operacao, qtd, data_str, preco = row[0], row[1], row[2], row[3], row[4]
             chaves.append(chave_duplicidade(ticker, operacao, qtd, data_str, preco))
     return chaves
+
+
+def formatar_linha_txt(registro):
+    return '\t'.join([
+        registro['ticker'],
+        registro['tipo'],
+        '{:.3f}'.format(float(registro['qtd'])),
+        registro['data'],
+        '{:.3f}'.format(float(registro['preco'])),
+        '0.000',
+        'HomeBroker',
+    ])
+
+
+def classificar_candidatos(candidatos, chaves_existentes):
+    vistos = set(chaves_existentes)
+    resultado = []
+
+    for candidato in candidatos:
+        item = dict(candidato)
+        item['categoria'] = None
+        item['motivo'] = None
+        item['linha_txt'] = None
+
+        ok, motivo_formato = validar_formato(candidato)
+        if not ok:
+            item['categoria'] = 'observacao'
+            item['motivo'] = motivo_formato
+            resultado.append(item)
+            continue
+
+        if candidato['tipo'] not in TIPOS_PADRAO:
+            item['categoria'] = 'observacao'
+            item['motivo'] = 'tipo fora do padrao compra/venda: {}'.format(candidato['tipo'])
+            resultado.append(item)
+            continue
+
+        chave = chave_duplicidade(candidato['ticker'], candidato['tipo'], candidato['qtd'], candidato['data'], candidato['preco'])
+        if chave in vistos:
+            item['categoria'] = 'observacao'
+            item['motivo'] = 'ja existe (arquivo atual ou outro print deste lote)'
+            resultado.append(item)
+            continue
+
+        vistos.add(chave)
+        item['categoria'] = 'pronto'
+        item['linha_txt'] = formatar_linha_txt(candidato)
+        resultado.append(item)
+
+    return resultado

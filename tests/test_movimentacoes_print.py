@@ -1,6 +1,13 @@
 import datetime
 
-from src.movimentacoes_print import parse_data, validar_formato, chave_duplicidade, parse_arquivo_operacoes
+from src.movimentacoes_print import (
+    parse_data,
+    validar_formato,
+    chave_duplicidade,
+    parse_arquivo_operacoes,
+    formatar_linha_txt,
+    classificar_candidatos,
+)
 
 
 class TestParseData:
@@ -99,3 +106,60 @@ class TestParseArquivoOperacoes:
         arquivo.write_text('')
 
         assert parse_arquivo_operacoes(str(arquivo)) == []
+
+
+class TestFormatarLinhaTxt:
+
+    def test_formata_linha_igual_ao_arquivo_real(self):
+        registro = {'ticker': 'ITRI11', 'tipo': 'Venda', 'qtd': 550, 'data': '02/06/25', 'preco': 81.2}
+        assert formatar_linha_txt(registro) == 'ITRI11\tVenda\t550.000\t02/06/25\t81.200\t0.000\tHomeBroker'
+
+
+class TestClassificarCandidatos:
+
+    def test_candidato_valido_e_novo_fica_pronto(self):
+        candidatos = [{'ticker': 'BBAS3', 'tipo': 'Compra', 'qtd': 1500, 'data': '16/05/25', 'preco': 25.7}]
+
+        resultado = classificar_candidatos(candidatos, chaves_existentes=[])
+
+        assert resultado[0]['categoria'] == 'pronto'
+        assert resultado[0]['linha_txt'] == 'BBAS3\tCompra\t1500.000\t16/05/25\t25.700\t0.000\tHomeBroker'
+        assert resultado[0]['motivo'] is None
+
+    def test_candidato_com_formato_invalido_vira_observacao(self):
+        candidatos = [{'ticker': 'invalido', 'tipo': 'Compra', 'qtd': 100, 'data': '16/05/25', 'preco': 10}]
+
+        resultado = classificar_candidatos(candidatos, chaves_existentes=[])
+
+        assert resultado[0]['categoria'] == 'observacao'
+        assert 'ticker' in resultado[0]['motivo']
+        assert resultado[0]['linha_txt'] is None
+
+    def test_tipo_fora_do_padrao_vira_observacao_com_campos_preservados(self):
+        candidatos = [{'ticker': 'BBAS3', 'tipo': 'Desdobramento', 'qtd': 100, 'data': '16/05/25', 'preco': 10}]
+
+        resultado = classificar_candidatos(candidatos, chaves_existentes=[])
+
+        assert resultado[0]['categoria'] == 'observacao'
+        assert 'Desdobramento' in resultado[0]['motivo']
+        assert resultado[0]['ticker'] == 'BBAS3'
+        assert resultado[0]['linha_txt'] is None
+
+    def test_candidato_duplicado_no_arquivo_existente_vira_observacao(self):
+        candidatos = [{'ticker': 'ITRI11', 'tipo': 'Venda', 'qtd': 550, 'data': '02/06/25', 'preco': 81.2}]
+        chaves_existentes = [chave_duplicidade('ITRI11', 'Venda', 550, '02/06/25', 81.2)]
+
+        resultado = classificar_candidatos(candidatos, chaves_existentes)
+
+        assert resultado[0]['categoria'] == 'observacao'
+        assert 'ja existe' in resultado[0]['motivo']
+
+    def test_dois_candidatos_identicos_no_mesmo_lote_segundo_vira_observacao(self):
+        candidato = {'ticker': 'BBAS3', 'tipo': 'Compra', 'qtd': 1500, 'data': '16/05/25', 'preco': 25.7}
+        candidatos = [dict(candidato), dict(candidato)]
+
+        resultado = classificar_candidatos(candidatos, chaves_existentes=[])
+
+        assert resultado[0]['categoria'] == 'pronto'
+        assert resultado[1]['categoria'] == 'observacao'
+        assert 'ja existe' in resultado[1]['motivo']
