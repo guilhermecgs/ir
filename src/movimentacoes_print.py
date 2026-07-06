@@ -1,6 +1,8 @@
 import csv
 import datetime
+import json
 import re
+import sys
 
 TICKER_REGEX = re.compile(r'^[A-Z]{4}\d{1,2}$')
 TIPOS_PADRAO = {'Compra', 'Venda'}
@@ -118,3 +120,15 @@ def classificar_candidatos(candidatos, chaves_existentes):
         resultado.append(item)
 
     return resultado
+
+
+def executar_classificacao(candidatos_path, operacoes_path):
+    with open(candidatos_path, encoding='utf-8') as f:
+        candidatos = json.load(f)
+    chaves_existentes = parse_arquivo_operacoes(operacoes_path)
+    resultado = classificar_candidatos(candidatos, chaves_existentes)
+    return json.dumps(resultado, ensure_ascii=False, indent=2)
+
+
+if __name__ == '__main__':
+    print(executar_classificacao(sys.argv[1], sys.argv[2]))

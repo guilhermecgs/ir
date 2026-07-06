@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from src.movimentacoes_print import (
     parse_data,
@@ -7,6 +8,7 @@ from src.movimentacoes_print import (
     parse_arquivo_operacoes,
     formatar_linha_txt,
     classificar_candidatos,
+    executar_classificacao,
 )
 
 
@@ -163,3 +165,24 @@ class TestClassificarCandidatos:
         assert resultado[0]['categoria'] == 'pronto'
         assert resultado[1]['categoria'] == 'observacao'
         assert 'ja existe' in resultado[1]['motivo']
+
+
+class TestExecutarClassificacao:
+
+    def test_executar_classificacao_le_arquivos_e_retorna_json(self, tmp_path):
+        operacoes = tmp_path / 'export_operacoes.txt'
+        operacoes.write_text('ITRI11\tVenda\t550.000\t02/06/25\t81.200\t0.000\tHomeBroker\n')
+
+        candidatos_path = tmp_path / 'candidatos.json'
+        candidatos_path.write_text(json.dumps([
+            {'ticker': 'ITRI11', 'tipo': 'Venda', 'qtd': 550, 'data': '02/06/25', 'preco': 81.2},
+            {'ticker': 'BBAS3', 'tipo': 'Compra', 'qtd': 1500, 'data': '16/05/25', 'preco': 25.7},
+        ]))
+
+        resultado_json = executar_classificacao(str(candidatos_path), str(operacoes))
+        resultado = json.loads(resultado_json)
+
+        assert resultado[0]['categoria'] == 'observacao'
+        assert 'ja existe' in resultado[0]['motivo']
+        assert resultado[1]['categoria'] == 'pronto'
+        assert resultado[1]['linha_txt'] == 'BBAS3\tCompra\t1500.000\t16/05/25\t25.700\t0.000\tHomeBroker'
