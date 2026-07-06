@@ -71,6 +71,7 @@ ticker_map = {
     "MALL11": TipoTicker.FII,
     "KFOF11": TipoTicker.FII,
     "HGRU11": TipoTicker.FII,
+    "CPTA11": TipoTicker.FII,
     "CPTR11": TipoTicker.FII,
     "RFOF11": TipoTicker.FII,
     "BTLG11": TipoTicker.FII,
