@@ -1,3 +1,4 @@
+import csv
 import datetime
 import re
 
@@ -50,3 +51,20 @@ def validar_formato(registro):
             return False, 'valor informado ({}) nao bate com qtd*preco ({:.2f})'.format(valor, esperado)
 
     return True, None
+
+
+def chave_duplicidade(ticker, operacao, qtd, data_str, preco):
+    data = parse_data(data_str)
+    return (ticker, operacao, round(float(qtd), 3), data, round(float(preco), 3))
+
+
+def parse_arquivo_operacoes(caminho):
+    chaves = []
+    with open(caminho, newline='') as f:
+        reader = csv.reader(f, delimiter='\t')
+        for row in reader:
+            if len(row) < 5:
+                continue
+            ticker, operacao, qtd, data_str, preco = row[0], row[1], row[2], row[3], row[4]
+            chaves.append(chave_duplicidade(ticker, operacao, qtd, data_str, preco))
+    return chaves
