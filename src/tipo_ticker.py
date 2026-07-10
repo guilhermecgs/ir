@@ -158,6 +158,7 @@ ticker_map = {
     "ONCO3": TipoTicker.ACAO_OU_ETF,
     "STBP3": TipoTicker.ACAO_OU_ETF,
     "ANIM3": TipoTicker.ACAO_OU_ETF,
+    "AXIA3": TipoTicker.ACAO_OU_ETF,
     "AXIA6": TipoTicker.ACAO_OU_ETF,
     "AXIA7": TipoTicker.ACAO_OU_ETF,
     "BOVA11": TipoTicker.ACAO_OU_ETF,

@@ -73,11 +73,12 @@ def parse_arquivo_operacoes(caminho):
 
 
 def formatar_linha_txt(registro):
+    data = parse_data(registro['data']).strftime('%d/%m/%y')
     return '\t'.join([
         registro['ticker'],
         registro['tipo'],
         '{:.3f}'.format(float(registro['qtd'])),
-        registro['data'],
+        data,
         '{:.3f}'.format(float(registro['preco'])),
         '0.000',
         'HomeBroker',

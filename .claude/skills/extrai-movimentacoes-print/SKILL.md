@@ -49,7 +49,10 @@ linha, extraia:
   `Desdobramento`, `Bonificação`, `Subscrição`, `Conversão`, etc. — não
   traduza nem normalize, use exatamente o que está escrito)
 - `qtd` (quantidade, numérico)
-- `data` (formato `DD/MM/AAAA` ou `DD/MM/AA`, como aparece na tela)
+- `data` (formato `DD/MM/AAAA` ou `DD/MM/AA`, como aparece na tela — o script
+  normaliza a saída sempre para `DD/MM/AA` (ano com 2 dígitos), igual ao
+  restante do arquivo de operações; nunca gere linha com ano de 4 dígitos,
+  isso quebra a inferência de tipo de data no pandas)
 - `preco` (preço unitário, numérico)
 - `valor` (valor total da operação, se visível — numérico; omita a chave se
   não estiver visível)
