@@ -10,6 +10,13 @@ portal da B3, corretora, etc.) em linhas prontas para colar manualmente no
 arquivo de operações do projeto `ir`. Nunca escreve no arquivo sozinha — a
 inserção final é sempre manual.
 
+> **REGRA ABSOLUTA — SOMENTE LEITURA:** esta skill NUNCA, em hipótese
+> nenhuma, escreve, edita, sobrescreve ou apaga qualquer arquivo de operações
+> (`export_operacoes.txt`, `export_operacoes_egs.txt` ou qualquer variante).
+> Todo acesso a esse arquivo é read-only, mesmo durante sincronização com o
+> Dropbox. A inserção das linhas "prontas" é sempre manual, feita pelo
+> usuário fora desta skill.
+
 ## Quando usar
 
 O usuário fornece um ou mais paths de imagem (printscreens já salvos
