@@ -31,3 +31,4 @@ relatorio.txt
 __cache__/
 
 .env
+.gstack/
