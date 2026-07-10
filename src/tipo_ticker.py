@@ -24,6 +24,7 @@ class TipoTicker(Enum):
 ticker_map = {
     "ELET6": TipoTicker.ACAO_OU_ETF,
     "ITUB3": TipoTicker.ACAO_OU_ETF,
+    "ITUB4": TipoTicker.ACAO_OU_ETF,
     "BBASP280W2": TipoTicker.OPCAO,
     "FATN11": TipoTicker.FII,
     "FATN12": TipoTicker.FII,
@@ -104,6 +105,7 @@ ticker_map = {
     "PQDP11": TipoTicker.FII,
     "PSEC11": TipoTicker.FII,
     "PCIP11": TipoTicker.FII,
+    "PMLL11": TipoTicker.FII,
     "RBRY12": TipoTicker.FII,
     "RBRP12": TipoTicker.FII,
     "RVBI11": TipoTicker.FII,
