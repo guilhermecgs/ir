@@ -63,8 +63,10 @@ exemplo `/tmp/candidatos_movimentacoes.json`:
 
 ### 3. Rodar a classificação determinística
 
+O script é auto-contido dentro desta skill (não depende de `src/`):
+
 ```bash
-python3 -m src.movimentacoes_print /tmp/candidatos_movimentacoes.json export_operacoes.txt
+python3 .claude/skills/extrai-movimentacoes-print/movimentacoes_print.py /tmp/candidatos_movimentacoes.json export_operacoes.txt
 ```
 
 O segundo argumento é o mesmo arquivo baixado no passo 1 (`OPERATIONS_FILEPATH`,

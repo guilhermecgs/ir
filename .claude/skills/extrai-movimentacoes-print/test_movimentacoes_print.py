@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from src.movimentacoes_print import (
+from movimentacoes_print import (
     parse_data,
     validar_formato,
     chave_duplicidade,
